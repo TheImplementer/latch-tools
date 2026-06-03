@@ -556,8 +556,45 @@ const structuredData = {
 
   let files: FileEntry[] = [];
   let results: ResultEntry[] = [];
+  let previewUrls: string[] = [];
   let cancelled = false;
   let fitMode: FitMode = 'cover';
+
+  // Owns the lifetime of preview object URLs (separate from downloadOne's
+  // short-lived URLs). Call before re-rendering or leaving the done state.
+  function revokePreviewUrls() {
+    for (const url of previewUrls) URL.revokeObjectURL(url);
+    previewUrls = [];
+  }
+
+  // Decoded source for the live "Image ready" preview, kept alive so option
+  // changes can redraw without re-decoding the file. Backing-store side is
+  // capped for performance — CSS scales it for display.
+  const MAX_PREVIEW_SIDE = 1000;
+  let previewBitmap: ImageBitmap | null = null;
+
+  function closePreviewBitmap() {
+    if (previewBitmap) previewBitmap.close();
+    previewBitmap = null;
+  }
+
+  function updatePreview() {
+    const figure = document.getElementById('input-preview');
+    if (!figure || !previewBitmap) return;
+    const { w, h } = getTargetDimensions();
+    if (!w || !h) return;
+    const scale = Math.min(1, MAX_PREVIEW_SIDE / Math.max(w, h));
+    const cw = Math.max(1, Math.round(w * scale));
+    const ch = Math.max(1, Math.round(h * scale));
+    let canvas = figure.querySelector('canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      canvas.setAttribute('role', 'img');
+      figure.replaceChildren(canvas);
+    }
+    canvas.setAttribute('aria-label', `Preview of the resized image at ${w} by ${h} pixels`);
+    drawResized(canvas, previewBitmap, cw, ch, fitMode);
+  }
 
   const dropzone = $('dropzone');
   const fileInput = $<HTMLInputElement>('file-input');
@@ -586,10 +623,11 @@ const structuredData = {
     const isCustom = presetSelect.value === 'custom';
     customRow.hidden = !isCustom;
     updatePillSize();
+    updatePreview();
   });
 
-  customW.addEventListener('input', updatePillSize);
-  customH.addEventListener('input', updatePillSize);
+  customW.addEventListener('input', () => { updatePillSize(); updatePreview(); });
+  customH.addEventListener('input', () => { updatePillSize(); updatePreview(); });
 
   function updatePillSize() {
     const { w, h } = getTargetDimensions();
@@ -615,6 +653,7 @@ const structuredData = {
     fitCoverBtn.setAttribute('aria-pressed', String(mode === 'cover'));
     fitContainBtn.classList.toggle('active', mode === 'contain');
     fitContainBtn.setAttribute('aria-pressed', String(mode === 'contain'));
+    updatePreview();
   }
 
   // ---- Drop zone ----
@@ -680,12 +719,36 @@ const structuredData = {
 
   function removeFile(index: number) {
     files.splice(index, 1);
+    closePreviewBitmap();
+    document.getElementById('input-preview')?.remove();
     widgetTitle.textContent = 'Resize your photo';
     showState('drop');
   }
 
   function renderFileList() {
+    document.getElementById('input-preview')?.remove();
+    closePreviewBitmap();
     fileList.innerHTML = '';
+
+    // Live preview of the resize result — updates when options change.
+    const lead = files[0];
+    if (lead) {
+      const figure = document.createElement('figure');
+      figure.id = 'input-preview';
+      figure.className = 'result-preview';
+      fileList.parentElement!.insertBefore(figure, fileList);
+      createImageBitmap(lead.file)
+        .then((bmp) => {
+          // Ignore if the user moved on (removed the file / started over).
+          if (!document.getElementById('input-preview')) { bmp.close(); return; }
+          previewBitmap = bmp;
+          updatePreview();
+        })
+        .catch(() => {
+          /* Invalid image — leave preview blank; resize surfaces the error. */
+        });
+    }
+
     files.forEach((entry, i) => {
       const row = document.createElement('div');
       row.className = 'filerow';
@@ -717,6 +780,8 @@ const structuredData = {
 
     cancelled = false;
     results = [];
+    revokePreviewUrls();
+    closePreviewBitmap();
     widgetTitle.textContent = 'Resizing…';
     showState('processing');
 
@@ -761,9 +826,8 @@ const structuredData = {
     statusEl.textContent = status;
   }
 
-  async function convertOne(file: File, targetW: number, targetH: number, mode: FitMode): Promise<Blob> {
-    const bitmap = await createImageBitmap(file);
-    const canvas = document.createElement('canvas');
+  // Shared resize draw — used by both the live preview and the final export.
+  function drawResized(canvas: HTMLCanvasElement, bitmap: ImageBitmap, targetW: number, targetH: number, mode: FitMode) {
     canvas.width = targetW;
     canvas.height = targetH;
     const ctx = canvas.getContext('2d')!;
@@ -788,7 +852,12 @@ const structuredData = {
       const y = (targetH - scaledH) / 2;
       ctx.drawImage(bitmap, x, y, scaledW, scaledH);
     }
+  }
 
+  async function convertOne(file: File, targetW: number, targetH: number, mode: FitMode): Promise<Blob> {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    drawResized(canvas, bitmap, targetW, targetH, mode);
     bitmap.close();
     return new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((blob) => {
@@ -802,6 +871,8 @@ const structuredData = {
     cancelled = true;
     files = [];
     results = [];
+    revokePreviewUrls();
+    closePreviewBitmap();
     widgetTitle.textContent = 'Resize your photo';
     showState('drop');
   });
@@ -811,6 +882,25 @@ const structuredData = {
     doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} resized`;
     doneSub.textContent = `Resized to ${targetW}×${targetH} px · stayed on your device the whole time`;
     resultsList.innerHTML = '';
+    revokePreviewUrls();
+    document.getElementById('result-preview')?.remove();
+
+    // Large lead preview of the resized result (first file in multi-file mode).
+    const lead = results[0];
+    const leadUrl = URL.createObjectURL(lead.blob);
+    previewUrls.push(leadUrl);
+    const figure = document.createElement('figure');
+    figure.id = 'result-preview';
+    figure.className = 'result-preview';
+    const img = document.createElement('img');
+    img.src = leadUrl;
+    img.alt = `Preview of ${lead.name}, resized to ${lead.w} by ${lead.h} pixels`;
+    img.width = lead.w;
+    img.height = lead.h;
+    img.decoding = 'async';
+    figure.appendChild(img);
+    resultsList.parentElement!.insertBefore(figure, resultsList);
+
     results.forEach((r) => {
       const row = document.createElement('div');
       row.className = 'filerow';
@@ -845,6 +935,9 @@ const structuredData = {
   convertAnotherBtn.addEventListener('click', () => {
     files = [];
     results = [];
+    revokePreviewUrls();
+    closePreviewBitmap();
+    document.getElementById('result-preview')?.remove();
     widgetTitle.textContent = 'Resize your photo';
     showState('drop');
   });
