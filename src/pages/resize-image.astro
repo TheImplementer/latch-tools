@@ -1,0 +1,889 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Image Resizer for Passport, Visa & LinkedIn",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, LinkedIn, and more — all in your browser. No uploads.",
+      "url": "https://latchtools.com/resize-image"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to resize an image for a passport or visa photo",
+      "step": [
+        { "@type": "HowToStep", "name": "Add your photo", "text": "Drag your image onto the drop zone, or click Browse to pick it from your device." },
+        { "@type": "HowToStep", "name": "Choose a preset or custom size", "text": "Select a named preset (UK Passport, US Passport, Schengen Visa, LinkedIn) or enter custom pixel dimensions." },
+        { "@type": "HowToStep", "name": "Pick a fit mode", "text": "Crop to fill fills the exact frame by cropping the edges. Fit with padding scales the image down and adds white padding to fill the rest." },
+        { "@type": "HowToStep", "name": "Download your resized image", "text": "Save the result and verify the dimensions before submitting. Always check official requirements before submission." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What size should a UK passport photo be?",
+          "acceptedAnswer": { "@type": "Answer", "text": "UK passport photos must be 35 mm wide by 45 mm tall. For digital submissions, the UK Government guidance specifies 600 × 750 pixels. Always verify with the official gov.uk guidance before submitting." }
+        },
+        {
+          "@type": "Question",
+          "name": "What size should a US passport photo be?",
+          "acceptedAnswer": { "@type": "Answer", "text": "US passport photos must be 2 × 2 inches (51 × 51 mm). At 300 dpi that is 600 × 600 pixels. Check the U.S. Department of State website for the latest requirements." }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my photos uploaded anywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Resizing happens entirely in your browser using the Canvas API. Nothing is sent to a server — the tool works offline too." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between Crop to fill and Fit with padding?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Crop to fill scales the image so it covers the full target frame, then trims the edges. The result has no padding but parts of the image may be cut off. Fit with padding scales the image to fit entirely within the frame, then fills the remaining space with white. No content is lost, but white bars may appear." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use custom pixel dimensions?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Select Custom dimensions from the preset menu and type your target width and height in pixels." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Resize Image for Passport, Visa & LinkedIn — Free · Latch"
+  description="Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, or LinkedIn. All resizing happens in your browser. No uploads, no sign-up."
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <!-- TOOL HERO + WIDGET -->
+  <section>
+    <div class="wrap tool-wrap">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Resize Image</span>
+        </nav>
+        <h1>Resize image for passport, visa, and social profiles</h1>
+        <p>Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, LinkedIn, or any custom size — all in your browser.</p>
+        <TrustPill />
+      </div>
+
+      <!-- WIDGET -->
+      <div class="widget" id="widget" role="region" aria-label="Image resizer">
+        <div class="widget-head">
+          <span class="wt" style="font-family:var(--font-display);font-weight:600;font-size:16px;letter-spacing:-.01em" id="widget-title">
+            Resize your photo
+          </span>
+          <span class="fmt-pill" aria-hidden="true">
+            <span class="from">IMG</span>
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            <span class="to" id="pill-size">600×750</span>
+          </span>
+        </div>
+
+        <!-- STATE: empty / drag -->
+        <div id="state-drop" class="widget-state">
+          <div
+            class="dropzone"
+            id="dropzone"
+            role="button"
+            tabindex="0"
+            aria-label="Drop image files here or click to browse"
+            aria-describedby="dz-hint"
+          >
+            <div class="dz-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5m0 0L8 9m4-4l4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            </div>
+            <p class="dz-title" id="dz-title">Drag &amp; drop your image</p>
+            <p class="dz-or" aria-hidden="true">or</p>
+            <button class="btn btn-secondary" type="button" id="browse-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Browse files
+            </button>
+            <p class="dz-hint" id="dz-hint">Accepts JPEG, PNG, WebP · up to 50 MB</p>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Resizing happens right here in your browser — nothing is uploaded.
+          </div>
+        </div>
+
+        <!-- STATE: selected -->
+        <div id="state-selected" class="widget-state" hidden>
+          <div class="filelist" id="filelist" aria-live="polite" aria-label="Selected files"></div>
+          <div class="opts">
+            <div class="opt">
+              <label for="preset-select">Resize to</label>
+              <select class="select" id="preset-select" aria-label="Resize preset">
+                <option value="uk-passport">UK Passport — 600 × 750 px</option>
+                <option value="us-passport">US Passport — 600 × 600 px</option>
+                <option value="schengen">Schengen Visa — 600 × 750 px</option>
+                <option value="linkedin">LinkedIn Profile — 400 × 400 px</option>
+                <option value="custom">Custom dimensions…</option>
+              </select>
+            </div>
+            <div class="opt" id="custom-row" hidden>
+              <label>Dimensions (px)</label>
+              <span class="dim-inputs">
+                <input type="number" class="num-input" id="custom-w" min="1" max="8000" value="800" aria-label="Width in pixels" />
+                <span class="dim-sep" aria-hidden="true">×</span>
+                <input type="number" class="num-input" id="custom-h" min="1" max="8000" value="800" aria-label="Height in pixels" />
+                <span class="dim-label" aria-hidden="true">px</span>
+              </span>
+            </div>
+            <div class="opt">
+              <label id="fit-mode-label">Fit mode</label>
+              <span class="fit-toggle" role="group" aria-labelledby="fit-mode-label">
+                <button class="fit-btn active" id="fit-cover" type="button" aria-pressed="true">Crop to fill</button>
+                <button class="fit-btn" id="fit-contain" type="button" aria-pressed="false">Fit with padding</button>
+              </span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary grow" type="button" id="convert-btn">
+              Resize image
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            These images stay on your device the entire time.
+          </div>
+        </div>
+
+        <!-- STATE: processing -->
+        <div id="state-processing" class="widget-state" hidden>
+          <div class="proc">
+            <div class="proc-row">
+              <div class="spinner" role="status" aria-label="Resizing"></div>
+              <div>
+                <div class="pt">Resizing your images</div>
+                <div class="ps" id="proc-status" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+              <i id="progress-fill" style="width:0%"></i>
+            </div>
+            <div class="proc-pct">
+              <span id="proc-pct">0%</span>
+              <span>Working locally — nothing uploaded</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancel</button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Your browser is doing the work — no file has been sent anywhere.
+          </div>
+        </div>
+
+        <!-- STATE: done -->
+        <div id="state-done" class="widget-state" hidden>
+          <div class="result-head">
+            <span class="result-badge" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <div>
+              <div class="rt" id="done-title">All done</div>
+              <div class="rs" id="done-sub">Resized · stayed on your device the whole time</div>
+            </div>
+          </div>
+          <div class="filelist" id="results-list" aria-live="polite" aria-label="Resized files"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="convert-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"/></svg>
+              Resize another
+            </button>
+            <button class="btn btn-primary grow" type="button" id="download-all-btn">
+              Download
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Close this tab and every file is gone — nothing was kept.
+          </div>
+        </div>
+
+        <!-- STATE: error -->
+        <div id="state-error" class="widget-state" hidden>
+          <div class="err-head">
+            <span class="err-badge" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><circle cx="12" cy="16.4" r=".4" fill="currentColor"/><path d="M10.3 4.2L3.4 16a2 2 0 0 0 1.7 3h13.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/></svg>
+            </span>
+            <div>
+              <div class="et" id="err-title">We couldn't resize that file</div>
+              <div class="es" id="err-message"></div>
+            </div>
+          </div>
+          <div class="filelist" id="error-list" aria-live="assertive"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="remove-continue-btn">Remove &amp; continue</button>
+            <button class="btn btn-primary grow" type="button" id="try-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Try another file
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            The file stayed on your device — even when something goes wrong.
+          </div>
+        </div>
+      </div>
+      <!-- hidden file input -->
+      <input type="file" id="file-input" accept="image/*" hidden aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to resize an image for passport or visa</h2>
+          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Add your photo</h4>
+          <p>Drag your image onto the box above, or click Browse. JPEG, PNG, and WebP are all accepted.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>Choose a preset or custom size</h4>
+          <p>Pick UK Passport, US Passport, Schengen Visa, LinkedIn, or type your own pixel dimensions.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>Pick a fit mode</h4>
+          <p><strong>Crop to fill</strong> fills the exact frame and trims edges. <strong>Fit with padding</strong> scales the image down and adds white space to fill the rest.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Download and verify</h4>
+          <p>Save your resized image. Always check the exact pixel dimensions and any other requirements before submitting an official document photo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPEC SOURCES -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Preset dimensions and sources</h2>
+          <p class="sec-desc">Requirements change — always verify with the official issuing authority before submitting.</p>
+        </div>
+      </div>
+      <div class="spec-table">
+        <div class="spec-row spec-head-row">
+          <span>Preset</span>
+          <span>Size (px)</span>
+          <span>Physical size</span>
+          <span>Source</span>
+        </div>
+        <div class="spec-row">
+          <span>UK Passport</span>
+          <span>600 × 750</span>
+          <span>35 × 45 mm</span>
+          <span>UK Government (gov.uk)</span>
+        </div>
+        <div class="spec-row">
+          <span>US Passport</span>
+          <span>600 × 600</span>
+          <span>2 × 2 inches</span>
+          <span>U.S. Dept of State (travel.state.gov)</span>
+        </div>
+        <div class="spec-row">
+          <span>Schengen Visa</span>
+          <span>600 × 750</span>
+          <span>35 × 45 mm</span>
+          <span>ICAO Doc 9303 standard</span>
+        </div>
+        <div class="spec-row">
+          <span>LinkedIn Profile</span>
+          <span>400 × 400</span>
+          <span>Square</span>
+          <span>LinkedIn Help Center</span>
+        </div>
+      </div>
+      <p class="spec-note">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+        Pixel sizes are at 300 dpi. Some submission systems accept other resolutions — check the specific requirements for your application.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">
+            What size should a UK passport photo be?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">UK passport photos must be 35 mm wide by 45 mm tall. For digital submissions, the UK Government guidance specifies 600 × 750 pixels. Always verify with the official gov.uk guidance before submitting.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What size should a US passport photo be?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">US passport photos must be 2 × 2 inches (51 × 51 mm). At 300 dpi that is 600 × 600 pixels. Check the U.S. Department of State website for the latest requirements before submission.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Are my photos uploaded anywhere?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No. Resizing happens entirely in your browser using the Canvas API. Nothing is sent to a server — the tool works offline too.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What is the difference between "Crop to fill" and "Fit with padding"?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Crop to fill scales the image so it covers the full target frame, then trims the edges. The result has no white bars but some content near the edges may be cut. Fit with padding scales the image to fit entirely within the frame and fills the remaining space with white — no content is lost, but white bars may appear.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Can I use custom pixel dimensions?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Yes. Select "Custom dimensions…" from the preset menu and type your target width and height in pixels. Maximum 8000 × 8000 px.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .tool-wrap { max-width: 780px; }
+
+  .widget-state[hidden] { display: none; }
+
+  .select {
+    appearance: none;
+    background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%238b94a2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    padding: 0 36px 0 12px;
+    height: 40px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    min-width: 260px;
+  }
+  .select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  .dim-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .num-input {
+    width: 80px;
+    height: 40px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    padding: 0 10px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface);
+    text-align: center;
+  }
+  .num-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .dim-sep { font-weight: 600; color: var(--text-3); }
+  .dim-label { font-size: 13px; color: var(--text-3); }
+
+  .fit-toggle {
+    display: flex;
+    gap: 4px;
+  }
+  .fit-btn {
+    padding: 0 16px;
+    height: 36px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--text-2);
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .fit-btn.active,
+  .fit-btn[aria-pressed="true"] {
+    background: var(--accent-weak);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .fit-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  .spec-table {
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .spec-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 2fr;
+    gap: 0;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-head-row {
+    background: var(--surface-2);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .spec-note {
+    font-size: 13px;
+    color: var(--text-3);
+    margin: 0;
+  }
+
+  details.faq-item .faq-a { display: none; }
+  details.faq-item[open] .faq-a { display: block; }
+  details.faq-item[open] .pm svg path:last-child { opacity: 0; }
+
+  @media (max-width: 580px) {
+    .spec-row { grid-template-columns: 1fr 1fr; row-gap: 2px; }
+    .spec-row span:nth-child(3),
+    .spec-row span:nth-child(4) { color: var(--text-2); }
+    .spec-head-row span:nth-child(3),
+    .spec-head-row span:nth-child(4) { display: none; }
+  }
+</style>
+
+<script>
+  // -----------------------------------------------------------------------
+  // Resize Image — client-side widget controller
+  // Presets: UK Passport, US Passport, Schengen Visa, LinkedIn, Custom.
+  // Uses the Canvas API — no external library needed.
+  // -----------------------------------------------------------------------
+
+  type FileEntry = { file: File };
+  type FitMode = 'cover' | 'contain';
+  type ResultEntry = { name: string; blob: Blob; originalSize: number; w: number; h: number };
+
+  const MAX_SIZE_MB = 50;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+  const PRESETS: Record<string, { w: number; h: number }> = {
+    'uk-passport': { w: 600, h: 750 },
+    'us-passport': { w: 600, h: 600 },
+    'schengen':    { w: 600, h: 750 },
+    'linkedin':    { w: 400, h: 400 },
+    'custom':      { w: 0,   h: 0   },
+  };
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const states = {
+    drop: $('state-drop'),
+    selected: $('state-selected'),
+    processing: $('state-processing'),
+    done: $('state-done'),
+    error: $('state-error'),
+  };
+
+  function showState(name: keyof typeof states) {
+    for (const [k, el] of Object.entries(states)) {
+      (el as HTMLElement).hidden = k !== name;
+    }
+  }
+
+  let files: FileEntry[] = [];
+  let results: ResultEntry[] = [];
+  let cancelled = false;
+  let fitMode: FitMode = 'cover';
+
+  const dropzone = $('dropzone');
+  const fileInput = $<HTMLInputElement>('file-input');
+  const browseBtn = $('browse-btn');
+  const fileList = $('filelist');
+  const presetSelect = $<HTMLSelectElement>('preset-select');
+  const customRow = $('custom-row');
+  const customW = $<HTMLInputElement>('custom-w');
+  const customH = $<HTMLInputElement>('custom-h');
+  const fitCoverBtn = $('fit-cover');
+  const fitContainBtn = $('fit-contain');
+  const convertBtn = $('convert-btn');
+  const cancelBtn = $('cancel-btn');
+  const resultsList = $('results-list');
+  const convertAnotherBtn = $('convert-another-btn');
+  const downloadAllBtn = $('download-all-btn');
+  const doneTitleEl = $('done-title');
+  const doneSub = $('done-sub');
+  const removeAndContinueBtn = $('remove-continue-btn');
+  const tryAnotherBtn = $('try-another-btn');
+  const widgetTitle = $('widget-title');
+  const pillSize = $('pill-size');
+
+  // ---- Preset select ----
+  presetSelect.addEventListener('change', () => {
+    const isCustom = presetSelect.value === 'custom';
+    customRow.hidden = !isCustom;
+    updatePillSize();
+  });
+
+  customW.addEventListener('input', updatePillSize);
+  customH.addEventListener('input', updatePillSize);
+
+  function updatePillSize() {
+    const { w, h } = getTargetDimensions();
+    if (w && h) pillSize.textContent = `${w}×${h}`;
+  }
+
+  function getTargetDimensions(): { w: number; h: number } {
+    if (presetSelect.value === 'custom') {
+      const w = parseInt(customW.value, 10) || 0;
+      const h = parseInt(customH.value, 10) || 0;
+      return { w, h };
+    }
+    return PRESETS[presetSelect.value] ?? { w: 600, h: 750 };
+  }
+
+  // ---- Fit mode toggle ----
+  fitCoverBtn.addEventListener('click', () => setFitMode('cover'));
+  fitContainBtn.addEventListener('click', () => setFitMode('contain'));
+
+  function setFitMode(mode: FitMode) {
+    fitMode = mode;
+    fitCoverBtn.classList.toggle('active', mode === 'cover');
+    fitCoverBtn.setAttribute('aria-pressed', String(mode === 'cover'));
+    fitContainBtn.classList.toggle('active', mode === 'contain');
+    fitContainBtn.setAttribute('aria-pressed', String(mode === 'contain'));
+  }
+
+  // ---- Drop zone ----
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('is-drag');
+    $('dz-title').textContent = 'Drop to add your image';
+  });
+  ['dragleave', 'dragend'].forEach((ev) => {
+    dropzone.addEventListener(ev, () => {
+      dropzone.classList.remove('is-drag');
+      $('dz-title').textContent = 'Drag & drop your image';
+    });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('is-drag');
+    const de = e as DragEvent;
+    addFiles(Array.from(de.dataTransfer?.files ?? []));
+  });
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('keydown', (e) => {
+    const ke = e as KeyboardEvent;
+    if (ke.key === 'Enter' || ke.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', () => {
+    addFiles(Array.from(fileInput.files ?? []));
+    fileInput.value = '';
+  });
+
+  function formatBytes(b: number): string {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function addFiles(incoming: File[]) {
+    const valid = incoming.filter((f) => f.type.startsWith('image/'));
+
+    if (valid.length === 0 && incoming.length > 0) {
+      showError('Unsupported file type', 'Please drop an image file (JPEG, PNG, or WebP).', []);
+      return;
+    }
+
+    const first = valid[0];
+    if (!first) return;
+
+    if (first.size > MAX_SIZE_BYTES) {
+      showError('File too large', `${first.name} must be under ${MAX_SIZE_MB} MB.`, []);
+      return;
+    }
+
+    files = [{ file: first }];
+    renderFileList();
+    widgetTitle.textContent = 'Image ready';
+    showState('selected');
+  }
+
+  function removeFile(index: number) {
+    files.splice(index, 1);
+    widgetTitle.textContent = 'Resize your photo';
+    showState('drop');
+  }
+
+  function renderFileList() {
+    fileList.innerHTML = '';
+    files.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb">IMG</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(entry.file.name)}</div>
+          <div class="file-sub">${formatBytes(entry.file.size)}</div>
+        </div>
+        <button class="icon-btn" aria-label="Remove ${escHtml(entry.file.name)}" data-index="${i}">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => removeFile(i));
+      fileList.appendChild(row);
+    });
+  }
+
+  convertBtn.addEventListener('click', startConversion);
+
+  async function startConversion() {
+    if (files.length === 0) return;
+
+    const { w: targetW, h: targetH } = getTargetDimensions();
+    if (!targetW || !targetH) {
+      showError('Invalid dimensions', 'Please enter valid width and height values greater than zero.', files);
+      return;
+    }
+
+    cancelled = false;
+    results = [];
+    widgetTitle.textContent = 'Resizing…';
+    showState('processing');
+
+    for (let i = 0; i < files.length; i++) {
+      if (cancelled) break;
+
+      const entry = files[i];
+      const pct = Math.round((i / files.length) * 100);
+      updateProgress(pct, `${i + 1} of ${files.length} · ${entry.file.name}`);
+
+      try {
+        const blob = await convertOne(entry.file, targetW, targetH, fitMode);
+        const baseName = entry.file.name.replace(/\.[^.]+$/, '');
+        const name = `${baseName}-${targetW}x${targetH}.jpg`;
+        results.push({ name, blob, originalSize: entry.file.size, w: targetW, h: targetH });
+      } catch (err) {
+        if (!cancelled) {
+          showError(
+            `Couldn't resize ${entry.file.name}`,
+            `<code>${escHtml(entry.file.name)}</code> looks corrupted or isn't a valid image.`,
+            files.filter((_, j) => j !== i)
+          );
+          return;
+        }
+      }
+    }
+
+    if (!cancelled) {
+      updateProgress(100, '');
+      showDone(targetW, targetH);
+    }
+  }
+
+  function updateProgress(pct: number, status: string) {
+    const fill = $<HTMLElement>('progress-fill');
+    const pctEl = $('proc-pct');
+    const bar = $<HTMLElement>('progress-bar');
+    const statusEl = $('proc-status');
+    fill.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    bar.setAttribute('aria-valuenow', String(pct));
+    statusEl.textContent = status;
+  }
+
+  async function convertOne(file: File, targetW: number, targetH: number, mode: FitMode): Promise<Blob> {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d')!;
+    const imgW = bitmap.width;
+    const imgH = bitmap.height;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    if (mode === 'cover') {
+      const scale = Math.max(targetW / imgW, targetH / imgH);
+      const scaledW = imgW * scale;
+      const scaledH = imgH * scale;
+      const offsetX = (scaledW - targetW) / 2;
+      const offsetY = (scaledH - targetH) / 2;
+      ctx.drawImage(bitmap, -offsetX, -offsetY, scaledW, scaledH);
+    } else {
+      const scale = Math.min(targetW / imgW, targetH / imgH);
+      const scaledW = imgW * scale;
+      const scaledH = imgH * scale;
+      const x = (targetW - scaledW) / 2;
+      const y = (targetH - scaledH) / 2;
+      ctx.drawImage(bitmap, x, y, scaledW, scaledH);
+    }
+
+    bitmap.close();
+    return new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Canvas conversion failed'));
+      }, 'image/jpeg', 0.95);
+    });
+  }
+
+  cancelBtn.addEventListener('click', () => {
+    cancelled = true;
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Resize your photo';
+    showState('drop');
+  });
+
+  function showDone(targetW: number, targetH: number) {
+    const count = results.length;
+    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} resized`;
+    doneSub.textContent = `Resized to ${targetW}×${targetH} px · stayed on your device the whole time`;
+    resultsList.innerHTML = '';
+    results.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb done">JPG</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(r.name)}</div>
+          <div class="file-sub">${formatBytes(r.blob.size)} · ${r.w}×${r.h} px</div>
+        </div>
+        <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+          Save
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => downloadOne(r));
+      resultsList.appendChild(row);
+    });
+    widgetTitle.textContent = `${count} image${count !== 1 ? 's' : ''} resized`;
+    showState('done');
+  }
+
+  function downloadOne(r: ResultEntry) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(r.blob);
+    a.download = r.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  downloadAllBtn.addEventListener('click', () => downloadOne(results[0]));
+
+  convertAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Resize your photo';
+    showState('drop');
+  });
+
+  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+    $('err-title').textContent = title;
+    $('err-message').innerHTML = message;
+    const errorList = $('error-list');
+    errorList.innerHTML = `
+      <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">
+        <span class="file-thumb" style="background:var(--danger-weak);color:var(--danger)">!</span>
+        <div class="file-meta">
+          <div class="file-name">${title}</div>
+          <div class="file-sub" style="color:var(--danger)">${message.replace(/<[^>]+>/g, '')}</div>
+        </div>
+      </div>
+    `;
+    widgetTitle.textContent = 'Something went wrong';
+    showState('error');
+
+    const handler = () => {
+      files = remainingFiles;
+      if (files.length === 0) {
+        widgetTitle.textContent = 'Resize your photo';
+        showState('drop');
+      } else {
+        widgetTitle.textContent = `${files.length} image${files.length !== 1 ? 's' : ''} ready`;
+        renderFileList();
+        showState('selected');
+      }
+      removeAndContinueBtn.removeEventListener('click', handler);
+    };
+    removeAndContinueBtn.addEventListener('click', handler);
+  }
+
+  tryAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Resize your photo';
+    showState('drop');
+  });
+</script>

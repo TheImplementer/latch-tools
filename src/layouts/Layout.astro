@@ -1,0 +1,29 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+}
+const { title, description, canonicalUrl } = Astro.props;
+const canonical = canonicalUrl ?? Astro.url.href;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href={canonical} />
+  <!-- Preload the two font files used above the fold -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/sg-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/manrope-latin.woff2" />
+  <slot name="head" />
+</head>
+<body>
+  <slot />
+</body>
+</html>

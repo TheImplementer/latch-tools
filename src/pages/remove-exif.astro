@@ -1,0 +1,764 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Remove EXIF Data from Photos",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Strip GPS location, camera info, and all EXIF metadata from JPEG, PNG, and WebP files directly in your browser. No uploads required.",
+      "url": "https://latchtools.com/remove-exif"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to remove EXIF data from a photo",
+      "step": [
+        { "@type": "HowToStep", "name": "Add your photos", "text": "Drag photos onto the drop zone, or click Browse to pick them from your device." },
+        { "@type": "HowToStep", "name": "We scan the metadata", "text": "Latch reads what EXIF data is present — GPS coordinates, camera make and model, date taken, and more." },
+        { "@type": "HowToStep", "name": "Strip everything in one click", "text": "Click 'Strip metadata' and all EXIF, IPTC, and XMP data is removed by re-encoding the image through the browser's Canvas API." },
+        { "@type": "HowToStep", "name": "Download the clean copy", "text": "Save your metadata-free photo. The original on your device is untouched." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is EXIF data?",
+          "acceptedAnswer": { "@type": "Answer", "text": "EXIF (Exchangeable Image File Format) is metadata embedded in photo files by cameras and phones. It can include GPS coordinates showing exactly where a photo was taken, the camera make and model, lens settings, the date and time, and sometimes even the device's serial number." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does removing EXIF data affect image quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For JPEG photos the tool re-encodes at 99% quality, which is visually identical to the original. PNG images are re-encoded losslessly. The pixel content of the image is unchanged." }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my photos uploaded anywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Everything happens in your browser using the Canvas API. Your photos never leave your device — which is rather fitting for a privacy tool." }
+        },
+        {
+          "@type": "Question",
+          "name": "What metadata is removed?",
+          "acceptedAnswer": { "@type": "Answer", "text": "All of it. The Canvas API re-encodes only pixel data, discarding all EXIF fields (GPS, camera info, dates, settings), as well as IPTC and XMP metadata." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why should I remove EXIF data before sharing photos?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Photos taken on a smartphone contain the precise GPS coordinates of where they were shot. Sharing a photo publicly — on social media, a forum, or via email — can inadvertently reveal your home address, workplace, or travel habits to anyone who looks at the file metadata." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Remove EXIF Data from Photos — Free & Private · Latch"
+  description="Strip GPS location, camera info, and all metadata from JPEG, PNG, and WebP files in your browser. Nothing is uploaded — privacy guaranteed."
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <!-- TOOL HERO + WIDGET -->
+  <section>
+    <div class="wrap tool-wrap">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Remove EXIF</span>
+        </nav>
+        <h1>Remove EXIF metadata from photos</h1>
+        <p>Strip GPS location, camera details, and all hidden data from your photos — right in your browser. The pixel content stays identical.</p>
+        <TrustPill />
+      </div>
+
+      <!-- WIDGET -->
+      <div class="widget" id="widget" role="region" aria-label="Remove EXIF metadata">
+        <div class="widget-head">
+          <span class="wt" style="font-family:var(--font-display);font-weight:600;font-size:16px;letter-spacing:-.01em" id="widget-title">
+            Strip your photos
+          </span>
+          <span class="fmt-pill" aria-hidden="true">
+            <span class="from">EXIF</span>
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            <span class="to">Clean</span>
+          </span>
+        </div>
+
+        <!-- STATE: empty / drag -->
+        <div id="state-drop" class="widget-state">
+          <div
+            class="dropzone"
+            id="dropzone"
+            role="button"
+            tabindex="0"
+            aria-label="Drop photo files here or click to browse"
+            aria-describedby="dz-hint"
+          >
+            <div class="dz-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5m0 0L8 9m4-4l4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            </div>
+            <p class="dz-title" id="dz-title">Drag &amp; drop your photos</p>
+            <p class="dz-or" aria-hidden="true">or</p>
+            <button class="btn btn-secondary" type="button" id="browse-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Browse files
+            </button>
+            <p class="dz-hint" id="dz-hint">Accepts JPEG, PNG, WebP · up to 50 MB</p>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Processing happens right here in your browser — nothing is uploaded.
+          </div>
+        </div>
+
+        <!-- STATE: selected -->
+        <div id="state-selected" class="widget-state" hidden>
+          <div class="filelist" id="filelist" aria-live="polite" aria-label="Selected files"></div>
+          <div class="exif-note">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+            All EXIF, GPS, and embedded metadata will be stripped. Pixel content is unchanged.
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary grow" type="button" id="convert-btn">
+              Strip metadata
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            These photos stay on your device the entire time.
+          </div>
+        </div>
+
+        <!-- STATE: processing -->
+        <div id="state-processing" class="widget-state" hidden>
+          <div class="proc">
+            <div class="proc-row">
+              <div class="spinner" role="status" aria-label="Stripping metadata"></div>
+              <div>
+                <div class="pt">Stripping metadata</div>
+                <div class="ps" id="proc-status" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+              <i id="progress-fill" style="width:0%"></i>
+            </div>
+            <div class="proc-pct">
+              <span id="proc-pct">0%</span>
+              <span>Working locally — nothing uploaded</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancel</button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Your browser is doing the work — no file has been sent anywhere.
+          </div>
+        </div>
+
+        <!-- STATE: done -->
+        <div id="state-done" class="widget-state" hidden>
+          <div class="result-head">
+            <span class="result-badge" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <div>
+              <div class="rt" id="done-title">All done</div>
+              <div class="rs">Metadata stripped · stayed on your device the whole time</div>
+            </div>
+          </div>
+          <div class="filelist" id="results-list" aria-live="polite" aria-label="Cleaned files"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="convert-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"/></svg>
+              Strip another
+            </button>
+            <button class="btn btn-primary grow" type="button" id="download-all-btn">
+              Download
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Close this tab and every file is gone — nothing was kept.
+          </div>
+        </div>
+
+        <!-- STATE: error -->
+        <div id="state-error" class="widget-state" hidden>
+          <div class="err-head">
+            <span class="err-badge" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><circle cx="12" cy="16.4" r=".4" fill="currentColor"/><path d="M10.3 4.2L3.4 16a2 2 0 0 0 1.7 3h13.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/></svg>
+            </span>
+            <div>
+              <div class="et" id="err-title">We couldn't process that file</div>
+              <div class="es" id="err-message"></div>
+            </div>
+          </div>
+          <div class="filelist" id="error-list" aria-live="assertive"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="remove-continue-btn">Remove &amp; continue</button>
+            <button class="btn btn-primary grow" type="button" id="try-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Try another file
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            The file stayed on your device — even when something goes wrong.
+          </div>
+        </div>
+      </div>
+      <!-- hidden file input -->
+      <input type="file" id="file-input" accept=".jpg,.jpeg,image/jpeg,.png,image/png,.webp,image/webp" hidden aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to remove EXIF data from a photo</h2>
+          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Add your photos</h4>
+          <p>Drag photos onto the box above, or click Browse. JPEG, PNG, and WebP are all accepted. Up to 50 at once.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>We scan the metadata</h4>
+          <p>Latch reads the EXIF data present in each file — GPS coordinates, camera make and model, date taken, software, and more.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>Strip everything in one click</h4>
+          <p>The browser re-encodes the image through its Canvas API, which only copies pixel data — all EXIF, IPTC, and XMP metadata is discarded automatically.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Download the clean copy</h4>
+          <p>Save your metadata-free photo. Your original file on your device is completely untouched.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY REMOVE EXIF -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Why remove EXIF data?</h2>
+        </div>
+      </div>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        Every photo taken on a smartphone contains precise GPS coordinates showing exactly where the shot was taken. Share that photo publicly — on social media, a forum, a property listing, or via email — and anyone who inspects the file can extract your home address, workplace, or travel route.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        Beyond GPS, EXIF data includes the camera make and model (which can identify the device), the date and time, lens settings, and sometimes even a serial number. Stripping it before sharing is a simple habit with a meaningful privacy benefit.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7">
+        Common use cases: posting photos to public forums or social media, sending images to people you don't fully trust, submitting photos for competitions or publications, listing a property for sale, or simply keeping your metadata your own business.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">
+            What is EXIF data?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">EXIF (Exchangeable Image File Format) is metadata embedded in photo files by cameras and phones. It can include GPS coordinates, the camera make and model, lens settings, date and time, and sometimes even the device's serial number.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Does removing EXIF data affect image quality?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">For JPEG photos the tool re-encodes at 99% quality, which is visually identical to the original. PNG images are re-encoded losslessly. The pixel content is unchanged in both cases.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Are my photos uploaded anywhere?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No. Everything happens in your browser using the Canvas API. Your photos never leave your device — which is rather fitting for a privacy tool.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What metadata is removed?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">All of it. The Canvas API re-encodes only pixel data, discarding all EXIF fields (GPS, camera info, dates, lens settings), IPTC metadata (captions, keywords, copyright), and XMP metadata (editing history, colour profiles).</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Why should I remove EXIF data before sharing photos?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Photos taken on a smartphone contain precise GPS coordinates of where they were shot. Sharing a photo publicly — on social media, a forum, or via email — can inadvertently reveal your home address, workplace, or travel habits to anyone who inspects the file metadata.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .tool-wrap { max-width: 780px; }
+
+  .widget-state[hidden] { display: none; }
+
+  .exif-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--accent-weak);
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    color: var(--accent-text);
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+  .exif-note svg { flex-shrink: 0; margin-top: 1px; }
+
+  details.faq-item .faq-a { display: none; }
+  details.faq-item[open] .faq-a { display: block; }
+  details.faq-item[open] .pm svg path:last-child { opacity: 0; }
+</style>
+
+<script>
+  // -----------------------------------------------------------------------
+  // Remove EXIF — client-side widget controller
+  // Reads metadata with exifr (lazy-loaded), strips via Canvas re-encode.
+  // -----------------------------------------------------------------------
+
+  type FileEntry = { file: File };
+  type MetaMap = Record<string, string>;
+  type ResultEntry = { name: string; blob: Blob; originalSize: number; meta: MetaMap; outputExt: string };
+
+  const MAX_SIZE_MB = 50;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const states = {
+    drop: $('state-drop'),
+    selected: $('state-selected'),
+    processing: $('state-processing'),
+    done: $('state-done'),
+    error: $('state-error'),
+  };
+
+  function showState(name: keyof typeof states) {
+    for (const [k, el] of Object.entries(states)) {
+      (el as HTMLElement).hidden = k !== name;
+    }
+  }
+
+  let files: FileEntry[] = [];
+  let results: ResultEntry[] = [];
+  let cancelled = false;
+
+  const dropzone = $('dropzone');
+  const fileInput = $<HTMLInputElement>('file-input');
+  const browseBtn = $('browse-btn');
+  const fileList = $('filelist');
+  const convertBtn = $('convert-btn');
+  const cancelBtn = $('cancel-btn');
+  const resultsList = $('results-list');
+  const convertAnotherBtn = $('convert-another-btn');
+  const downloadAllBtn = $('download-all-btn');
+  const doneTitleEl = $('done-title');
+  const removeAndContinueBtn = $('remove-continue-btn');
+  const tryAnotherBtn = $('try-another-btn');
+  const widgetTitle = $('widget-title');
+
+  // ---- Drop zone ----
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('is-drag');
+    $('dz-title').textContent = 'Drop to add your photos';
+  });
+  ['dragleave', 'dragend'].forEach((ev) => {
+    dropzone.addEventListener(ev, () => {
+      dropzone.classList.remove('is-drag');
+      $('dz-title').textContent = 'Drag & drop your photos';
+    });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('is-drag');
+    const de = e as DragEvent;
+    addFiles(Array.from(de.dataTransfer?.files ?? []));
+  });
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('keydown', (e) => {
+    const ke = e as KeyboardEvent;
+    if (ke.key === 'Enter' || ke.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', () => {
+    addFiles(Array.from(fileInput.files ?? []));
+    fileInput.value = '';
+  });
+
+  function formatBytes(b: number): string {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function addFiles(incoming: File[]) {
+    const valid = incoming.filter((f) => {
+      const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+      const validExts = ['jpg', 'jpeg', 'png', 'webp'];
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      return validExts.includes(ext) || validTypes.includes(f.type);
+    });
+
+    if (valid.length === 0 && incoming.length > 0) {
+      showError('Unsupported file type', 'Please drop a JPEG, PNG, or WebP file.', []);
+      return;
+    }
+
+    const first = valid[0];
+    if (!first) return;
+
+    if (first.size > MAX_SIZE_BYTES) {
+      showError('File too large', `${first.name} must be under ${MAX_SIZE_MB} MB.`, []);
+      return;
+    }
+
+    files = [{ file: first }];
+    renderFileList();
+    widgetTitle.textContent = 'Photo ready';
+    showState('selected');
+  }
+
+  function removeFile(index: number) {
+    files.splice(index, 1);
+    widgetTitle.textContent = 'Strip your photos';
+    showState('drop');
+  }
+
+  function renderFileList() {
+    fileList.innerHTML = '';
+    files.forEach((entry, i) => {
+      const ext = (entry.file.name.split('.').pop()?.toUpperCase() ?? 'IMG');
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb">${ext}</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(entry.file.name)}</div>
+          <div class="file-sub">${formatBytes(entry.file.size)}</div>
+        </div>
+        <button class="icon-btn" aria-label="Remove ${escHtml(entry.file.name)}" data-index="${i}">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => removeFile(i));
+      fileList.appendChild(row);
+    });
+  }
+
+  convertBtn.addEventListener('click', startConversion);
+
+  // Lazy-loaded exifr parse function
+  type ExifrParseFn = (input: File, opts: Record<string, boolean>) => Promise<Record<string, unknown> | undefined>;
+  let exifrParse: ExifrParseFn | null = null;
+
+  async function ensureExifr() {
+    if (exifrParse) return;
+    const mod = await import('exifr');
+    const lib = mod.default ?? mod;
+    exifrParse = lib.parse.bind(lib) as ExifrParseFn;
+  }
+
+  const FRIENDLY_LABELS: Record<string, string> = {
+    Make: 'Camera brand',
+    Model: 'Camera model',
+    DateTimeOriginal: 'Date taken',
+    DateTime: 'Date modified',
+    latitude: 'GPS latitude',
+    longitude: 'GPS longitude',
+    Altitude: 'GPS altitude',
+    Software: 'Software',
+    Artist: 'Author',
+    Copyright: 'Copyright',
+    ImageDescription: 'Description',
+    ExposureTime: 'Exposure',
+    FNumber: 'Aperture',
+    ISO: 'ISO',
+    FocalLength: 'Focal length',
+    Flash: 'Flash',
+    WhiteBalance: 'White balance',
+    LensMake: 'Lens brand',
+    LensModel: 'Lens model',
+  };
+
+  function formatMetaValue(key: string, val: unknown): string {
+    if (val === null || val === undefined) return '';
+    if (key === 'ExposureTime' && typeof val === 'number') {
+      return val < 1 ? `1/${Math.round(1 / val)}s` : `${val}s`;
+    }
+    if (key === 'FNumber' && typeof val === 'number') return `f/${val}`;
+    if (key === 'FocalLength' && typeof val === 'number') return `${val} mm`;
+    if ((key === 'latitude' || key === 'longitude') && typeof val === 'number') {
+      return val.toFixed(6) + '°';
+    }
+    if (val instanceof Date) return val.toLocaleDateString();
+    if (typeof val === 'object') return JSON.stringify(val);
+    return String(val);
+  }
+
+  function extractFriendlyMeta(raw: Record<string, unknown>): MetaMap {
+    const result: MetaMap = {};
+    for (const [key, label] of Object.entries(FRIENDLY_LABELS)) {
+      if (key in raw) {
+        const formatted = formatMetaValue(key, raw[key]);
+        if (formatted) result[label] = formatted;
+      }
+    }
+    return result;
+  }
+
+  async function readMeta(file: File): Promise<MetaMap> {
+    try {
+      await ensureExifr();
+      const raw = await exifrParse!(file, { gps: true, ifd0: true, exif: true });
+      if (!raw) return {};
+      return extractFriendlyMeta(raw);
+    } catch {
+      return {};
+    }
+  }
+
+  function getOutputMime(file: File): { mime: string; ext: string; quality?: number } {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    if (ext === 'png' || file.type === 'image/png') return { mime: 'image/png', ext: 'png' };
+    // WebP output has poor Firefox support — output PNG instead
+    return { mime: 'image/jpeg', ext: 'jpg', quality: 0.99 };
+  }
+
+  async function stripOne(file: File): Promise<{ blob: Blob; meta: MetaMap; outputExt: string }> {
+    const [meta] = await Promise.all([readMeta(file), Promise.resolve()]);
+    const { mime, ext, quality } = getOutputMime(file);
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((b) => {
+        if (b) resolve(b);
+        else reject(new Error('Canvas export failed'));
+      }, mime, quality);
+    });
+    return { blob, meta, outputExt: ext };
+  }
+
+  async function startConversion() {
+    if (files.length === 0) return;
+    cancelled = false;
+    results = [];
+    widgetTitle.textContent = 'Stripping…';
+    showState('processing');
+
+    for (let i = 0; i < files.length; i++) {
+      if (cancelled) break;
+
+      const entry = files[i];
+      const pct = Math.round((i / files.length) * 100);
+      updateProgress(pct, `${i + 1} of ${files.length} · ${entry.file.name}`);
+
+      try {
+        const { blob, meta, outputExt } = await stripOne(entry.file);
+        const baseName = entry.file.name.replace(/\.[^.]+$/, '');
+        const name = `${baseName}-clean.${outputExt}`;
+        results.push({ name, blob, originalSize: entry.file.size, meta, outputExt });
+      } catch (err) {
+        if (!cancelled) {
+          showError(
+            `Couldn't process ${entry.file.name}`,
+            `<code>${escHtml(entry.file.name)}</code> looks corrupted or isn't a valid image.`,
+            files.filter((_, j) => j !== i)
+          );
+          return;
+        }
+      }
+    }
+
+    if (!cancelled) {
+      updateProgress(100, '');
+      showDone();
+    }
+  }
+
+  function updateProgress(pct: number, status: string) {
+    const fill = $<HTMLElement>('progress-fill');
+    const pctEl = $('proc-pct');
+    const bar = $<HTMLElement>('progress-bar');
+    const statusEl = $('proc-status');
+    fill.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    bar.setAttribute('aria-valuenow', String(pct));
+    statusEl.textContent = status;
+  }
+
+  cancelBtn.addEventListener('click', () => {
+    cancelled = true;
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Strip your photos';
+    showState('drop');
+  });
+
+  function buildMetaPanel(meta: MetaMap): string {
+    const entries = Object.entries(meta);
+    if (entries.length === 0) {
+      return `<details class="meta-panel"><summary>What was removed <svg class="meta-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></summary><div class="meta-items"><p class="meta-empty">No readable metadata found in this file.</p></div></details>`;
+    }
+    const items = entries.map(([k, v]) => `
+      <div class="meta-item">
+        <div class="meta-key">${escHtml(k)}</div>
+        <div class="meta-val">${escHtml(v)}</div>
+      </div>
+    `).join('');
+    return `<details class="meta-panel"><summary>What was removed (${entries.length} field${entries.length !== 1 ? 's' : ''}) <svg class="meta-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></summary><div class="meta-items">${items}</div></details>`;
+  }
+
+  function showDone() {
+    const count = results.length;
+    doneTitleEl.textContent = `All done — ${count} photo${count !== 1 ? 's' : ''} cleaned`;
+    resultsList.innerHTML = '';
+    results.forEach((r) => {
+      const outLabel = r.outputExt.toUpperCase();
+      const row = document.createElement('div');
+      row.className = 'filerow-stack';
+      row.innerHTML = `
+        <div class="filerow">
+          <span class="file-thumb done">${outLabel}</span>
+          <div class="file-meta">
+            <div class="file-name">${escHtml(r.name)}</div>
+            <div class="file-sub">${formatBytes(r.blob.size)}</div>
+          </div>
+          <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+            Save
+          </button>
+        </div>
+        ${buildMetaPanel(r.meta)}
+      `;
+      row.querySelector<HTMLButtonElement>('.filerow button')!.addEventListener('click', () => downloadOne(r));
+      resultsList.appendChild(row);
+    });
+    widgetTitle.textContent = `${count} photo${count !== 1 ? 's' : ''} cleaned`;
+    showState('done');
+  }
+
+  function downloadOne(r: ResultEntry) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(r.blob);
+    a.download = r.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  downloadAllBtn.addEventListener('click', () => downloadOne(results[0]));
+
+  convertAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Strip your photos';
+    showState('drop');
+  });
+
+  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+    $('err-title').textContent = title;
+    $('err-message').innerHTML = message;
+    const errorList = $('error-list');
+    errorList.innerHTML = `
+      <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">
+        <span class="file-thumb" style="background:var(--danger-weak);color:var(--danger)">!</span>
+        <div class="file-meta">
+          <div class="file-name">${title}</div>
+          <div class="file-sub" style="color:var(--danger)">${message.replace(/<[^>]+>/g, '')}</div>
+        </div>
+      </div>
+    `;
+    widgetTitle.textContent = 'Something went wrong';
+    showState('error');
+
+    const handler = () => {
+      files = remainingFiles;
+      if (files.length === 0) {
+        widgetTitle.textContent = 'Strip your photos';
+        showState('drop');
+      } else {
+        widgetTitle.textContent = `${files.length} photo${files.length !== 1 ? 's' : ''} ready`;
+        renderFileList();
+        showState('selected');
+      }
+      removeAndContinueBtn.removeEventListener('click', handler);
+    };
+    removeAndContinueBtn.addEventListener('click', handler);
+  }
+
+  tryAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Strip your photos';
+    showState('drop');
+  });
+</script>

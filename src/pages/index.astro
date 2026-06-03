@@ -1,0 +1,195 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+---
+<Layout
+  title="Latch — Private file tools that run in your browser"
+  description="A fast, free toolkit for your images — convert, compress, resize and clean metadata. Every tool runs entirely in your browser. Nothing is uploaded, nothing is stored."
+>
+  <Header />
+
+  <!-- HERO -->
+  <section style="background:radial-gradient(62% 120% at 50% -8%, var(--accent-weak), transparent 60%)">
+    <div class="wrap" style="text-align:center;display:flex;flex-direction:column;align-items:center;padding:80px 28px 44px">
+      <span class="eyebrow">
+        <span class="bar"></span>
+        Private by design
+      </span>
+      <h1 class="hero-h">Edit your files without<br>ever uploading them.</h1>
+      <p class="hero-sub">
+        A fast, free toolkit for your images — convert, compress, resize and clean metadata.
+        Every tool runs entirely in your browser. Nothing is uploaded, nothing is stored, nothing leaves your device.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="#tools">
+          Browse the tools
+          <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="#how">How it works</a>
+      </div>
+      <div style="margin-top:30px">
+        <TrustPill />
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section class="section" id="tools" style="padding-top:34px">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title">Pick a tool</h2>
+          <p class="sec-desc">Five focused image tools — each one does a single job, well.</p>
+        </div>
+        <span class="hide-mobile"><TrustPill variant="inline" text="Runs offline · no account" /></span>
+      </div>
+
+      <div class="tool-grid">
+        <a class="tool-card" href="/heic-to-jpg">
+          <span class="tool-ic">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
+          </span>
+          <span class="tool-arrow" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
+          </span>
+          <h3 class="tool-name">HEIC to JPG</h3>
+          <p class="tool-desc">Turn iPhone HEIC photos into universal JPGs anything can open.</p>
+          <div class="tool-tags"><span class="chip">.heic → .jpg</span></div>
+        </a>
+
+        <a class="tool-card" href="/png-to-jpg">
+          <span class="tool-ic">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="11" y="5" width="2" height="14" rx="1" fill="currentColor" stroke="none" opacity=".22"/><path d="M3 12h5m0 0L5.5 9.5M8 12l-2.5 2.5"/><path d="M21 12h-5m0 0l2.5-2.5M16 12l2.5 2.5"/></svg>
+          </span>
+          <span class="tool-arrow" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
+          </span>
+          <h3 class="tool-name">PNG to JPG</h3>
+          <p class="tool-desc">Convert PNG images to JPG with adjustable quality, right in your browser.</p>
+          <div class="tool-tags"><span class="chip">.png → .jpg</span></div>
+        </a>
+
+        <a class="tool-card" href="/webp-to-png">
+          <span class="tool-ic">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
+          </span>
+          <span class="tool-arrow" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
+          </span>
+          <h3 class="tool-name">WebP to PNG</h3>
+          <p class="tool-desc">Convert WebP images back to lossless, universally-supported PNG.</p>
+          <div class="tool-tags"><span class="chip">.webp → .png</span></div>
+        </a>
+
+        <a class="tool-card" href="/resize-image">
+          <span class="tool-ic">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3v14a2 2 0 0 0 2 2h14"/><path d="M19 21V7a2 2 0 0 0-2-2H3"/><circle cx="12" cy="10" r="2"/><path d="M9 15.2a3 3 0 0 1 6 0"/></svg>
+          </span>
+          <span class="tool-arrow" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
+          </span>
+          <h3 class="tool-name">Resize for passport &amp; visa</h3>
+          <p class="tool-desc">Crop to official passport, visa and LinkedIn photo presets in seconds.</p>
+          <div class="tool-tags"><span class="chip">presets</span><span class="chip">LinkedIn</span></div>
+        </a>
+
+        <a class="tool-card" href="/remove-exif">
+          <span class="tool-ic">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5h7l8.5 8.5-6.5 6.5L4.5 11V4.5z"/><circle cx="8" cy="8" r="1.3"/><path d="M3.5 20.5L20.5 3.5"/></svg>
+          </span>
+          <span class="tool-arrow" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
+          </span>
+          <h3 class="tool-name">Remove image metadata</h3>
+          <p class="tool-desc">Strip EXIF, GPS location and camera data before you share a photo.</p>
+          <div class="tool-tags"><span class="chip">EXIF</span><span class="chip">GPS</span></div>
+        </a>
+
+        <a class="tool-card" href="mailto:hello@latchtools.com?subject=Tool%20suggestion" style="background:transparent;border-style:dashed;justify-content:center;align-items:flex-start">
+          <span class="tool-ic" style="background:var(--surface-2);color:var(--text-3)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <h3 class="tool-name" style="color:var(--text-2)">Need another tool?</h3>
+          <p class="tool-desc">Tell us what you'd convert or clean next — we build the most-asked ones first.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title">How it works</h2>
+          <p class="sec-desc">No uploads. No queue. No sign-up.</p>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-ic">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+          </div>
+          <div class="step-n">Step 01</div>
+          <h3>Choose a tool</h3>
+          <p>Pick the conversion or edit you need from the grid above. Each one opens on its own focused page.</p>
+        </div>
+        <div class="step">
+          <div class="step-ic">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0l-3.5-3.5M12 14l3.5-3.5"/><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+          </div>
+          <div class="step-n">Step 02</div>
+          <h3>Drop your file</h3>
+          <p>Drag it in or browse. The file is read directly by your browser — it is never sent across the network.</p>
+        </div>
+        <div class="step">
+          <div class="step-ic">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="step-n">Step 03</div>
+          <h3>Download &amp; done</h3>
+          <p>Your processed file is ready instantly. Close the tab and every trace of it is gone for good.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY BAND -->
+  <section class="band" id="privacy">
+    <div class="wrap" style="padding:56px 28px">
+      <div class="band-grid">
+        <div class="band-item">
+          <span class="bi-ic">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+          </span>
+          <div>
+            <h4>On-device only</h4>
+            <p>Files are processed by your browser's own engine. They are never uploaded to a server — there is no server to upload to.</p>
+          </div>
+        </div>
+        <div class="band-item">
+          <span class="bi-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.8a14 14 0 0 1 20 0M5 12.2a9 9 0 0 1 14 0M8.3 15.6a4.5 4.5 0 0 1 7.4 0"/><circle cx="12" cy="19" r="1"/><path d="M3 3l18 18" stroke-width="1.6"/></svg>
+          </span>
+          <div>
+            <h4>Works offline</h4>
+            <p>Once the page has loaded you can switch off Wi-Fi entirely and every tool keeps working, exactly the same.</p>
+          </div>
+        </div>
+        <div class="band-item">
+          <span class="bi-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6m3 0v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v5M14 11v5"/></svg>
+          </span>
+          <div>
+            <h4>Nothing is stored</h4>
+            <p>No accounts, no upload history, no trackers. Refresh the page and there is no trace of your file left behind.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

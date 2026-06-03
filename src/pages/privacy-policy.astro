@@ -1,0 +1,146 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Privacy Policy — Latch"
+  description="Latch processes all files locally in your browser. No uploads, no tracking, no stored data. Read the full privacy policy."
+>
+  <Header />
+
+  <main>
+    <section class="section" style="padding-bottom: 0">
+      <div class="wrap" style="max-width: 780px">
+        <span class="eyebrow"><span class="bar"></span>Legal</span>
+        <h1 style="font-family: var(--font-display); font-weight: 600; letter-spacing: -.03em; line-height: 1.06; font-size: clamp(30px, 4.5vw, 44px); margin: 18px 0 0;">
+          Privacy Policy
+        </h1>
+        <p style="color: var(--text-3); font-family: var(--font-mono); font-size: 13px; margin: 14px 0 40px;">
+          Last updated: 2 June 2026
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 0">
+      <div class="wrap" style="max-width: 680px">
+        <div class="prose">
+
+          <h2>The short version</h2>
+          <p>
+            Latch converts and processes your files entirely inside your browser.
+            No file — not a single byte of its content — is ever sent to our servers
+            or any third party. We cannot access your files, and we do not try to.
+          </p>
+
+          <h2>What we do <em>not</em> collect</h2>
+          <ul>
+            <li>Your files or any part of their content.</li>
+            <li>Filenames, file sizes, or metadata about files you process.</li>
+            <li>Conversion results or downloads.</li>
+          </ul>
+          <p>
+            All processing happens using your device's own CPU and browser APIs
+            (Canvas, WebAssembly, JavaScript). The results are created locally and
+            downloaded directly to your device.
+          </p>
+
+          <h2>What Cloudflare Pages collects</h2>
+          <p>
+            Latch is hosted on Cloudflare Pages. When you visit the site, Cloudflare's
+            infrastructure records standard server access data: your IP address,
+            user-agent string, the page requested, and the timestamp. This is typical
+            of any web server and is not specific to Latch.
+          </p>
+          <p>
+            These logs are used for security, abuse prevention, and uptime monitoring.
+            They are not linked to individuals, not sold, and not used for advertising.
+            See <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer" target="_blank" style="color: var(--accent-text)">Cloudflare's privacy policy</a> for details.
+          </p>
+
+          <h2>Cookies</h2>
+          <p>
+            Latch currently sets no cookies and uses no tracking scripts.
+            If analytics or advertising are added in future, this policy will be updated
+            before any such scripts are enabled, and a compliant consent banner will be
+            shown to visitors in the UK and EU.
+          </p>
+
+          <h2>Analytics</h2>
+          <p>
+            There is no analytics at this time. If lightweight, privacy-respecting
+            analytics are added later (for example, aggregate page-view counts with no
+            individual tracking), this policy will be updated to describe them.
+          </p>
+
+          <h2>Third-party scripts</h2>
+          <p>
+            Latch loads fonts from Google Fonts. Google may record that your browser
+            requested a font file; see
+            <a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank" style="color: var(--accent-text)">Google's privacy policy</a>.
+            No other third-party scripts are loaded.
+          </p>
+
+          <h2>Your rights (UK &amp; EU)</h2>
+          <p>
+            Because we do not collect personal data beyond standard Cloudflare server
+            logs (which we do not control or process ourselves), there is no personal
+            data held by Latch for you to access, correct, or erase.
+            If you have questions, contact us at the address below.
+          </p>
+
+          <h2>Children</h2>
+          <p>
+            Latch is a general-purpose utility and does not knowingly collect data from
+            children under 13 (or the relevant age of digital consent in your jurisdiction).
+          </p>
+
+          <h2>Changes to this policy</h2>
+          <p>
+            If this policy changes in a meaningful way — for example, when analytics
+            or ads are introduced — the "last updated" date at the top will change and
+            we will describe what is new. Continued use of the site after a material
+            change constitutes acceptance of the updated policy.
+          </p>
+
+          <h2>Contact</h2>
+          <p>
+            Questions or concerns about this policy:
+            <a href="mailto:privacy@latchtools.com" style="color: var(--accent-text)">privacy@latchtools.com</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .prose h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: -.02em;
+    margin: 44px 0 12px;
+    color: var(--text);
+  }
+  .prose h2:first-child { margin-top: 0; }
+  .prose p {
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.7;
+    margin: 0 0 16px;
+    max-width: 64ch;
+  }
+  .prose ul {
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.7;
+    margin: 0 0 16px;
+    padding-left: 22px;
+  }
+  .prose ul li { margin-bottom: 6px; }
+  .prose em { font-style: italic; }
+</style>
