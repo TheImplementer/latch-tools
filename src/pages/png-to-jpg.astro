@@ -70,8 +70,8 @@ const structuredData = {
   <Header />
 
   <!-- TOOL HERO + WIDGET -->
-  <section>
-    <div class="wrap tool-wrap">
+  <section class="tool-section">
+    <div class="wrap tool-split">
       <div class="tool-hero">
         <nav class="crumb" aria-label="Breadcrumb">
           <a href="/">Tools</a>
@@ -81,6 +81,11 @@ const structuredData = {
         <h1>PNG to JPG converter</h1>
         <p>Convert PNG images to JPG — or flip it the other way — right in your browser. Handles transparency, no uploads ever.</p>
         <TrustPill />
+        <ul class="tool-features">
+          <li>Convert PNG → JPG or JPG → PNG</li>
+          <li>Choose background fill for transparent areas</li>
+          <li>Batch process up to 50 images at once</li>
+        </ul>
       </div>
 
       <!-- WIDGET -->
@@ -346,7 +351,6 @@ const structuredData = {
 </Layout>
 
 <style>
-  .tool-wrap { max-width: 780px; }
 
   .widget-state[hidden] { display: none; }
 

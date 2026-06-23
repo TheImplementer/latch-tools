@@ -53,6 +53,26 @@ const structuredData = {
           "@type": "Question",
           "name": "Why should I remove EXIF data before sharing photos?",
           "acceptedAnswer": { "@type": "Answer", "text": "Photos taken on a smartphone contain the precise GPS coordinates of where they were shot. Sharing a photo publicly — on social media, a forum, or via email — can inadvertently reveal your home address, workplace, or travel habits to anyone who looks at the file metadata." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can someone track my location from a photo?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes — if your photo has GPS metadata embedded. When a photo is taken on a smartphone with location services enabled, the precise coordinates (latitude and longitude) are stored in the EXIF data. Anyone who receives the original file can extract those coordinates using free online tools and map them to a street address." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I remove metadata from a photo on iPhone or Android?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The easiest way is to use a browser-based tool like this one — drag in your photo and download the clean version. Both iPhone and Android can be set to strip location data when sharing via the native share sheet, but that only removes GPS and may leave other EXIF fields intact. For complete metadata removal, re-encoding through a dedicated tool is the most reliable method." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do social media sites remove EXIF data automatically?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Most major platforms — Instagram, Facebook, Twitter/X — strip EXIF data when you upload a photo. But messaging apps like WhatsApp and iMessage often pass EXIF through intact, and email attachments always preserve it. Removing metadata before sharing is the only way to be certain it's gone." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between EXIF, IPTC, and XMP metadata?",
+          "acceptedAnswer": { "@type": "Answer", "text": "All three are metadata standards embedded in image files. EXIF is written by cameras and phones: GPS, date, camera model, lens settings. IPTC is used by photographers and agencies for descriptive data: captions, keywords, copyright. XMP is an Adobe standard recording editing history and adjustments. This tool strips all three." }
         }
       ]
     }
@@ -60,8 +80,8 @@ const structuredData = {
 };
 ---
 <Layout
-  title="Remove EXIF Data from Photos — Free & Private · Latch"
-  description="Strip GPS location, camera info, and all metadata from JPEG, PNG, and WebP files in your browser. Nothing is uploaded — privacy guaranteed."
+  title="Remove EXIF Data from Photos — Free, Private, No Upload | Latch"
+  description="Strip GPS location, camera model, and timestamps from JPEG and PNG photos. Runs entirely in your browser — your files never leave your device."
 >
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
@@ -70,8 +90,8 @@ const structuredData = {
   <Header />
 
   <!-- TOOL HERO + WIDGET -->
-  <section>
-    <div class="wrap tool-wrap">
+  <section class="tool-section">
+    <div class="wrap tool-split">
       <div class="tool-hero">
         <nav class="crumb" aria-label="Breadcrumb">
           <a href="/">Tools</a>
@@ -81,6 +101,11 @@ const structuredData = {
         <h1>Remove EXIF metadata from photos</h1>
         <p>Strip GPS location, camera details, and all hidden data from your photos — right in your browser. The pixel content stays identical.</p>
         <TrustPill />
+        <ul class="tool-features">
+          <li>Removes GPS, camera info, and all metadata</li>
+          <li>Pixel content stays completely identical</li>
+          <li>Supports JPEG, PNG, and WebP</li>
+        </ul>
       </div>
 
       <!-- WIDGET -->
@@ -227,6 +252,84 @@ const structuredData = {
     </div>
   </section>
 
+  <!-- WHAT'S HIDDEN IN YOUR PHOTOS -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">What's hidden in your photos?</h2>
+          <p class="sec-desc">Modern smartphones embed far more than you might expect. Here's what anyone with the right tool can read from an unstripped image.</p>
+        </div>
+      </div>
+      <div class="howto" style="grid-template-columns:repeat(3,1fr)">
+        <div class="howto-step">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <h4>GPS coordinates</h4>
+          <p>Your exact latitude and longitude — often precise enough to identify your home address or place of work.</p>
+        </div>
+        <div class="howto-step">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <h4>Date &amp; time</h4>
+          <p>The exact timestamp the photo was taken — which, combined with GPS, can reveal your routines and travel patterns.</p>
+        </div>
+        <div class="howto-step">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+          <h4>Device make &amp; model</h4>
+          <p>The brand and model of your phone or camera — which can identify the device and sometimes correlate across photos.</p>
+        </div>
+        <div class="howto-step">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m10 0h3a2 2 0 0 0 2-2v-3"/><path d="M9 12h6M12 9v6"/></svg>
+          <h4>Software &amp; OS version</h4>
+          <p>The app used to edit or shoot the photo, plus the operating system version — useful for fingerprinting a device.</p>
+        </div>
+        <div class="howto-step">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <h4>Camera settings</h4>
+          <p>Aperture, shutter speed, ISO, focal length, and flash mode — the full technical fingerprint of the shot.</p>
+        </div>
+        <div class="howto-step">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <h4>Embedded thumbnail</h4>
+          <p>A tiny copy of the original, unedited image is often stored inside the file — even if you cropped or filtered the photo before sharing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO SHOULD REMOVE EXIF -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Who should remove EXIF data?</h2>
+          <p class="sec-desc">Most people are unaware their photos carry this data. Here are the groups most at risk.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Online sellers</h4>
+          <p>Listing on eBay, Etsy, or Facebook Marketplace? Photos taken at home embed your address. Strip the metadata before you post.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>Journalists &amp; activists</h4>
+          <p>Sharing images of sensitive subjects or locations? GPS data can betray sources and put people at risk. Remove it first.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>Social media users</h4>
+          <p>Platforms may strip metadata when you upload, but the original file you share directly — via DM, email, or link — often passes EXIF through intact.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Anyone sharing privately</h4>
+          <p>WhatsApp, iMessage, and email attachments frequently preserve EXIF. If you're sending original photos, assume the metadata goes with them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- HOW TO -->
   <section class="section">
     <div class="wrap" style="max-width:980px">
@@ -339,6 +442,83 @@ const structuredData = {
           </summary>
           <p class="faq-a">Photos taken on a smartphone contain precise GPS coordinates of where they were shot. Sharing a photo publicly — on social media, a forum, or via email — can inadvertently reveal your home address, workplace, or travel habits to anyone who inspects the file metadata.</p>
         </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Can someone track my location from a photo I shared?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Yes — if the original file has GPS metadata embedded. When a photo is taken on a smartphone with location services enabled, the precise coordinates are stored in the EXIF data. Anyone who receives that file can extract the coordinates using free tools and resolve them to a street address. Most people share photos without ever knowing this data is there.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Do social media sites like Instagram remove EXIF automatically?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Most major platforms — Instagram, Facebook, Twitter/X — strip EXIF when photos are uploaded to their servers. But this doesn't help when you share the original file directly: messaging apps like WhatsApp and iMessage often pass EXIF through intact, and email attachments always preserve it. Stripping before sharing is the only reliable approach.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            How is this different from just screenshotting my photo?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">A screenshot does remove all original EXIF (since it creates a new image file) but it also reduces quality significantly, often adding compression artefacts and losing fine detail. This tool re-encodes the image at 99% quality for JPEG and losslessly for PNG, so the result is indistinguishable from the original — just without the metadata.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Can I remove EXIF from iPhone HEIC photos?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">This tool accepts JPEG, PNG, and WebP. iPhone photos in HEIC format need to be converted first — use our <a href="/heic-to-jpg" style="color:var(--accent)">HEIC to JPG converter</a> to get a JPEG, then strip the metadata here. Both steps happen entirely in your browser.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED TOOLS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Related tools</h2>
+        </div>
+      </div>
+      <div class="tool-grid" style="grid-template-columns:repeat(3,1fr)">
+        <a href="/heic-to-jpg" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div class="tool-name">HEIC to JPG</div>
+          <div class="tool-desc">Convert iPhone HEIC photos to JPEG — then strip the metadata here.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/webp-to-png" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="tool-name">WebP to PNG</div>
+          <div class="tool-desc">Convert WebP images to PNG format, fully in-browser with no quality loss.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/resize-image" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </div>
+          <div class="tool-name">Resize Image</div>
+          <div class="tool-desc">Resize photos to exact pixel dimensions or for passport and visa requirements.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
       </div>
     </div>
   </section>
@@ -347,7 +527,6 @@ const structuredData = {
 </Layout>
 
 <style>
-  .tool-wrap { max-width: 780px; }
 
   .widget-state[hidden] { display: none; }
 

@@ -60,8 +60,8 @@ const structuredData = {
   <Header />
 
   <!-- TOOL HERO + WIDGET -->
-  <section>
-    <div class="wrap tool-wrap">
+  <section class="tool-section">
+    <div class="wrap tool-split">
       <div class="tool-hero">
         <nav class="crumb" aria-label="Breadcrumb">
           <a href="/">Tools</a>
@@ -71,6 +71,11 @@ const structuredData = {
         <h1>HEIC to JPG converter</h1>
         <p>Convert Apple HEIC photos into universal JPGs — right here in your browser. No uploads, no waiting, no sign-up.</p>
         <TrustPill />
+        <ul class="tool-features">
+          <li>Batch convert up to 10 photos at once</li>
+          <li>Adjust quality before saving</li>
+          <li>Works offline after first load</li>
+        </ul>
       </div>
 
       <!-- WIDGET -->
@@ -97,7 +102,7 @@ const structuredData = {
             aria-describedby="dz-hint"
           >
             <div class="dz-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5m0 0L8 9m4-4l4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </div>
             <p class="dz-title" id="dz-title">Drag &amp; drop your HEIC photos</p>
             <p class="dz-or" aria-hidden="true">or</p>
@@ -106,6 +111,11 @@ const structuredData = {
               Browse files
             </button>
             <p class="dz-hint" id="dz-hint">Accepts .heic and .heif · up to 10 files, 50 MB each</p>
+            <div class="dz-badges" aria-hidden="true">
+              <span class="dz-badge">No account</span>
+              <span class="dz-badge">Truly free</span>
+              <span class="dz-badge">100% private</span>
+            </div>
           </div>
           <div class="widget-foot">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
@@ -324,12 +334,47 @@ const structuredData = {
     </div>
   </section>
 
+  <!-- RELATED TOOLS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Related tools</h2>
+        </div>
+      </div>
+      <div class="tool-grid" style="grid-template-columns:repeat(3,1fr)">
+        <a href="/heic-to-png" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
+          </div>
+          <div class="tool-name">HEIC to PNG</div>
+          <div class="tool-desc">Need lossless output or transparency? Convert to PNG instead.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/remove-exif" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h7l8.5 8.5-6.5 6.5L4.5 11V4.5z"/><circle cx="8" cy="8" r="1.3"/><path d="M3.5 20.5L20.5 3.5"/></svg>
+          </div>
+          <div class="tool-name">Remove EXIF</div>
+          <div class="tool-desc">Strip GPS location and camera metadata from your converted photos.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/png-to-jpg" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="5" width="2" height="14" rx="1" fill="currentColor" stroke="none" opacity=".22"/><path d="M3 12h5m0 0L5.5 9.5M8 12l-2.5 2.5"/><path d="M21 12h-5m0 0l2.5-2.5M16 12l2.5 2.5"/></svg>
+          </div>
+          <div class="tool-name">PNG to JPG</div>
+          <div class="tool-desc">Convert PNG images to JPG with adjustable quality.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <Footer />
 </Layout>
 
 <style>
-  .tool-wrap { max-width: 780px; }
-
   .widget-state[hidden] { display: none; }
 
   /* FAQ: hide the answer before details is open, show + → × on open */
@@ -345,7 +390,7 @@ const structuredData = {
   // -----------------------------------------------------------------------
 
   type FileEntry = { file: File; objectUrl?: string };
-  type ResultEntry = { name: string; blob: Blob; originalSize: number };
+  type ResultEntry = { name: string; blob: Blob; originalSize: number; thumbnailUrl?: string };
 
   const MAX_SIZE_MB = 50;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
@@ -457,7 +502,23 @@ const structuredData = {
     showState('selected');
   }
 
+  function clearFiles() {
+    for (const entry of files) {
+      if (entry.objectUrl) URL.revokeObjectURL(entry.objectUrl);
+    }
+    files = [];
+  }
+
+  function clearResults() {
+    for (const r of results) {
+      if (r.thumbnailUrl) URL.revokeObjectURL(r.thumbnailUrl);
+    }
+    results = [];
+  }
+
   function removeFile(index: number) {
+    const removed = files[index];
+    if (removed.objectUrl) URL.revokeObjectURL(removed.objectUrl);
     files.splice(index, 1);
     if (files.length === 0) {
       widgetTitle.textContent = 'Convert your photos';
@@ -471,10 +532,13 @@ const structuredData = {
   function renderFileList() {
     fileList.innerHTML = '';
     files.forEach((entry, i) => {
+      if (!entry.objectUrl) entry.objectUrl = URL.createObjectURL(entry.file);
       const row = document.createElement('div');
       row.className = 'filerow';
       row.innerHTML = `
-        <span class="file-thumb">HEIC</span>
+        <span class="file-thumb">
+          <img src="${entry.objectUrl}" alt="" class="thumb-img">
+        </span>
         <div class="file-meta">
           <div class="file-name">${escHtml(entry.file.name)}</div>
           <div class="file-sub">${formatBytes(entry.file.size)}</div>
@@ -483,6 +547,11 @@ const structuredData = {
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
         </button>
       `;
+      // Browsers without native HEIC decode (Chrome/Firefox) will error — fall back to text label
+      const img = row.querySelector<HTMLImageElement>('img.thumb-img')!;
+      img.addEventListener('error', () => {
+        (img.parentElement as HTMLElement).innerHTML = 'HEIC';
+      });
       row.querySelector('button')!.addEventListener('click', () => removeFile(i));
       fileList.appendChild(row);
     });
@@ -565,8 +634,8 @@ const structuredData = {
 
   cancelBtn.addEventListener('click', () => {
     cancelled = true;
-    files = [];
-    results = [];
+    clearFiles();
+    clearResults();
     widgetTitle.textContent = 'Convert your photos';
     showState('drop');
   });
@@ -577,10 +646,13 @@ const structuredData = {
     resultsList.innerHTML = '';
     results.forEach((r) => {
       const saving = Math.round((1 - r.blob.size / r.originalSize) * 100);
+      r.thumbnailUrl = URL.createObjectURL(r.blob);
       const row = document.createElement('div');
       row.className = 'filerow';
       row.innerHTML = `
-        <span class="file-thumb done">JPG</span>
+        <span class="file-thumb done">
+          <img src="${r.thumbnailUrl}" alt="" class="thumb-img">
+        </span>
         <div class="file-meta">
           <div class="file-name">${escHtml(r.name)}</div>
           <div class="file-sub">${formatBytes(r.blob.size)}${saving > 0 ? ` <span class="ok">· ${saving}% smaller</span>` : ''}</div>
@@ -623,8 +695,8 @@ const structuredData = {
   downloadAllBtn.addEventListener('click', () => downloadAll());
 
   convertAnotherBtn.addEventListener('click', () => {
-    files = [];
-    results = [];
+    clearFiles();
+    clearResults();
     widgetTitle.textContent = 'Convert your photos';
     showState('drop');
   });
@@ -661,8 +733,8 @@ const structuredData = {
   }
 
   tryAnotherBtn.addEventListener('click', () => {
-    files = [];
-    results = [];
+    clearFiles();
+    clearResults();
     widgetTitle.textContent = 'Convert your photos';
     showState('drop');
   });

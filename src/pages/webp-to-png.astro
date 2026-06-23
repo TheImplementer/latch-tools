@@ -70,8 +70,8 @@ const structuredData = {
   <Header />
 
   <!-- TOOL HERO + WIDGET -->
-  <section>
-    <div class="wrap tool-wrap">
+  <section class="tool-section">
+    <div class="wrap tool-split">
       <div class="tool-hero">
         <nav class="crumb" aria-label="Breadcrumb">
           <a href="/">Tools</a>
@@ -81,6 +81,11 @@ const structuredData = {
         <h1>WebP to PNG converter</h1>
         <p>Turn WebP images into lossless PNGs — right here in your browser. Transparency preserved, nothing uploaded.</p>
         <TrustPill />
+        <ul class="tool-features">
+          <li>Transparency preserved perfectly</li>
+          <li>Batch convert up to 50 files at once</li>
+          <li>Works offline after first load</li>
+        </ul>
       </div>
 
       <!-- WIDGET -->
@@ -323,7 +328,6 @@ const structuredData = {
 </Layout>
 
 <style>
-  .tool-wrap { max-width: 780px; }
 
   .widget-state[hidden] { display: none; }
 
