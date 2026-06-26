@@ -889,6 +889,19 @@ h1.hero-h {
 .ftr-col a:hover {
   color: var(--text);
 }
+/* Tools list flows into two balanced columns so the footer stays compact. */
+.ftr-links {
+  columns: 2;
+  column-gap: 40px;
+}
+.ftr-links a {
+  break-inside: avoid;
+}
+@media (max-width: 420px) {
+  .ftr-links {
+    columns: 1;
+  }
+}
 
 /* ============================================================
    TOOL PAGE

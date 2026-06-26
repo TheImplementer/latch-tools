@@ -1,0 +1,972 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "SVG to PNG Converter",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Rasterise SVG vector graphics to lossless PNG at any resolution, with transparency preserved — directly in your browser. No uploads required — files never leave your device.",
+      "url": "https://latchtools.com/svg-to-png/"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to convert SVG to PNG",
+      "step": [
+        { "@type": "HowToStep", "name": "Add your SVG files", "text": "Drag SVG files onto the drop zone, or click Browse to pick them from your device." },
+        { "@type": "HowToStep", "name": "Choose the output size", "text": "Pick an output resolution — 1×, 2×, 4×, or a custom width. The height follows the SVG's aspect ratio automatically." },
+        { "@type": "HowToStep", "name": "Files convert locally", "text": "Latch renders each SVG to a lossless PNG using your browser, with transparency preserved — instantly and offline." },
+        { "@type": "HowToStep", "name": "Download your PNGs", "text": "Save them one at a time, or grab everything at once in a single zip." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is an SVG file?",
+          "acceptedAnswer": { "@type": "Answer", "text": "SVG (Scalable Vector Graphics) is an XML-based vector format — it describes shapes and paths rather than a grid of pixels, so it stays sharp at any size. It's widely used for logos, icons, and illustrations. Converting to PNG gives you a fixed-resolution raster image that opens in any app." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why convert an SVG to PNG?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Many apps, editors, and upload forms don't accept SVG. PNG is a universally-supported raster format that is lossless — every pixel is preserved exactly — and keeps transparency, so it's the natural choice for rasterising logos and graphics without losing quality or the transparent background." }
+        },
+        {
+          "@type": "Question",
+          "name": "What output size or resolution should I choose?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Because SVG is vector, it has no inherent pixel size — you choose it. 1× uses the size declared in the SVG; 2× and 4× multiply it for crisp results on high-resolution screens or in print; or set a custom width and the height follows the aspect ratio automatically. Larger sizes look sharper but produce bigger files." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the PNG keep transparency?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. An SVG canvas is transparent by default, and PNG supports an alpha channel, so transparent areas of the SVG are preserved faithfully in the PNG output. If you need a flat background instead — for example to share as a photo — convert SVG to JPG, which fills the transparent areas with a colour you pick." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I convert multiple SVG files to PNG at once?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drop up to 10 SVG files at once and they'll all convert in one go. When done, download them individually or as a single zip file." }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my files uploaded anywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Every SVG is rendered and encoded by your own browser using the Canvas API. Nothing is sent to a server — in fact, the tool keeps working even with your Wi-Fi switched off." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Convert SVG to PNG — Free, Private, No Upload | Latch"
+  description="Convert SVG vector graphics to lossless PNG with transparency preserved — at any resolution you choose. Runs entirely in your browser. No uploads, no sign-up."
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <!-- TOOL HERO + WIDGET -->
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">SVG to PNG</span>
+        </nav>
+        <h1>SVG to PNG converter</h1>
+        <p>Rasterise a scalable SVG to a lossless PNG — at the exact resolution you choose, with transparency preserved. No uploads, no waiting, no sign-up.</p>
+        <TrustPill />
+        <ul class="tool-features">
+          <li>Transparency preserved</li>
+          <li>Choose any output resolution</li>
+          <li>Batch convert up to 10 files</li>
+        </ul>
+      </div>
+
+      <!-- WIDGET -->
+      <div class="widget" id="widget" role="region" aria-label="SVG to PNG converter">
+        <div class="widget-head">
+          <span class="wt" style="font-family:var(--font-display);font-weight:600;font-size:16px;letter-spacing:-.01em" id="widget-title">
+            Convert your images
+          </span>
+          <span class="fmt-pill" aria-hidden="true">
+            <span class="from">SVG</span>
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            <span class="to">PNG</span>
+          </span>
+        </div>
+
+        <!-- STATE: empty / drag -->
+        <div id="state-drop" class="widget-state">
+          <div
+            class="dropzone"
+            id="dropzone"
+            role="button"
+            tabindex="0"
+            aria-label="Drop SVG files here or click to browse"
+            aria-describedby="dz-hint"
+          >
+            <div class="dz-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <p class="dz-title" id="dz-title">Drag &amp; drop your SVG files</p>
+            <p class="dz-or" aria-hidden="true">or</p>
+            <button class="btn btn-secondary" type="button" id="browse-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Browse files
+            </button>
+            <p class="dz-hint" id="dz-hint">Accepts .svg · up to 10 files</p>
+            <div class="dz-badges" aria-hidden="true">
+              <span class="dz-badge">No account</span>
+              <span class="dz-badge">Truly free</span>
+              <span class="dz-badge">100% private</span>
+            </div>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Conversion happens right here in your browser — nothing is uploaded.
+          </div>
+        </div>
+
+        <!-- STATE: selected -->
+        <div id="state-selected" class="widget-state" hidden>
+          <div class="filelist" id="filelist" aria-live="polite" aria-label="Selected files"></div>
+          <!-- output options -->
+          <div class="opts">
+            <div class="opt">
+              <label id="size-label">Output size</label>
+              <span class="fit-toggle" role="group" aria-labelledby="size-label">
+                <button class="fit-btn scale-btn active" type="button" data-scale="1" aria-pressed="true">1×</button>
+                <button class="fit-btn scale-btn" type="button" data-scale="2" aria-pressed="false">2×</button>
+                <button class="fit-btn scale-btn" type="button" data-scale="4" aria-pressed="false">4×</button>
+                <button class="fit-btn scale-btn" type="button" data-scale="custom" aria-pressed="false">Custom</button>
+              </span>
+              <span class="val" id="output-val" aria-live="polite"></span>
+            </div>
+            <div class="opt" id="custom-row" hidden>
+              <label for="custom-w">Width</label>
+              <span class="dim-inputs">
+                <input type="number" class="num-input" id="custom-w" min="1" max="8000" value="1024" aria-label="Output width in pixels" />
+                <span class="dim-label" aria-hidden="true">px</span>
+              </span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary grow" type="button" id="convert-btn">
+              Convert to PNG
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            These files stay on your device the entire time.
+          </div>
+        </div>
+
+        <!-- STATE: processing -->
+        <div id="state-processing" class="widget-state" hidden>
+          <div class="proc">
+            <div class="proc-row">
+              <div class="spinner" role="status" aria-label="Converting"></div>
+              <div>
+                <div class="pt">Converting your images</div>
+                <div class="ps" id="proc-status" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+              <i id="progress-fill" style="width:0%"></i>
+            </div>
+            <div class="proc-pct">
+              <span id="proc-pct">0%</span>
+              <span>Working locally — nothing uploaded</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancel</button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Your browser is doing the work — no file has been sent anywhere.
+          </div>
+        </div>
+
+        <!-- STATE: done -->
+        <div id="state-done" class="widget-state" hidden>
+          <div class="result-head">
+            <span class="result-badge" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <div>
+              <div class="rt" id="done-title">All done</div>
+              <div class="rs">Saved as PNG · stayed on your device the whole time</div>
+            </div>
+          </div>
+          <div class="filelist" id="results-list" aria-live="polite" aria-label="Converted files"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="convert-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"/></svg>
+              Convert another
+            </button>
+            <button class="btn btn-primary grow" type="button" id="download-all-btn">
+              <span id="download-all-label">Download</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Close this tab and every file is gone — nothing was kept.
+          </div>
+        </div>
+
+        <!-- STATE: error -->
+        <div id="state-error" class="widget-state" hidden>
+          <div class="err-head">
+            <span class="err-badge" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><circle cx="12" cy="16.4" r=".4" fill="currentColor"/><path d="M10.3 4.2L3.4 16a2 2 0 0 0 1.7 3h13.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/></svg>
+            </span>
+            <div>
+              <div class="et" id="err-title">We couldn't convert that file</div>
+              <div class="es" id="err-message"></div>
+            </div>
+          </div>
+          <div class="filelist" id="error-list" aria-live="assertive"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="remove-continue-btn">Remove &amp; continue</button>
+            <button class="btn btn-primary grow" type="button" id="try-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Try another file
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            The file stayed on your device — even when something goes wrong.
+          </div>
+        </div>
+      </div>
+      <!-- hidden file input -->
+      <input type="file" id="file-input" accept=".svg,image/svg+xml" multiple hidden aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to convert SVG to PNG</h2>
+          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Add your SVG files</h4>
+          <p>Drag SVG files onto the box above, or click Browse to pick them from your device.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>Choose the output size</h4>
+          <p>Pick 1×, 2×, 4×, or a custom width. The height follows the SVG's aspect ratio automatically.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>We convert locally</h4>
+          <p>Latch renders each SVG to a lossless PNG using the browser's Canvas API — transparency preserved, instantly and offline.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Download your PNGs</h4>
+          <p>Save them one at a time, or grab everything at once in a single zip. That's it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY PNG -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Why rasterise SVG to PNG?</h2>
+        </div>
+      </div>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        SVG is a vector format — it stores shapes and paths, not pixels, so it scales to any size without blurring. But plenty of apps, editors, and upload forms only accept raster images. Rasterising to PNG gives you a universally-supported file with no quality loss: PNG is lossless, so every pixel is stored exactly as rendered, with no compression artefacts around the hard edges typical of logos and icons.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        Because you choose the output resolution, you control the trade-off: render at 1× for the SVG's declared size, or 2×–4× for crisp results on high-resolution screens and in print. PNG also keeps the SVG's transparent background, which JPG cannot.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7">
+        If you'd rather have a smaller, flattened file to share or publish — and don't need transparency — <a href="/svg-to-jpg/" style="color:var(--accent)">SVG to JPG</a> produces a far more compact result with an adjustable background colour.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">
+            What is an SVG file?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">SVG (Scalable Vector Graphics) is an XML-based vector format — it describes shapes and paths rather than a grid of pixels, so it stays sharp at any size. It's widely used for logos, icons, and illustrations. Converting to PNG gives you a fixed-resolution raster image that opens in any app.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Why convert an SVG to PNG?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Many apps, editors, and upload forms don't accept SVG. PNG is a universally-supported raster format that is lossless — every pixel is preserved exactly — and keeps transparency, so it's the natural choice for rasterising logos and graphics without losing quality or the transparent background.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What output size or resolution should I choose?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Because SVG is vector, it has no inherent pixel size — you choose it. 1× uses the size declared in the SVG; 2× and 4× multiply it for crisp results on high-resolution screens or in print; or set a custom width and the height follows the aspect ratio automatically. Larger sizes look sharper but produce bigger files.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Does the PNG keep transparency?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Yes. An SVG canvas is transparent by default, and PNG supports an alpha channel, so transparent areas of the SVG are preserved faithfully in the PNG output. If you need a flat background instead, <a href="/svg-to-jpg/" style="color:var(--accent)">convert SVG to JPG</a>, which fills the transparent areas with a colour you pick.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Can I convert multiple SVG files to PNG at once?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Yes. Drop up to 10 SVG files at once and they'll all convert in one go. When done, download them individually or as a single zip file.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Are my files uploaded anywhere?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No. Every SVG is rendered and encoded by your own browser using the Canvas API. Nothing is sent to a server — in fact, the tool keeps working even with your Wi-Fi switched off.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED TOOLS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Related tools</h2>
+        </div>
+      </div>
+      <div class="tool-grid" style="grid-template-columns:repeat(3,1fr)">
+        <a href="/svg-to-jpg/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
+          </div>
+          <div class="tool-name">SVG to JPG</div>
+          <div class="tool-desc">Prefer a smaller, flattened file? Rasterise to JPG with a background colour.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/webp-to-png/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
+          </div>
+          <div class="tool-name">WebP to PNG</div>
+          <div class="tool-desc">Convert WebP images to lossless PNG, fully in-browser.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/png-to-jpg/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="5" width="2" height="14" rx="1" fill="currentColor" stroke="none" opacity=".22"/><path d="M3 12h5m0 0L5.5 9.5M8 12l-2.5 2.5"/><path d="M21 12h-5m0 0l2.5-2.5M16 12l2.5 2.5"/></svg>
+          </div>
+          <div class="tool-name">PNG to JPG</div>
+          <div class="tool-desc">Convert PNG images to JPG with adjustable quality, right in your browser.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .widget-state[hidden] { display: none; }
+
+  /* Output-size control (scale toggle + custom width) */
+  .fit-toggle {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .fit-btn {
+    padding: 0 14px;
+    height: 36px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--text-2);
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .fit-btn.active,
+  .fit-btn[aria-pressed="true"] {
+    background: var(--accent-weak);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .fit-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .dim-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .num-input {
+    width: 90px;
+    height: 40px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    padding: 0 10px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface);
+    text-align: center;
+  }
+  .num-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .dim-label { font-size: 13px; color: var(--text-3); }
+
+  details.faq-item .faq-a { display: none; }
+  details.faq-item[open] .faq-a { display: block; }
+  details.faq-item[open] .pm svg path:last-child { opacity: 0; }
+</style>
+
+<script>
+  // -----------------------------------------------------------------------
+  // SVG to PNG — client-side widget controller
+  // SVG is vector, so we (1) parse its intrinsic size from the markup, (2)
+  // render it via an <img> + object URL — the universally-supported, script-
+  // sandboxed decode path (createImageBitmap is unreliable on SVG) — and (3)
+  // draw it to a transparent canvas at the chosen output resolution, then
+  // encode to lossless PNG (transparency preserved).
+  // -----------------------------------------------------------------------
+
+  type FileEntry = { file: File };
+  type ResultEntry = { name: string; blob: Blob; originalSize: number };
+
+  const MAX_SIZE_MB = 50;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const MAX_FILES = 10;
+  const FALLBACK_SIZE = 512;
+  const MAX_PREVIEW_SIDE = 1000;
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const states = {
+    drop: $('state-drop'),
+    selected: $('state-selected'),
+    processing: $('state-processing'),
+    done: $('state-done'),
+    error: $('state-error'),
+  };
+
+  function showState(name: keyof typeof states) {
+    for (const [k, el] of Object.entries(states)) {
+      (el as HTMLElement).hidden = k !== name;
+    }
+  }
+
+  let files: FileEntry[] = [];
+  let results: ResultEntry[] = [];
+  let cancelled = false;
+
+  // Output-size state
+  let scale = 1;
+  let useCustom = false;
+
+  // Live-preview state (first file only)
+  let previewImg: HTMLImageElement | null = null;
+  let previewUrl: string | null = null;
+  let previewIntrinsic: { w: number; h: number } | null = null;
+
+  const dropzone = $('dropzone');
+  const fileInput = $<HTMLInputElement>('file-input');
+  const browseBtn = $('browse-btn');
+  const fileList = $('filelist');
+  const scaleBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.scale-btn'));
+  const customRow = $('custom-row');
+  const customW = $<HTMLInputElement>('custom-w');
+  const outputVal = $('output-val');
+  const convertBtn = $('convert-btn');
+  const cancelBtn = $('cancel-btn');
+  const resultsList = $('results-list');
+  const convertAnotherBtn = $('convert-another-btn');
+  const downloadAllBtn = $('download-all-btn');
+  const doneTitleEl = $('done-title');
+  const removeAndContinueBtn = $('remove-continue-btn');
+  const tryAnotherBtn = $('try-another-btn');
+  const widgetTitle = $('widget-title');
+
+  // ---- SVG helpers ----
+
+  // Parse the SVG markup for its intrinsic pixel size and ensure it has a
+  // viewBox (so the browser rasterises crisply at any draw size), then return
+  // an object URL for the normalised SVG. Throws on malformed SVG.
+  function prepareSvg(text: string): { url: string; w: number; h: number } {
+    const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+    if (doc.querySelector('parsererror')) throw new Error('svg-parse');
+    const svg = doc.documentElement;
+    if (!svg || svg.tagName.toLowerCase() !== 'svg') throw new Error('svg-parse');
+
+    const num = (v: string | null): number => {
+      if (!v) return 0;
+      const s = v.trim();
+      if (s.endsWith('%')) return 0; // relative size — not usable as absolute px
+      const n = parseFloat(s);       // tolerates "100" and "100px"
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    };
+
+    let w = num(svg.getAttribute('width'));
+    let h = num(svg.getAttribute('height'));
+    const vb = (svg.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
+    const hasViewBox = vb.length === 4 && vb.every((n) => Number.isFinite(n)) && vb[2] > 0 && vb[3] > 0;
+    if ((!w || !h) && hasViewBox) { w = vb[2]; h = vb[3]; }
+    if (!w || !h) { w = FALLBACK_SIZE; h = FALLBACK_SIZE; }
+    w = Math.round(w); h = Math.round(h);
+
+    if (!hasViewBox) svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.setAttribute('width', String(w));
+    svg.setAttribute('height', String(h));
+
+    const serialized = new XMLSerializer().serializeToString(svg);
+    const url = URL.createObjectURL(new Blob([serialized], { type: 'image/svg+xml' }));
+    return { url, w, h };
+  }
+
+  function loadImage(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('svg-decode'));
+      img.src = url;
+    });
+  }
+
+  // Output pixel size for a file, from its intrinsic size + the chosen scale.
+  function outputSize(iw: number, ih: number): { w: number; h: number } {
+    if (useCustom) {
+      const cw = parseInt(customW.value, 10) || iw;
+      return { w: Math.max(1, cw), h: Math.max(1, Math.round((cw * ih) / iw)) };
+    }
+    return { w: Math.max(1, Math.round(iw * scale)), h: Math.max(1, Math.round(ih * scale)) };
+  }
+
+  // ---- Live preview ----
+
+  function clearPreview() {
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+    previewImg = null;
+    previewIntrinsic = null;
+  }
+
+  function updateOutputReadout() {
+    if (!previewIntrinsic) { outputVal.textContent = ''; return; }
+    const { w, h } = outputSize(previewIntrinsic.w, previewIntrinsic.h);
+    outputVal.textContent = `${w} × ${h} px`;
+  }
+
+  function updatePreview() {
+    updateOutputReadout();
+    const figure = document.getElementById('input-preview');
+    if (!figure || !previewImg || !previewIntrinsic) return;
+    const { w, h } = outputSize(previewIntrinsic.w, previewIntrinsic.h);
+    if (!w || !h) return;
+    const f = Math.min(1, MAX_PREVIEW_SIDE / Math.max(w, h));
+    const cw = Math.max(1, Math.round(w * f));
+    const ch = Math.max(1, Math.round(h * f));
+    let canvas = figure.querySelector('canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      canvas.setAttribute('role', 'img');
+      figure.replaceChildren(canvas);
+    }
+    canvas.setAttribute('aria-label', `Preview of the PNG at ${w} by ${h} pixels`);
+    canvas.width = cw;
+    canvas.height = ch;
+    const ctx = canvas.getContext('2d')!;
+    ctx.clearRect(0, 0, cw, ch); // transparent canvas — PNG keeps the alpha
+    ctx.drawImage(previewImg, 0, 0, cw, ch);
+  }
+
+  // ---- Output-size controls ----
+  scaleBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      scaleBtns.forEach((b) => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      const v = btn.dataset.scale!;
+      useCustom = v === 'custom';
+      if (!useCustom) scale = parseInt(v, 10);
+      customRow.hidden = !useCustom;
+      updatePreview();
+    });
+  });
+  customW.addEventListener('input', () => updatePreview());
+
+  // ---- Drop zone ----
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('is-drag');
+    $('dz-title').textContent = 'Drop to add your files';
+  });
+  ['dragleave', 'dragend'].forEach((ev) => {
+    dropzone.addEventListener(ev, () => {
+      dropzone.classList.remove('is-drag');
+      $('dz-title').textContent = 'Drag & drop your SVG files';
+    });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('is-drag');
+    const de = e as DragEvent;
+    addFiles(Array.from(de.dataTransfer?.files ?? []));
+  });
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('keydown', (e) => {
+    const ke = e as KeyboardEvent;
+    if (ke.key === 'Enter' || ke.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', () => {
+    addFiles(Array.from(fileInput.files ?? []));
+    fileInput.value = '';
+  });
+
+  function formatBytes(b: number): string {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function addFiles(incoming: File[]) {
+    const valid = incoming.filter((f) => {
+      const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+      return ext === 'svg' || f.type === 'image/svg+xml';
+    });
+
+    if (valid.length === 0 && incoming.length > 0) {
+      showError('Unsupported file type', `Please drop an <code>.svg</code> file.`, files);
+      return;
+    }
+    if (valid.length === 0) return;
+
+    const oversized = valid.find((f) => f.size > MAX_SIZE_BYTES);
+    if (oversized) {
+      showError('File too large', `${oversized.name} must be under ${MAX_SIZE_MB} MB.`, files);
+      return;
+    }
+
+    const existingNames = new Set(files.map((e) => e.file.name));
+    const fresh = valid.filter((f) => !existingNames.has(f.name));
+    files = [...files, ...fresh.map((f) => ({ file: f }))].slice(0, MAX_FILES);
+    if (files.length === 0) return;
+
+    renderFileList();
+    widgetTitle.textContent = files.length === 1 ? 'Image ready' : `${files.length} images ready`;
+    showState('selected');
+  }
+
+  function removeFile(index: number) {
+    files.splice(index, 1);
+    if (files.length === 0) {
+      document.getElementById('input-preview')?.remove();
+      clearPreview();
+      widgetTitle.textContent = 'Convert your images';
+      showState('drop');
+    } else {
+      widgetTitle.textContent = files.length === 1 ? 'Image ready' : `${files.length} images ready`;
+      renderFileList();
+    }
+  }
+
+  function renderFileList() {
+    document.getElementById('input-preview')?.remove();
+    clearPreview();
+    fileList.innerHTML = '';
+
+    // Live preview of the first file's rasterised result — redraws on option change.
+    const lead = files[0];
+    if (lead) {
+      const figure = document.createElement('figure');
+      figure.id = 'input-preview';
+      figure.className = 'result-preview';
+      fileList.parentElement!.insertBefore(figure, fileList);
+      lead.file.text()
+        .then((text) => {
+          if (!document.getElementById('input-preview')) return;
+          const { url, w, h } = prepareSvg(text);
+          previewUrl = url;
+          previewIntrinsic = { w, h };
+          return loadImage(url).then((img) => {
+            if (!document.getElementById('input-preview')) { clearPreview(); return; }
+            previewImg = img;
+            updatePreview();
+          });
+        })
+        .catch(() => {
+          // Malformed SVG — leave the preview blank; conversion surfaces the error.
+          updateOutputReadout();
+        });
+    }
+
+    files.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb">SVG</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(entry.file.name)}</div>
+          <div class="file-sub">${formatBytes(entry.file.size)}</div>
+        </div>
+        <button class="icon-btn" aria-label="Remove ${escHtml(entry.file.name)}" data-index="${i}">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => removeFile(i));
+      fileList.appendChild(row);
+    });
+  }
+
+  convertBtn.addEventListener('click', startConversion);
+
+  async function startConversion() {
+    if (files.length === 0) return;
+    cancelled = false;
+    results = [];
+    clearPreview();
+    widgetTitle.textContent = 'Converting…';
+    showState('processing');
+
+    for (let i = 0; i < files.length; i++) {
+      if (cancelled) break;
+
+      const entry = files[i];
+      const pct = Math.round((i / files.length) * 100);
+      updateProgress(pct, `${i + 1} of ${files.length} · ${entry.file.name}`);
+
+      try {
+        const blob = await convertOne(entry.file);
+        results.push({
+          name: entry.file.name.replace(/\.svg$/i, '.png'),
+          blob,
+          originalSize: entry.file.size,
+        });
+      } catch (err) {
+        if (!cancelled) {
+          showError(
+            `Couldn't convert ${entry.file.name}`,
+            `We couldn't render <code>${escHtml(entry.file.name)}</code> — it may be malformed or missing a width/height or viewBox.`,
+            files.filter((_, j) => j !== i)
+          );
+          return;
+        }
+      }
+    }
+
+    if (!cancelled) {
+      updateProgress(100, '');
+      showDone();
+    }
+  }
+
+  function updateProgress(pct: number, status: string) {
+    const fill = $<HTMLElement>('progress-fill');
+    const pctEl = $('proc-pct');
+    const bar = $<HTMLElement>('progress-bar');
+    const statusEl = $('proc-status');
+    fill.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    bar.setAttribute('aria-valuenow', String(pct));
+    statusEl.textContent = status;
+  }
+
+  async function convertOne(file: File): Promise<Blob> {
+    const { url, w, h } = prepareSvg(await file.text());
+    try {
+      const img = await loadImage(url);
+      const { w: outW, h: outH } = outputSize(w, h);
+      const canvas = document.createElement('canvas');
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext('2d')!;
+      // Transparent canvas — PNG preserves the SVG's alpha.
+      ctx.drawImage(img, 0, 0, outW, outH);
+      return await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas conversion failed'));
+        }, 'image/png');
+      });
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  cancelBtn.addEventListener('click', () => {
+    cancelled = true;
+    files = [];
+    results = [];
+    document.getElementById('input-preview')?.remove();
+    clearPreview();
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+
+  function showDone() {
+    const count = results.length;
+    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    resultsList.innerHTML = '';
+    results.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb done">PNG</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(r.name)}</div>
+          <div class="file-sub">${formatBytes(r.blob.size)}</div>
+        </div>
+        <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+          Save
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => downloadOne(r));
+      resultsList.appendChild(row);
+    });
+    widgetTitle.textContent = `${count} image${count !== 1 ? 's' : ''} converted`;
+    $('download-all-label').textContent = count > 1 ? `Download all (${count})` : 'Download';
+    showState('done');
+  }
+
+  function downloadOne(r: ResultEntry) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(r.blob);
+    a.download = r.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  async function downloadAll() {
+    if (results.length === 1) { downloadOne(results[0]); return; }
+    const { default: JSZip } = await import('jszip');
+    const zip = new JSZip();
+    for (const r of results) zip.file(r.name, r.blob);
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = 'svg-to-png.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  downloadAllBtn.addEventListener('click', () => downloadAll());
+
+  convertAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    document.getElementById('input-preview')?.remove();
+    clearPreview();
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+
+  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+    $('err-title').textContent = title;
+    $('err-message').innerHTML = message;
+    const errorList = $('error-list');
+    errorList.innerHTML = `
+      <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">
+        <span class="file-thumb" style="background:var(--danger-weak);color:var(--danger)">!</span>
+        <div class="file-meta">
+          <div class="file-name">${title}</div>
+          <div class="file-sub" style="color:var(--danger)">${message.replace(/<[^>]+>/g, '')}</div>
+        </div>
+      </div>
+    `;
+    widgetTitle.textContent = 'Something went wrong';
+    showState('error');
+
+    const handler = () => {
+      files = remainingFiles;
+      if (files.length === 0) {
+        widgetTitle.textContent = 'Convert your images';
+        showState('drop');
+      } else {
+        widgetTitle.textContent = `${files.length} image${files.length !== 1 ? 's' : ''} ready`;
+        renderFileList();
+        showState('selected');
+      }
+      removeAndContinueBtn.removeEventListener('click', handler);
+    };
+    removeAndContinueBtn.addEventListener('click', handler);
+  }
+
+  tryAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    document.getElementById('input-preview')?.remove();
+    clearPreview();
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+</script>
