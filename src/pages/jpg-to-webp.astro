@@ -1,0 +1,733 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "JPG to WebP Converter",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Convert JPG images to WebP directly in your browser, with adjustable quality. No uploads required — files never leave your device.",
+      "url": "https://latchtools.com/jpg-to-webp/"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to convert JPG to WebP",
+      "step": [
+        { "@type": "HowToStep", "name": "Add your JPG files", "text": "Drag JPG images onto the drop zone, or click Browse to pick them from your device." },
+        { "@type": "HowToStep", "name": "Set the quality", "text": "Pick a WebP quality level — 80 is a great default that stays sharp while making far smaller files." },
+        { "@type": "HowToStep", "name": "Files convert locally", "text": "Latch decodes each JPG and re-encodes it as a WebP using your browser — instantly and offline." },
+        { "@type": "HowToStep", "name": "Download your WebPs", "text": "Save them one at a time, or grab everything at once in a single zip." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Are my images uploaded anywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Your browser handles the entire conversion locally. Nothing is sent to a server — the tool even works with Wi-Fi switched off." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why convert JPG to WebP?",
+          "acceptedAnswer": { "@type": "Answer", "text": "WebP files are typically 25–35% smaller than the equivalent JPG at the same visual quality, so pages load faster and use less bandwidth. It's the format Google recommends for images on the web, and it's supported by every modern browser." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does converting to WebP lose quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "WebP here uses lossy compression, and your JPG was already compressed once — but at the default quality of 80 the WebP is visually indistinguishable from the JPG while being smaller. Raise the slider toward 95–100 if you want to keep as much detail as possible." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a limit on size or number of files?",
+          "acceptedAnswer": { "@type": "Answer", "text": "You can convert up to 10 images at once, up to 50 MB each. The real limit is your device's available memory, not an arbitrary cap." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I convert a JPG file to WebP?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Drag your JPG files onto the drop zone or click Browse, set your quality, then press Convert to WebP. Latch turns each JPG into a WebP right in your browser and lets you download them individually or as a single zip — convert one file or batch several at once." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="JPG to WebP Converter — Free, Smaller Files · Latch"
+  description="Convert JPG images to WebP in your browser, with adjustable quality. No uploads, no sign-up — files never leave your device."
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <!-- TOOL HERO + WIDGET -->
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">JPG to WebP</span>
+        </nav>
+        <h1>JPG to WebP converter</h1>
+        <p>Turn JPG photos into smaller WebP files — right here in your browser. Adjustable quality, nothing uploaded.</p>
+        <TrustPill />
+        <ul class="tool-features">
+          <li>Smaller than JPG at the same quality</li>
+          <li>Adjustable WebP quality</li>
+          <li>Batch convert up to 10 files at once</li>
+        </ul>
+      </div>
+
+      <!-- WIDGET -->
+      <div class="widget" id="widget" role="region" aria-label="JPG to WebP converter">
+        <div class="widget-head">
+          <span class="wt" style="font-family:var(--font-display);font-weight:600;font-size:16px;letter-spacing:-.01em" id="widget-title">
+            Convert your images
+          </span>
+          <span class="fmt-pill" aria-hidden="true">
+            <span class="from">JPG</span>
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            <span class="to">WebP</span>
+          </span>
+        </div>
+
+        <!-- STATE: empty / drag -->
+        <div id="state-drop" class="widget-state">
+          <div
+            class="dropzone"
+            id="dropzone"
+            role="button"
+            tabindex="0"
+            aria-label="Drop JPG files here or click to browse"
+            aria-describedby="dz-hint"
+          >
+            <div class="dz-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5m0 0L8 9m4-4l4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            </div>
+            <p class="dz-title" id="dz-title">Drag &amp; drop your JPG images</p>
+            <p class="dz-or" aria-hidden="true">or</p>
+            <button class="btn btn-secondary" type="button" id="browse-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Browse files
+            </button>
+            <p class="dz-hint" id="dz-hint">Accepts .jpg and .jpeg · up to 10 files, 50 MB each</p>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Conversion happens right here in your browser — nothing is uploaded.
+          </div>
+        </div>
+
+        <!-- STATE: selected -->
+        <div id="state-selected" class="widget-state" hidden>
+          <div class="filelist" id="filelist" aria-live="polite" aria-label="Selected files"></div>
+          <div class="opts" id="webp-opts">
+            <div class="opt">
+              <label for="quality-slider">Quality</label>
+              <input
+                class="slider"
+                type="range"
+                min="40"
+                max="100"
+                value="80"
+                id="quality-slider"
+                aria-label="WebP quality percentage"
+              />
+              <span class="val" id="quality-val" aria-live="polite">80%</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary grow" type="button" id="convert-btn">
+              Convert to WebP
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            These images stay on your device the entire time.
+          </div>
+        </div>
+
+        <!-- STATE: processing -->
+        <div id="state-processing" class="widget-state" hidden>
+          <div class="proc">
+            <div class="proc-row">
+              <div class="spinner" role="status" aria-label="Converting"></div>
+              <div>
+                <div class="pt">Converting your images</div>
+                <div class="ps" id="proc-status" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+              <i id="progress-fill" style="width:0%"></i>
+            </div>
+            <div class="proc-pct">
+              <span id="proc-pct">0%</span>
+              <span>Working locally — nothing uploaded</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancel</button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Your browser is doing the work — no file has been sent anywhere.
+          </div>
+        </div>
+
+        <!-- STATE: done -->
+        <div id="state-done" class="widget-state" hidden>
+          <div class="result-head">
+            <span class="result-badge" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <div>
+              <div class="rt" id="done-title">All done</div>
+              <div class="rs">Saved as WebP · stayed on your device the whole time</div>
+            </div>
+          </div>
+          <div class="filelist" id="results-list" aria-live="polite" aria-label="Converted files"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="convert-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"/></svg>
+              Convert another
+            </button>
+            <button class="btn btn-primary grow" type="button" id="download-all-btn">
+              <span id="download-all-label">Download</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Close this tab and every file is gone — nothing was kept.
+          </div>
+        </div>
+
+        <!-- STATE: error -->
+        <div id="state-error" class="widget-state" hidden>
+          <div class="err-head">
+            <span class="err-badge" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><circle cx="12" cy="16.4" r=".4" fill="currentColor"/><path d="M10.3 4.2L3.4 16a2 2 0 0 0 1.7 3h13.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/></svg>
+            </span>
+            <div>
+              <div class="et" id="err-title">We couldn't convert that file</div>
+              <div class="es" id="err-message"></div>
+            </div>
+          </div>
+          <div class="filelist" id="error-list" aria-live="assertive"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="remove-continue-btn">Remove &amp; continue</button>
+            <button class="btn btn-primary grow" type="button" id="try-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Try another file
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            The file stayed on your device — even when something goes wrong.
+          </div>
+        </div>
+      </div>
+      <!-- hidden file input -->
+      <input type="file" id="file-input" accept=".jpg,.jpeg,image/jpeg" multiple hidden aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to convert JPG to WebP</h2>
+          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Add your JPG files</h4>
+          <p>Drag images onto the box above, or click Browse to pick them from your device. Up to 10 at once.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>Set the quality</h4>
+          <p>Pick a WebP quality level — 80 is a great default that stays sharp while making far smaller files.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>We convert locally</h4>
+          <p>Latch decodes each JPG and re-encodes it as a WebP using your browser — instantly and offline.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Download your WebPs</h4>
+          <p>Save them one at a time, or grab everything at once in a single zip. That's it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JPG TO WEBP EXPLAINED -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">JPG to WebP, explained</h2>
+        </div>
+      </div>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        JPG has been the default photo format for decades, but WebP — Google's modern format for the web — compresses the same image roughly 25–35% smaller at matching quality. For a page full of photos, that adds up to faster loads and less bandwidth.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        Every current browser displays WebP, so it's a safe choice for anything going online. Since your JPG has already been compressed once, keep the quality slider high (around 80–90) to avoid stacking too much loss — the result still comes out smaller than the original.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7">
+        To turn a JPG into a WebP, drop your files above, set the quality, and hit Convert — everything runs in your browser, so the images never leave your device. Need to go back? <a href="/webp-to-jpg/" style="color:var(--accent)">WebP to JPG</a> converts them the other way.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">
+            Are my images uploaded anywhere?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No. Your browser handles the entire conversion locally. Nothing is sent to a server — the tool even works with Wi-Fi switched off.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Why convert JPG to WebP?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">WebP files are typically 25–35% smaller than the equivalent JPG at the same visual quality, so pages load faster and use less bandwidth. It's the format Google recommends for images on the web, and it's supported by every modern browser.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Does converting to WebP lose quality?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">WebP here uses lossy compression, and your JPG was already compressed once — but at the default quality of 80 the WebP is visually indistinguishable from the JPG while being smaller. Raise the slider toward 95–100 if you want to keep as much detail as possible.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Is there a limit on size or number of files?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">You can convert up to 10 images at once, up to 50 MB each. The real limit is your device's available memory, not an arbitrary cap we've set.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            How do I convert a JPG file to WebP?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Drag your JPG files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. Latch turns each JPG into a WebP right in your browser and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED TOOLS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Related tools</h2>
+        </div>
+      </div>
+      <div class="tool-grid" style="grid-template-columns:repeat(3,1fr)">
+        <a href="/webp-to-jpg/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
+          </div>
+          <div class="tool-name">WebP to JPG</div>
+          <div class="tool-desc">Convert WebP images back to universal JPGs with adjustable quality.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/png-to-webp/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
+          </div>
+          <div class="tool-name">PNG to WebP</div>
+          <div class="tool-desc">Convert PNG images to smaller WebP files with transparency preserved.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/jpg-to-avif/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
+          </div>
+          <div class="tool-name">JPG to AVIF</div>
+          <div class="tool-desc">Convert JPG photos to next-gen AVIF for even smaller files.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+
+  .widget-state[hidden] { display: none; }
+
+  details.faq-item .faq-a { display: none; }
+  details.faq-item[open] .faq-a { display: block; }
+  details.faq-item[open] .pm svg path:last-child { opacity: 0; }
+</style>
+
+<script>
+  // -----------------------------------------------------------------------
+  // JPG to WebP — client-side widget controller
+  // Uses the Canvas API — no external library needed.
+  // -----------------------------------------------------------------------
+
+  type FileEntry = { file: File };
+  type ResultEntry = { name: string; blob: Blob; originalSize: number };
+
+  const MAX_SIZE_MB = 50;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const MAX_FILES = 10;
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const states = {
+    drop: $('state-drop'),
+    selected: $('state-selected'),
+    processing: $('state-processing'),
+    done: $('state-done'),
+    error: $('state-error'),
+  };
+
+  function showState(name: keyof typeof states) {
+    for (const [k, el] of Object.entries(states)) {
+      (el as HTMLElement).hidden = k !== name;
+    }
+  }
+
+  let files: FileEntry[] = [];
+  let results: ResultEntry[] = [];
+  let cancelled = false;
+
+  const dropzone = $('dropzone');
+  const fileInput = $<HTMLInputElement>('file-input');
+  const browseBtn = $('browse-btn');
+  const fileList = $('filelist');
+  const convertBtn = $('convert-btn');
+  const cancelBtn = $('cancel-btn');
+  const resultsList = $('results-list');
+  const convertAnotherBtn = $('convert-another-btn');
+  const downloadAllBtn = $('download-all-btn');
+  const doneTitleEl = $('done-title');
+  const removeAndContinueBtn = $('remove-continue-btn');
+  const tryAnotherBtn = $('try-another-btn');
+  const widgetTitle = $('widget-title');
+  const qualitySlider = $<HTMLInputElement>('quality-slider');
+  const qualityVal = $('quality-val');
+
+  qualitySlider.addEventListener('input', () => {
+    qualityVal.textContent = qualitySlider.value + '%';
+  });
+
+  // ---- Drop zone ----
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('is-drag');
+    $('dz-title').textContent = 'Drop to add your images';
+  });
+  ['dragleave', 'dragend'].forEach((ev) => {
+    dropzone.addEventListener(ev, () => {
+      dropzone.classList.remove('is-drag');
+      $('dz-title').textContent = 'Drag & drop your JPG images';
+    });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('is-drag');
+    const de = e as DragEvent;
+    addFiles(Array.from(de.dataTransfer?.files ?? []));
+  });
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('keydown', (e) => {
+    const ke = e as KeyboardEvent;
+    if (ke.key === 'Enter' || ke.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', () => {
+    addFiles(Array.from(fileInput.files ?? []));
+    fileInput.value = '';
+  });
+
+  function formatBytes(b: number): string {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function addFiles(incoming: File[]) {
+    const valid = incoming.filter((f) => {
+      const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+      return ext === 'jpg' || ext === 'jpeg' || f.type === 'image/jpeg';
+    });
+
+    if (valid.length === 0 && incoming.length > 0) {
+      showError('Unsupported file type', `Please drop a <code>.jpg</code> file.`, files);
+      return;
+    }
+    if (valid.length === 0) return;
+
+    const oversized = valid.find((f) => f.size > MAX_SIZE_BYTES);
+    if (oversized) {
+      showError('File too large', `${oversized.name} must be under ${MAX_SIZE_MB} MB.`, files);
+      return;
+    }
+
+    const existingNames = new Set(files.map((e) => e.file.name));
+    const fresh = valid.filter((f) => !existingNames.has(f.name));
+    files = [...files, ...fresh.map((f) => ({ file: f }))].slice(0, MAX_FILES);
+    if (files.length === 0) return;
+
+    renderFileList();
+    widgetTitle.textContent = files.length === 1 ? 'Image ready' : `${files.length} images ready`;
+    showState('selected');
+  }
+
+  function removeFile(index: number) {
+    files.splice(index, 1);
+    if (files.length === 0) {
+      widgetTitle.textContent = 'Convert your images';
+      showState('drop');
+    } else {
+      widgetTitle.textContent = files.length === 1 ? 'Image ready' : `${files.length} images ready`;
+      renderFileList();
+    }
+  }
+
+  function renderFileList() {
+    fileList.innerHTML = '';
+    files.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb">JPG</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(entry.file.name)}</div>
+          <div class="file-sub">${formatBytes(entry.file.size)}</div>
+        </div>
+        <button class="icon-btn" aria-label="Remove ${escHtml(entry.file.name)}" data-index="${i}">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => removeFile(i));
+      fileList.appendChild(row);
+    });
+  }
+
+  convertBtn.addEventListener('click', startConversion);
+
+  async function startConversion() {
+    if (files.length === 0) return;
+    cancelled = false;
+    results = [];
+    widgetTitle.textContent = 'Converting…';
+    showState('processing');
+
+    const quality = parseInt(qualitySlider.value, 10) / 100;
+
+    for (let i = 0; i < files.length; i++) {
+      if (cancelled) break;
+
+      const entry = files[i];
+      const pct = Math.round((i / files.length) * 100);
+      updateProgress(pct, `${i + 1} of ${files.length} · ${entry.file.name}`);
+
+      try {
+        const blob = await convertOne(entry.file, quality);
+        results.push({
+          name: entry.file.name.replace(/\.jpe?g$/i, '') + '.webp',
+          blob,
+          originalSize: entry.file.size,
+        });
+      } catch (err) {
+        if (!cancelled) {
+          showError(
+            `Couldn't convert ${entry.file.name}`,
+            `<code>${escHtml(entry.file.name)}</code> looks corrupted or isn't a valid JPG image.`,
+            files.filter((_, j) => j !== i)
+          );
+          return;
+        }
+      }
+    }
+
+    if (!cancelled) {
+      updateProgress(100, '');
+      showDone();
+    }
+  }
+
+  function updateProgress(pct: number, status: string) {
+    const fill = $<HTMLElement>('progress-fill');
+    const pctEl = $('proc-pct');
+    const bar = $<HTMLElement>('progress-bar');
+    const statusEl = $('proc-status');
+    fill.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    bar.setAttribute('aria-valuenow', String(pct));
+    statusEl.textContent = status;
+  }
+
+  async function convertOne(file: File, quality: number): Promise<Blob> {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    return new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Canvas conversion failed'));
+      }, 'image/webp', quality);
+    });
+  }
+
+  cancelBtn.addEventListener('click', () => {
+    cancelled = true;
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+
+  function showDone() {
+    const count = results.length;
+    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    resultsList.innerHTML = '';
+    results.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb done">WebP</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(r.name)}</div>
+          <div class="file-sub">${formatBytes(r.blob.size)}</div>
+        </div>
+        <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+          Save
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => downloadOne(r));
+      resultsList.appendChild(row);
+    });
+    widgetTitle.textContent = `${count} image${count !== 1 ? 's' : ''} converted`;
+    $('download-all-label').textContent = count > 1 ? `Download all (${count})` : 'Download';
+    showState('done');
+  }
+
+  function downloadOne(r: ResultEntry) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(r.blob);
+    a.download = r.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  async function downloadAll() {
+    if (results.length === 1) { downloadOne(results[0]); return; }
+    const { default: JSZip } = await import('jszip');
+    const zip = new JSZip();
+    for (const r of results) zip.file(r.name, r.blob);
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = 'jpg-to-webp.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  downloadAllBtn.addEventListener('click', () => downloadAll());
+
+  convertAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+
+  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+    $('err-title').textContent = title;
+    $('err-message').innerHTML = message;
+    const errorList = $('error-list');
+    errorList.innerHTML = `
+      <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">
+        <span class="file-thumb" style="background:var(--danger-weak);color:var(--danger)">!</span>
+        <div class="file-meta">
+          <div class="file-name">${title}</div>
+          <div class="file-sub" style="color:var(--danger)">${message.replace(/<[^>]+>/g, '')}</div>
+        </div>
+      </div>
+    `;
+    widgetTitle.textContent = 'Something went wrong';
+    showState('error');
+
+    const handler = () => {
+      files = remainingFiles;
+      if (files.length === 0) {
+        widgetTitle.textContent = 'Convert your images';
+        showState('drop');
+      } else {
+        widgetTitle.textContent = `${files.length} image${files.length !== 1 ? 's' : ''} ready`;
+        renderFileList();
+        showState('selected');
+      }
+      removeAndContinueBtn.removeEventListener('click', handler);
+    };
+    removeAndContinueBtn.addEventListener('click', handler);
+  }
+
+  tryAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+</script>
