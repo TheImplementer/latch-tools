@@ -1,0 +1,500 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Base64 to Image Converter",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Decode a Base64 string or data URI back into an image directly in your browser — preview it and download as PNG, JPG, GIF, WebP or SVG. No uploads required — nothing leaves your device.",
+      "url": "https://latchtools.com/base64-to-image/"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to convert Base64 to an image",
+      "step": [
+        { "@type": "HowToStep", "name": "Paste your Base64", "text": "Paste a data URI or a raw Base64 string into the box." },
+        { "@type": "HowToStep", "name": "Decode locally", "text": "Latch decodes the string to an image in your browser — instantly and offline." },
+        { "@type": "HowToStep", "name": "Preview and download", "text": "Check the preview, then download the decoded image as a file." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is anything uploaded?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The Base64 is decoded entirely in your browser. Nothing is sent to a server — the tool even works with Wi-Fi switched off." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need the data: prefix?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. You can paste a full data URI (data:image/png;base64,...) or just the raw Base64. If there's no prefix, Latch detects the image type automatically from the decoded bytes." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which image formats are supported?",
+          "acceptedAnswer": { "@type": "Answer", "text": "PNG, JPG, GIF, WebP, BMP, AVIF and SVG. The type is read from the data URI if present, otherwise detected from the file's signature, and the download uses the matching extension." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why won't my Base64 decode?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Usually the string is incomplete or has stray characters. Make sure you copied the whole value. Data URIs must include the base64, marker. Latch trims whitespace and fixes padding automatically, but truncated data can't be recovered." }
+        },
+        {
+          "@type": "Question",
+          "name": "What file do I get?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A real image file matching the detected type — image.png, image.jpg, image.svg and so on — saved straight to your device with one click." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Convert Base64 to Image — Free, Private, No Upload | Latch"
+  description="Decode a Base64 string or data URI back into an image in your browser — preview and download as PNG, JPG, GIF, WebP or SVG. No uploads, no sign-up — nothing leaves your device."
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <!-- TOOL HERO + WIDGET -->
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Base64 to Image</span>
+        </nav>
+        <h1>Base64 to Image decoder</h1>
+        <p>Paste a Base64 string or data URI and get the image back — preview it and download it, right here in your browser. Nothing is uploaded.</p>
+        <TrustPill />
+        <ul class="tool-features">
+          <li>Data URIs and raw Base64 both work</li>
+          <li>Auto-detects PNG, JPG, GIF, WebP, SVG</li>
+          <li>Preview, then one-click download</li>
+        </ul>
+      </div>
+
+      <!-- WIDGET -->
+      <div class="widget" id="widget" role="region" aria-label="Base64 to Image decoder">
+        <div class="widget-head">
+          <span class="wt" style="font-family:var(--font-display);font-weight:600;font-size:16px;letter-spacing:-.01em" id="widget-title">
+            Decode your Base64
+          </span>
+          <span class="fmt-pill" aria-hidden="true">
+            <span class="from">Base64</span>
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            <span class="to">Image</span>
+          </span>
+        </div>
+
+        <!-- STATE: paste -->
+        <div id="state-drop" class="widget-state">
+          <label for="b64-input" class="b64-label">Paste a Base64 string or data URI</label>
+          <textarea class="b64-area" id="b64-input" spellcheck="false" aria-label="Base64 input" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg…&#10;&#10;— or just the raw Base64, with or without the data: prefix"></textarea>
+          <div class="actions">
+            <button class="btn btn-primary grow" type="button" id="convert-btn">
+              Convert to image
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Decoding happens right here in your browser — nothing is uploaded.
+          </div>
+        </div>
+
+        <!-- STATE: done -->
+        <div id="state-done" class="widget-state" hidden>
+          <div class="result-head">
+            <span class="result-badge" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <div>
+              <div class="rt" id="done-title">Image decoded</div>
+              <div class="rs">Decoded on your device — nothing was uploaded</div>
+            </div>
+          </div>
+          <div id="preview-slot"></div>
+          <div class="b64-size" id="img-info"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="decode-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"/></svg>
+              Decode another
+            </button>
+            <button class="btn btn-primary grow" type="button" id="download-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+              Download image
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Close this tab and the image is gone — nothing was kept.
+          </div>
+        </div>
+
+        <!-- STATE: error -->
+        <div id="state-error" class="widget-state" hidden>
+          <div class="err-head">
+            <span class="err-badge" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><circle cx="12" cy="16.4" r=".4" fill="currentColor"/><path d="M10.3 4.2L3.4 16a2 2 0 0 0 1.7 3h13.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/></svg>
+            </span>
+            <div>
+              <div class="et" id="err-title">We couldn't decode that</div>
+              <div class="es" id="err-message"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary grow" type="button" id="try-again-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"/></svg>
+              Try again
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Everything stayed on your device — even when something goes wrong.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to convert Base64 to an image</h2>
+          <p class="sec-desc">Three steps, a couple of seconds, zero uploads.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Paste your Base64</h4>
+          <p>Paste a full data URI or just the raw Base64 string into the box above.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>We decode locally</h4>
+          <p>Latch decodes the string to an image in your browser — instantly and offline.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>Preview &amp; download</h4>
+          <p>Check the preview, then download the decoded image with one click.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BASE64 TO IMAGE EXPLAINED -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Base64 to Image, explained</h2>
+        </div>
+      </div>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        Base64 is a way of writing binary data — like an image — as plain text, so it can travel inside HTML, CSS, JSON or an API response. When you're handed one of these strings, you often need the actual picture back. This tool decodes it in your browser and hands you a real image file.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        Paste either a full data URI (<code>data:image/png;base64,…</code>) or just the raw Base64. If the type isn't given, Latch reads the file's signature to work out whether it's a PNG, JPG, GIF, WebP, BMP, AVIF or SVG, and names the download accordingly. Whitespace and missing padding are fixed automatically.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7">
+        Everything runs locally — the string never leaves your device, which matters when you're decoding data from private code or an internal API. Need to go the other way? <a href="/image-to-base64/" style="color:var(--accent)">Image to Base64</a> encodes a picture into a string.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">
+            Is anything uploaded?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No. The Base64 is decoded entirely in your browser. Nothing is sent to a server — the tool even works with Wi-Fi switched off.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Do I need the data: prefix?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No. You can paste a full data URI (<code>data:image/png;base64,…</code>) or just the raw Base64. If there's no prefix, Latch detects the image type automatically from the decoded bytes.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Which image formats are supported?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">PNG, JPG, GIF, WebP, BMP, AVIF and SVG. The type is read from the data URI if present, otherwise detected from the file's signature, and the download uses the matching extension.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Why won't my Base64 decode?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Usually the string is incomplete or has stray characters — make sure you copied the whole value, and that data URIs include the <code>base64,</code> marker. Latch trims whitespace and fixes padding automatically, but truncated data can't be recovered.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            What file do I get?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">A real image file matching the detected type — <code>image.png</code>, <code>image.jpg</code>, <code>image.svg</code> and so on — saved straight to your device with one click.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED TOOLS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Related tools</h2>
+        </div>
+      </div>
+      <div class="tool-grid" style="grid-template-columns:repeat(3,1fr)">
+        <a href="/image-to-base64/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6"/></svg>
+          </div>
+          <div class="tool-name">Image to Base64</div>
+          <div class="tool-desc">Going the other way? Encode an image into a Base64 data URI.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/png-to-jpg/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="5" width="2" height="14" rx="1" fill="currentColor" stroke="none" opacity=".22"/><path d="M3 12h5m0 0L5.5 9.5M8 12l-2.5 2.5"/><path d="M21 12h-5m0 0l2.5-2.5M16 12l2.5 2.5"/></svg>
+          </div>
+          <div class="tool-name">PNG to JPG</div>
+          <div class="tool-desc">Convert PNG images to JPG with adjustable quality, right in your browser.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/resize-image/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 15l6-6M15 9v3M15 9h-3"/></svg>
+          </div>
+          <div class="tool-name">Resize image</div>
+          <div class="tool-desc">Change an image's dimensions in your browser — no upload required.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+
+  .widget-state[hidden] { display: none; }
+
+  details.faq-item .faq-a { display: none; }
+  details.faq-item[open] .faq-a { display: block; }
+  details.faq-item[open] .pm svg path:last-child { opacity: 0; }
+
+  .b64-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-2); margin-bottom: 8px; }
+
+  .b64-area {
+    width: 100%;
+    min-height: 172px;
+    resize: vertical;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 12px 14px;
+    word-break: break-all;
+    margin-bottom: 14px;
+  }
+  .b64-area:focus { outline: none; border-color: var(--border-strong); box-shadow: var(--ring); }
+  .b64-area::placeholder { color: var(--text-3); }
+  .b64-size { font-size: 12.5px; color: var(--text-3); margin: 2px 0 12px; }
+</style>
+
+<script>
+  // -----------------------------------------------------------------------
+  // Base64 to Image — client-side decoder. Uses atob; no libraries.
+  // -----------------------------------------------------------------------
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const states = {
+    drop: $('state-drop'),
+    done: $('state-done'),
+    error: $('state-error'),
+  };
+  function showState(name: keyof typeof states) {
+    for (const [k, el] of Object.entries(states)) (el as HTMLElement).hidden = k !== name;
+  }
+
+  const input = $<HTMLTextAreaElement>('b64-input');
+  const convertBtn = $('convert-btn');
+  const previewSlot = $('preview-slot');
+  const infoEl = $('img-info');
+  const widgetTitle = $('widget-title');
+
+  let blob: Blob | null = null;
+  let filename = 'image.png';
+  let previewUrl = '';
+
+  function formatBytes(b: number): string {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function extFromMime(m: string): string {
+    const map: Record<string, string> = {
+      'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif',
+      'image/webp': 'webp', 'image/bmp': 'bmp', 'image/avif': 'avif',
+      'image/svg+xml': 'svg', 'image/x-icon': 'ico', 'image/tiff': 'tiff',
+    };
+    return map[m] || 'png';
+  }
+
+  // Detect image type from the decoded bytes (magic numbers).
+  function sniffMime(bytes: Uint8Array, headText: string): string {
+    const b = bytes;
+    if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return 'image/png';
+    if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return 'image/jpeg';
+    if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46) return 'image/gif';
+    if (b[0] === 0x42 && b[1] === 0x4d) return 'image/bmp';
+    if (b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 &&
+        b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50) return 'image/webp';
+    // AVIF / HEIF: 'ftyp' at bytes 4-7, brand at 8-11
+    if (b[4] === 0x66 && b[5] === 0x74 && b[6] === 0x79 && b[7] === 0x70) {
+      const brand = headText.slice(8, 12);
+      if (brand.startsWith('avif') || brand.startsWith('avis')) return 'image/avif';
+    }
+    const t = headText.trimStart().toLowerCase();
+    if (t.startsWith('<svg') || t.startsWith('<?xml')) return 'image/svg+xml';
+    return 'image/png';
+  }
+
+  function decode() {
+    const text = input.value.trim();
+    if (!text) { showError('Nothing to decode', 'Paste a Base64 string or data URI first.'); return; }
+
+    let mime = '';
+    let b64 = text;
+    const dm = /^data:([^;,]*)?(?:;charset=[^;,]*)?;base64,(.*)$/s.exec(text);
+    if (dm) { mime = (dm[1] || '').trim(); b64 = dm[2]; }
+    else if (/^data:/i.test(text)) { showError("That data URI isn't Base64", 'Only base64-encoded data URIs (with a "base64," marker) can be decoded here.'); return; }
+
+    // Normalise: strip whitespace, convert URL-safe chars, fix padding.
+    b64 = b64.replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/');
+    while (b64.length % 4) b64 += '=';
+
+    let bin: string;
+    try {
+      bin = atob(b64);
+    } catch {
+      showError("That doesn't look like valid Base64", 'The string could not be decoded. Check that you copied the whole value with no missing characters.');
+      return;
+    }
+    if (bin.length === 0) { showError('Nothing to decode', 'The Base64 decoded to an empty file.'); return; }
+
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const headText = bin.slice(0, 64);
+
+    if (!mime || mime === 'application/octet-stream') mime = sniffMime(bytes, headText);
+    filename = 'image.' + extFromMime(mime);
+
+    blob = new Blob([bytes], { type: mime });
+
+    // Build the preview (result-preview is a global style, so JS injection is fine).
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(blob);
+    const img = new Image();
+    img.decoding = 'async';
+    img.alt = 'Decoded image preview';
+    img.onload = () => {
+      const figure = document.createElement('figure');
+      figure.className = 'result-preview';
+      figure.style.margin = '0 0 14px';
+      figure.appendChild(img);
+      previewSlot.replaceChildren(figure);
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const dims = (w && h) ? `${w} × ${h} px · ` : '';
+      infoEl.textContent = `${dims}${mime} · ${formatBytes(blob!.size)}`;
+      widgetTitle.textContent = 'Image decoded';
+      showState('done');
+    };
+    img.onerror = () => {
+      showError("That's not a valid image", 'The Base64 decoded successfully, but the result isn’t an image your browser can display.');
+    };
+    img.src = previewUrl;
+  }
+
+  convertBtn.addEventListener('click', decode);
+
+  $('download-btn').addEventListener('click', () => {
+    if (!blob) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  });
+
+  function reset() {
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = ''; }
+    blob = null;
+    input.value = '';
+    previewSlot.replaceChildren();
+    widgetTitle.textContent = 'Decode your Base64';
+    showState('drop');
+    input.focus();
+  }
+  $('decode-another-btn').addEventListener('click', reset);
+  $('try-again-btn').addEventListener('click', () => { showState('drop'); input.focus(); });
+
+  function showError(title: string, message: string) {
+    $('err-title').textContent = title;
+    $('err-message').textContent = message;
+    widgetTitle.textContent = 'Something went wrong';
+    showState('error');
+  }
+</script>
