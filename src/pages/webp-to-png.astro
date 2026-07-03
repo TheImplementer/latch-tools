@@ -282,7 +282,7 @@ const structuredData = {
         PNG is lossless and near-universally supported, so it's the natural target when you need to edit an image, drop it into a document, or hand it to software that doesn't speak WebP. The conversion is pixel-for-pixel — nothing is recompressed — and any transparency in the WebP carries straight through to the PNG's alpha channel.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        To turn a WebP into a PNG, drop your files above and hit Convert — everything runs in your browser, so the images never leave your device. Need a smaller, shareable file instead? <a href="/png-to-jpg/" style="color:var(--accent)">PNG to JPG</a> takes it the rest of the way.
+        To turn a WebP into a PNG, drop your files above and hit Convert — everything runs in your browser, so the images never leave your device. Working with other next-gen formats? <a href="/avif-to-png/" style="color:var(--accent)">AVIF to PNG</a> and <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a> do the same lossless conversion. Need a smaller, shareable file instead? <a href="/png-to-jpg/" style="color:var(--accent)">PNG to JPG</a> takes it the rest of the way.
       </p>
     </div>
   </section>
@@ -368,28 +368,28 @@ const structuredData = {
         </div>
       </div>
       <div class="tool-grid" style="grid-template-columns:repeat(3,1fr)">
+        <a href="/avif-to-png/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
+          </div>
+          <div class="tool-name">AVIF to PNG</div>
+          <div class="tool-desc">Another modern format to lossless PNG, with transparency preserved.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/jxl-to-png/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
+          </div>
+          <div class="tool-name">JXL to PNG</div>
+          <div class="tool-desc">Convert next-gen JPEG XL images to lossless PNG, fully in-browser.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
         <a href="/png-to-jpg/" class="tool-card">
           <div class="tool-ic" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="5" width="2" height="14" rx="1" fill="currentColor" stroke="none" opacity=".22"/><path d="M3 12h5m0 0L5.5 9.5M8 12l-2.5 2.5"/><path d="M21 12h-5m0 0l2.5-2.5M16 12l2.5 2.5"/></svg>
           </div>
           <div class="tool-name">PNG to JPG</div>
           <div class="tool-desc">Convert PNG images to JPG with adjustable quality, right in your browser.</div>
-          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
-        </a>
-        <a href="/png-to-webp/" class="tool-card">
-          <div class="tool-ic" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
-          </div>
-          <div class="tool-name">PNG to WebP</div>
-          <div class="tool-desc">Convert PNG images to smaller WebP files with transparency preserved.</div>
-          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
-        </a>
-        <a href="/webp-to-jpg/" class="tool-card">
-          <div class="tool-ic" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
-          </div>
-          <div class="tool-name">WebP to JPG</div>
-          <div class="tool-desc">Convert WebP images to compact JPGs with adjustable quality.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
