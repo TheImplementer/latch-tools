@@ -47,6 +47,11 @@ const structuredData = {
           "@type": "Question",
           "name": "Will JPEG XL replace JPEG?",
           "acceptedAnswer": { "@type": "Answer", "text": "That was the goal, and it may still happen over time — JPEG XL is royalty-free and technically strong. But adoption depends on browsers and operating systems shipping support. Until Chrome and Firefox enable it by default, JPEG remains the universal default." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I create a .jxl file?",
+          "acceptedAnswer": { "@type": "Answer", "text": "You can encode an existing image to JPEG XL in your browser: PNG to JXL keeps transparency, and JPG to JXL re-encodes photos smaller. Because .jxl only opens in Safari and recent Apple devices today, it's best for storage or archiving rather than sharing." }
         }
       ]
     }
@@ -179,6 +184,29 @@ const structuredData = {
       </div>
     </section>
 
+    <!-- HOW TO CREATE (encoders) -->
+    <section class="band section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">How to create a <code>.jxl</code> file</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          Want to go the other way and encode <em>to</em> JPEG XL — say, to archive a photo library
+          at a smaller size? These converters also run entirely in your browser, so your images are
+          never uploaded. Just remember a <code>.jxl</code> file only opens in Safari and recent
+          Apple devices today, so it's best for storage rather than sharing.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          <strong>Starting from a photo?</strong> Use the
+          <a href="/jpg-to-jxl/" style="color:var(--accent)">JPG to JXL converter</a> to re-encode
+          JPGs smaller at the same visual quality.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 24px;">
+          <strong>Need transparency kept?</strong> Use
+          <a href="/png-to-jxl/" style="color:var(--accent)">PNG to JXL</a> — it preserves the alpha
+          channel while shrinking the file.
+        </p>
+      </div>
+    </section>
+
     <!-- FAQ -->
     <section class="section">
       <div class="wrap" style="max-width: 780px">
@@ -222,6 +250,14 @@ const structuredData = {
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
           <p class="faq-a">That was the goal, and it still might over time — JPEG XL is royalty-free and technically strong. But adoption depends on browsers and operating systems shipping support. Until Chrome and Firefox enable it by default, JPEG remains the universal default.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            How do I create a .jxl file?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">Encode an existing image to JPEG XL right in your browser — <a href="/png-to-jxl/" style="color:var(--accent)">PNG to JXL</a> keeps transparency, and <a href="/jpg-to-jxl/" style="color:var(--accent)">JPG to JXL</a> re-encodes photos smaller. Because <code>.jxl</code> only opens in Safari and recent Apple devices today, it's best for storage or archiving rather than sharing.</p>
         </details>
       </div>
     </section>

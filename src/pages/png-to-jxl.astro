@@ -1,0 +1,748 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "PNG to JXL", "item": "https://latchtools.com/png-to-jxl/" }
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "PNG to JXL Converter",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Convert PNG images to JPEG XL (.jxl) directly in your browser. Smaller files with transparency preserved, using the modern JPEG XL codec. No uploads required — files never leave your device.",
+      "url": "https://latchtools.com/png-to-jxl/"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to convert PNG to JXL",
+      "step": [
+        { "@type": "HowToStep", "name": "Add your PNG files", "text": "Drag images onto the drop zone, or click Browse to pick them from your device." },
+        { "@type": "HowToStep", "name": "Set the quality", "text": "Choose a JPEG XL quality level — higher keeps more detail, lower makes smaller files. The default suits most images." },
+        { "@type": "HowToStep", "name": "Files convert locally", "text": "Latch encodes each PNG to JPEG XL in your browser — instantly and offline." },
+        { "@type": "HowToStep", "name": "Download your JXL files", "text": "Save them one at a time, or grab everything at once in a single zip." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much smaller is JPEG XL than PNG?",
+          "acceptedAnswer": { "@type": "Answer", "text": "JPEG XL is usually far smaller than PNG — often 50% or more — because it uses a modern codec instead of PNG's older lossless compression. The savings are largest on photographic or complex images; flat graphics with few colours see smaller gains. Transparency is kept either way." }
+        },
+        {
+          "@type": "Question",
+          "name": "Will a .jxl file open everywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No — this is the main catch. As of 2026 only Safari and recent Apple devices open JPEG XL directly; Chrome, Edge, Firefox, and most apps do not. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or use a widely supported format instead." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does PNG to JXL keep transparency?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. JPEG XL supports a full alpha channel, so any transparency in your PNG is preserved in the .jxl output — you get the smaller file without losing transparent areas." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this JPEG XL lossless or lossy?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool encodes with an adjustable quality setting, which is lossy — raise the slider for near-lossless results and smaller savings, lower it for the smallest files. JPEG XL also has a true lossless mode; if you need an exact pixel-for-pixel copy, keep your original PNG." }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my images uploaded anywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Every PNG is encoded to JPEG XL by your own browser. Nothing is sent to a server — in fact, the tool keeps working even with your Wi-Fi switched off." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Convert PNG to JXL (JPEG XL) — Free, Private, No Upload · Latch Tools"
+  description="Convert PNG images to JPEG XL (.jxl) in your browser — smaller files with transparency kept, using the modern JPEG XL codec. Files never leave your device."
+  ogImage="/og/png-to-jxl.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <!-- TOOL HERO + WIDGET -->
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">PNG to JXL</span>
+        </nav>
+        <h1>PNG to JXL converter</h1>
+        <p>Encode your PNGs to JPEG XL right here in your browser — smaller files, transparency preserved. Great for storage and the Apple ecosystem; note that <code>.jxl</code> won't open in most browsers yet.</p>
+        <TrustPill />
+        <ul class="tool-features">
+          <li>Smaller than PNG</li>
+          <li>Transparency preserved</li>
+          <li>Batch convert up to 10 files</li>
+        </ul>
+      </div>
+
+      <!-- WIDGET -->
+      <div class="widget" id="widget" role="region" aria-label="PNG to JXL converter">
+        <div class="widget-head">
+          <span class="wt" style="font-family:var(--font-display);font-weight:600;font-size:16px;letter-spacing:-.01em" id="widget-title">
+            Convert your images
+          </span>
+          <span class="fmt-pill" aria-hidden="true">
+            <span class="from">PNG</span>
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            <span class="to">JXL</span>
+          </span>
+        </div>
+
+        <!-- STATE: empty / drag -->
+        <div id="state-drop" class="widget-state">
+          <div
+            class="dropzone"
+            id="dropzone"
+            role="button"
+            tabindex="0"
+            aria-label="Drop PNG files here or click to browse"
+            aria-describedby="dz-hint"
+          >
+            <div class="dz-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <p class="dz-title" id="dz-title">Drag &amp; drop your PNG images</p>
+            <p class="dz-or" aria-hidden="true">or</p>
+            <button class="btn btn-secondary" type="button" id="browse-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Browse files
+            </button>
+            <p class="dz-hint" id="dz-hint">Accepts .png · up to 10 files, 50 MB each</p>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Conversion happens right here in your browser — nothing is uploaded.
+          </div>
+        </div>
+
+        <!-- STATE: selected -->
+        <div id="state-selected" class="widget-state" hidden>
+          <div class="filelist" id="filelist" aria-live="polite" aria-label="Selected files"></div>
+          <!-- JXL output options -->
+          <div class="opts" id="jxl-opts">
+            <div class="opt">
+              <label for="quality-slider">Quality</label>
+              <input
+                class="slider"
+                type="range"
+                min="40"
+                max="95"
+                value="75"
+                id="quality-slider"
+                aria-label="JPEG XL quality level"
+              />
+              <span class="val" id="quality-val" aria-live="polite">75</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary grow" type="button" id="convert-btn">
+              Convert to JXL
+              <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            These images stay on your device the entire time.
+          </div>
+        </div>
+
+        <!-- STATE: processing -->
+        <div id="state-processing" class="widget-state" hidden>
+          <div class="proc">
+            <div class="proc-row">
+              <div class="spinner" role="status" aria-label="Converting"></div>
+              <div>
+                <div class="pt">Converting your images</div>
+                <div class="ps" id="proc-status" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+              <i id="progress-fill" style="width:0%"></i>
+            </div>
+            <div class="proc-pct">
+              <span id="proc-pct">0%</span>
+              <span>Working locally — nothing uploaded</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancel</button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Your browser is doing the work — no file has been sent anywhere.
+          </div>
+        </div>
+
+        <!-- STATE: done -->
+        <div id="state-done" class="widget-state" hidden>
+          <div class="result-head">
+            <span class="result-badge" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </span>
+            <div>
+              <div class="rt" id="done-title">All done</div>
+              <div class="rs">Saved as JPEG XL · stayed on your device the whole time</div>
+            </div>
+          </div>
+          <div class="filelist" id="results-list" aria-live="polite" aria-label="Converted files"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="convert-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"/></svg>
+              Convert another
+            </button>
+            <button class="btn btn-primary grow" type="button" id="download-all-btn">
+              <span id="download-all-label">Download</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Close this tab and every file is gone — nothing was kept.
+          </div>
+        </div>
+
+        <!-- STATE: error -->
+        <div id="state-error" class="widget-state" hidden>
+          <div class="err-head">
+            <span class="err-badge" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><circle cx="12" cy="16.4" r=".4" fill="currentColor"/><path d="M10.3 4.2L3.4 16a2 2 0 0 0 1.7 3h13.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/></svg>
+            </span>
+            <div>
+              <div class="et" id="err-title">We couldn't convert that file</div>
+              <div class="es" id="err-message"></div>
+            </div>
+          </div>
+          <div class="filelist" id="error-list" aria-live="assertive"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="remove-continue-btn">Remove &amp; continue</button>
+            <button class="btn btn-primary grow" type="button" id="try-another-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+              Try another file
+            </button>
+          </div>
+          <div class="widget-foot">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            The file stayed on your device — even when something goes wrong.
+          </div>
+        </div>
+      </div>
+      <!-- hidden file input -->
+      <input type="file" id="file-input" accept=".png,image/png" multiple hidden aria-hidden="true" />
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to convert PNG to JXL</h2>
+          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Add your PNG files</h4>
+          <p>Drag images onto the box above, or click Browse to pick them from your device.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>Set the quality</h4>
+          <p>Pick a JPEG XL quality level — higher keeps more detail, lower makes smaller files. The default suits most images.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>We convert locally</h4>
+          <p>Latch encodes each PNG to JPEG XL, right in your browser — instantly and offline.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Download your JXL files</h4>
+          <p>Save them one at a time, or grab everything at once in a single zip. That's it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY JXL -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Why convert PNG to JPEG XL?</h2>
+        </div>
+      </div>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        PNG is lossless and universal, but the files are large. <a href="/jpeg-xl/" style="color:var(--accent)">JPEG XL</a> is a modern format that stores the same image far smaller — often half the size or less — while keeping the alpha channel, so transparency survives the conversion. For archiving a photo library or squeezing more into limited storage, that's a meaningful saving.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
+        The honest catch is compatibility. As of 2026, JPEG XL only opens natively in Safari and recent Apple devices — Chrome, Edge, Firefox, and many apps still can't display a <code>.jxl</code> file. So this conversion makes sense for storage, archiving, or an all-Apple workflow, not for sharing a file that has to open anywhere.
+      </p>
+      <p style="color:var(--text-2);line-height:1.7">
+        If you need the picture back in a universal format later, it converts straight back with <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a>. And if broad support matters more than the format itself, <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> gives you similar compression in a format every current browser can open today.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">
+            How much smaller is JPEG XL than PNG?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">JPEG XL is usually far smaller than PNG — often 50% or more — because it uses a modern codec instead of PNG's older lossless compression. Savings are largest on photographic or complex images; flat graphics with few colours see smaller gains. Transparency is kept either way.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Will a .jxl file open everywhere?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No — this is the main catch. As of 2026 only Safari and recent Apple devices open JPEG XL directly; Chrome, Edge, Firefox, and most apps do not. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or try <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> instead.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Does PNG to JXL keep transparency?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">Yes. JPEG XL supports a full alpha channel, so any transparency in your PNG is preserved in the .jxl output — you get the smaller file without losing transparent areas.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Is this JPEG XL lossless or lossy?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">This tool encodes with an adjustable quality setting, which is lossy — raise the slider for near-lossless results, lower it for the smallest files. JPEG XL also has a true lossless mode; if you need an exact pixel-for-pixel copy, keep your original PNG.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Are my images uploaded anywhere?
+            <span class="pm" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
+            </span>
+          </summary>
+          <p class="faq-a">No. Every PNG is encoded to JPEG XL by your own browser. Nothing is sent to a server — in fact, the tool keeps working even with your Wi-Fi switched off.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED TOOLS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Related tools</h2>
+        </div>
+      </div>
+      <div class="tool-grid" style="grid-template-columns:repeat(3,1fr)">
+        <a href="/jpg-to-jxl/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
+          </div>
+          <div class="tool-name">JPG to JXL</div>
+          <div class="tool-desc">Encode JPGs to JPEG XL too — the same modern codec, in your browser.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/jxl-to-png/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
+          </div>
+          <div class="tool-name">JXL to PNG</div>
+          <div class="tool-desc">Going the other way? Turn a .jxl back into a universal, lossless PNG.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+        <a href="/png-to-avif/" class="tool-card">
+          <div class="tool-ic" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
+          </div>
+          <div class="tool-name">PNG to AVIF</div>
+          <div class="tool-desc">Want similar savings in a format every browser opens today? Use AVIF.</div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .widget-state[hidden] { display: none; }
+
+  details.faq-item .faq-a { display: none; }
+  details.faq-item[open] .faq-a { display: block; }
+  details.faq-item[open] .pm svg path:last-child { opacity: 0; }
+</style>
+
+<script>
+  // -----------------------------------------------------------------------
+  // PNG to JXL — client-side widget controller
+  // Decodes PNG natively via createImageBitmap, then encodes to JPEG XL with
+  // the @jsquash/jxl WASM encoder (lazy-loaded on first use). Fully client-side.
+  // -----------------------------------------------------------------------
+
+  type FileEntry = { file: File };
+  type ResultEntry = { name: string; blob: Blob; originalSize: number };
+
+  const MAX_SIZE_MB = 50;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const MAX_FILES = 10;
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const states = {
+    drop: $('state-drop'),
+    selected: $('state-selected'),
+    processing: $('state-processing'),
+    done: $('state-done'),
+    error: $('state-error'),
+  };
+
+  function showState(name: keyof typeof states) {
+    for (const [k, el] of Object.entries(states)) {
+      (el as HTMLElement).hidden = k !== name;
+    }
+  }
+
+  let files: FileEntry[] = [];
+  let results: ResultEntry[] = [];
+  let cancelled = false;
+
+  const dropzone = $('dropzone');
+  const fileInput = $<HTMLInputElement>('file-input');
+  const browseBtn = $('browse-btn');
+  const fileList = $('filelist');
+  const qualitySlider = $<HTMLInputElement>('quality-slider');
+  const qualityVal = $('quality-val');
+  const convertBtn = $('convert-btn');
+  const cancelBtn = $('cancel-btn');
+  const resultsList = $('results-list');
+  const convertAnotherBtn = $('convert-another-btn');
+  const downloadAllBtn = $('download-all-btn');
+  const doneTitleEl = $('done-title');
+  const removeAndContinueBtn = $('remove-continue-btn');
+  const tryAnotherBtn = $('try-another-btn');
+  const widgetTitle = $('widget-title');
+
+  qualitySlider.addEventListener('input', () => {
+    qualityVal.textContent = qualitySlider.value;
+  });
+
+  // ---- Lazy-loaded JPEG XL encoder (WASM) ----
+  let jxlEncode: typeof import('@jsquash/jxl/encode').default | null = null;
+  async function ensureEncoder() {
+    if (jxlEncode) return;
+    jxlEncode = (await import('@jsquash/jxl/encode')).default;
+  }
+
+  // ---- Drop zone ----
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('is-drag');
+    $('dz-title').textContent = 'Drop to add your images';
+  });
+  ['dragleave', 'dragend'].forEach((ev) => {
+    dropzone.addEventListener(ev, () => {
+      dropzone.classList.remove('is-drag');
+      $('dz-title').textContent = 'Drag & drop your PNG images';
+    });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('is-drag');
+    const de = e as DragEvent;
+    addFiles(Array.from(de.dataTransfer?.files ?? []));
+  });
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('keydown', (e) => {
+    const ke = e as KeyboardEvent;
+    if (ke.key === 'Enter' || ke.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', () => {
+    addFiles(Array.from(fileInput.files ?? []));
+    fileInput.value = '';
+  });
+
+  function formatBytes(b: number): string {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function addFiles(incoming: File[]) {
+    const valid = incoming.filter((f) => {
+      const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
+      return ext === 'png' || f.type === 'image/png';
+    });
+
+    if (valid.length === 0 && incoming.length > 0) {
+      showError('Unsupported file type', `Please drop a <code>.png</code> file.`, files);
+      return;
+    }
+    if (valid.length === 0) return;
+
+    const oversized = valid.find((f) => f.size > MAX_SIZE_BYTES);
+    if (oversized) {
+      showError('File too large', `${oversized.name} must be under ${MAX_SIZE_MB} MB.`, files);
+      return;
+    }
+
+    const existingNames = new Set(files.map((e) => e.file.name));
+    const fresh = valid.filter((f) => !existingNames.has(f.name));
+    files = [...files, ...fresh.map((f) => ({ file: f }))].slice(0, MAX_FILES);
+    if (files.length === 0) return;
+
+    renderFileList();
+    widgetTitle.textContent = files.length === 1 ? 'Image ready' : `${files.length} images ready`;
+    showState('selected');
+  }
+
+  function removeFile(index: number) {
+    files.splice(index, 1);
+    if (files.length === 0) {
+      widgetTitle.textContent = 'Convert your images';
+      showState('drop');
+    } else {
+      widgetTitle.textContent = files.length === 1 ? 'Image ready' : `${files.length} images ready`;
+      renderFileList();
+    }
+  }
+
+  function renderFileList() {
+    fileList.innerHTML = '';
+    files.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb">PNG</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(entry.file.name)}</div>
+          <div class="file-sub">${formatBytes(entry.file.size)}</div>
+        </div>
+        <button class="icon-btn" aria-label="Remove ${escHtml(entry.file.name)}" data-index="${i}">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => removeFile(i));
+      fileList.appendChild(row);
+    });
+  }
+
+  convertBtn.addEventListener('click', startConversion);
+
+  async function startConversion() {
+    if (files.length === 0) return;
+    cancelled = false;
+    results = [];
+    widgetTitle.textContent = 'Converting…';
+    showState('processing');
+
+    const quality = parseInt(qualitySlider.value, 10);
+
+    for (let i = 0; i < files.length; i++) {
+      if (cancelled) break;
+
+      const entry = files[i];
+      const pct = Math.round((i / files.length) * 100);
+      updateProgress(pct, `${i + 1} of ${files.length} · ${entry.file.name}`);
+
+      try {
+        const blob = await convertOne(entry.file, quality);
+        results.push({
+          name: entry.file.name.replace(/\.png$/i, '.jxl'),
+          blob,
+          originalSize: entry.file.size,
+        });
+      } catch (err) {
+        if (!cancelled) {
+          showError(
+            `Couldn't convert ${entry.file.name}`,
+            `We couldn't convert <code>${escHtml(entry.file.name)}</code>. It may be corrupt or not a valid PNG image.`,
+            files.filter((_, j) => j !== i)
+          );
+          return;
+        }
+      }
+    }
+
+    if (!cancelled) {
+      updateProgress(100, '');
+      showDone();
+    }
+  }
+
+  function updateProgress(pct: number, status: string) {
+    const fill = $<HTMLElement>('progress-fill');
+    const pctEl = $('proc-pct');
+    const bar = $<HTMLElement>('progress-bar');
+    const statusEl = $('proc-status');
+    fill.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    bar.setAttribute('aria-valuenow', String(pct));
+    statusEl.textContent = status;
+  }
+
+  async function convertOne(file: File, quality: number): Promise<Blob> {
+    await ensureEncoder();
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const buf = await jxlEncode!(imageData, { quality });
+    return new Blob([buf], { type: 'image/jxl' });
+  }
+
+  cancelBtn.addEventListener('click', () => {
+    cancelled = true;
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+
+  function showDone() {
+    const count = results.length;
+    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    resultsList.innerHTML = '';
+    results.forEach((r) => {
+      const saving = Math.round((1 - r.blob.size / r.originalSize) * 100);
+      const row = document.createElement('div');
+      row.className = 'filerow';
+      row.innerHTML = `
+        <span class="file-thumb done">JXL</span>
+        <div class="file-meta">
+          <div class="file-name">${escHtml(r.name)}</div>
+          <div class="file-sub">${formatBytes(r.blob.size)}${saving > 0 ? ` <span class="ok">· ${saving}% smaller</span>` : ''}</div>
+        </div>
+        <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+          Save
+        </button>
+      `;
+      row.querySelector('button')!.addEventListener('click', () => downloadOne(r));
+      resultsList.appendChild(row);
+    });
+    widgetTitle.textContent = `${count} image${count !== 1 ? 's' : ''} converted`;
+    $('download-all-label').textContent = count > 1 ? `Download all (${count})` : 'Download';
+    showState('done');
+  }
+
+  function downloadOne(r: ResultEntry) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(r.blob);
+    a.download = r.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  async function downloadAll() {
+    if (results.length === 1) { downloadOne(results[0]); return; }
+    const { default: JSZip } = await import('jszip');
+    const zip = new JSZip();
+    for (const r of results) zip.file(r.name, r.blob);
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = 'png-to-jxl.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+
+  downloadAllBtn.addEventListener('click', () => downloadAll());
+
+  convertAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+
+  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+    $('err-title').textContent = title;
+    $('err-message').innerHTML = message;
+    const errorList = $('error-list');
+    errorList.innerHTML = `
+      <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">
+        <span class="file-thumb" style="background:var(--danger-weak);color:var(--danger)">!</span>
+        <div class="file-meta">
+          <div class="file-name">${title}</div>
+          <div class="file-sub" style="color:var(--danger)">${message.replace(/<[^>]+>/g, '')}</div>
+        </div>
+      </div>
+    `;
+    widgetTitle.textContent = 'Something went wrong';
+    showState('error');
+
+    const handler = () => {
+      files = remainingFiles;
+      if (files.length === 0) {
+        widgetTitle.textContent = 'Convert your images';
+        showState('drop');
+      } else {
+        widgetTitle.textContent = `${files.length} image${files.length !== 1 ? 's' : ''} ready`;
+        renderFileList();
+        showState('selected');
+      }
+      removeAndContinueBtn.removeEventListener('click', handler);
+    };
+    removeAndContinueBtn.addEventListener('click', handler);
+  }
+
+  tryAnotherBtn.addEventListener('click', () => {
+    files = [];
+    results = [];
+    widgetTitle.textContent = 'Convert your images';
+    showState('drop');
+  });
+</script>
