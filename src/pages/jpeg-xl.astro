@@ -1,0 +1,272 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "JPEG XL", "item": "https://latchtools.com/jpeg-xl/" }
+      ]
+    },
+    {
+      "@type": "TechArticle",
+      "headline": "What is JPEG XL (JXL)?",
+      "description": "JPEG XL (.jxl) explained: what the format is, why it won't open in most browsers, how it compares to AVIF, WebP, PNG and JPG, and how to convert .jxl files so you can view them anywhere.",
+      "about": { "@type": "Thing", "name": "JPEG XL" },
+      "url": "https://latchtools.com/jpeg-xl/"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I open a .jxl file?",
+          "acceptedAnswer": { "@type": "Answer", "text": "On a recent Apple device, Safari and the built-in Preview/Quick Look can open .jxl files directly. On Windows, Android, or in Chrome, Edge and Firefox, they usually won't open at all — the simplest fix is to convert the file to a format everything supports, such as JPG or PNG." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is JPEG XL better than AVIF or WebP?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Technically JPEG XL matches or beats both on compression and adds features like lossless JPEG recompression and very high bit depth. In practice AVIF and WebP win today because they're supported in every major browser, while JPEG XL is not. For anything you need to share now, AVIF or WebP are the safer choice." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why did Chrome remove JPEG XL?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Chrome had JPEG XL behind an experimental flag, then removed that support in Chrome 110 (early 2023), citing insufficient ecosystem interest and the maintenance cost. Edge follows Chrome. As of 2026 neither ships JPEG XL support, so a .jxl file won't display in those browsers." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is JPEG XL lossless?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It can be both. JPEG XL supports a true lossless mode that stores every pixel exactly, and a lossy mode that trades some detail for much smaller files. It can also losslessly recompress an existing JPEG to roughly 20% smaller with no quality change." }
+        },
+        {
+          "@type": "Question",
+          "name": "Will JPEG XL replace JPEG?",
+          "acceptedAnswer": { "@type": "Answer", "text": "That was the goal, and it may still happen over time — JPEG XL is royalty-free and technically strong. But adoption depends on browsers and operating systems shipping support. Until Chrome and Firefox enable it by default, JPEG remains the universal default." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="What Is JPEG XL (JXL)? Support & How to Open .jxl Files · Latch Tools"
+  description="JPEG XL (.jxl) explained: what the format is, why it won't open in most browsers, how it compares to AVIF, WebP, PNG and JPG, and how to convert a .jxl file so you can view it anywhere."
+  ogImage="/og/jpeg-xl.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <main>
+    <!-- HERO -->
+    <section class="section" style="padding-bottom: 0">
+      <div class="wrap" style="max-width: 780px">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">JPEG XL</span>
+        </nav>
+        <h1 style="font-family: var(--font-display); font-weight: 600; letter-spacing: -.035em; line-height: 1.06; font-size: clamp(32px, 5.2vw, 50px); margin: 18px 0 0; text-wrap: balance;">
+          What is <span style="color: var(--accent)">JPEG XL</span> (JXL)?
+        </h1>
+        <p style="font-size: clamp(16px, 2.2vw, 18px); color: var(--text-2); max-width: 40em; margin: 20px 0 0; line-height: 1.7; text-wrap: pretty;">
+          JPEG XL (file extension <code>.jxl</code>) is a modern image format built to
+          succeed the original JPEG — smaller files, higher quality, and features JPEG never
+          had. It's powerful, but barely supported, which is why a <code>.jxl</code> you
+          downloaded may refuse to open. Here's what the format is, why it won't open, and how
+          to convert it so you can actually use it.
+        </p>
+      </div>
+    </section>
+
+    <!-- WHAT IT IS -->
+    <section class="section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">A next-generation image format</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          JPEG XL was standardised (ISO/IEC 18181) and finalised around 2021 by the same
+          committee behind the original JPEG. It's royalty-free and designed as a single format
+          that does everything: it compresses photos roughly 20–60% smaller than JPEG at the
+          same visual quality, and supports both a true lossless mode and an efficient lossy one.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
+          Beyond size, it adds what JPEG lacked — full alpha transparency, animation, progressive
+          loading, very high bit depth and wide colour gamut, and the ability to losslessly
+          recompress an existing JPEG about 20% smaller with no quality change. On paper it's an
+          excellent replacement. The catch is support.
+        </p>
+      </div>
+    </section>
+
+    <!-- WHY WON'T IT OPEN -->
+    <section class="band section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">Why won't my <code>.jxl</code> file open?</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          Because most software still can't read it. As of 2026, browser and OS support looks
+          like this:
+        </p>
+        <ul style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px; padding-left: 1.1em;">
+          <li><strong>Safari (macOS &amp; iOS 17+):</strong> supported — Apple added JPEG XL in 2023, so it opens in Safari, Preview and Quick Look.</li>
+          <li><strong>Chrome &amp; Edge:</strong> not supported — Chrome removed its experimental flag in version 110 (early 2023) and hasn't shipped it since.</li>
+          <li><strong>Firefox:</strong> only behind a developer flag in Nightly builds, off by default.</li>
+          <li><strong>Windows, Android &amp; most editors:</strong> no native support without a plugin.</li>
+        </ul>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
+          So unless you're on a recent Apple device, a <code>.jxl</code> file usually won't open
+          at all. The reliable fix is to convert it to a format everything supports —
+          <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a> for a lossless copy
+          with transparency, or <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a>
+          for a small file that opens anywhere.
+        </p>
+      </div>
+    </section>
+
+    <!-- COMPARISON -->
+    <section class="section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">JPEG XL vs AVIF, WebP, PNG and JPG</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 20px;">
+          How JPEG XL stacks up against the formats you'll actually convert it to:
+        </p>
+        <div class="table-scroll">
+          <table class="cmp">
+            <thead>
+              <tr><th>Format</th><th>Compression</th><th>Lossless</th><th>Transparency</th><th>Browser support</th><th>Best for</th></tr>
+            </thead>
+            <tbody>
+              <tr><th>JPEG XL</th><td>Excellent</td><td>Yes</td><td>Yes</td><td>Safari only</td><td>Future-proofing, once supported</td></tr>
+              <tr><th>AVIF</th><td>Excellent</td><td>Limited</td><td>Yes</td><td>Wide</td><td>Smallest modern web images</td></tr>
+              <tr><th>WebP</th><td>Very good</td><td>Yes</td><td>Yes</td><td>Universal</td><td>General-purpose web use</td></tr>
+              <tr><th>PNG</th><td>Lossless only</td><td>Yes</td><td>Yes</td><td>Universal</td><td>Graphics, transparency, exact copies</td></tr>
+              <tr><th>JPG</th><td>Good (lossy)</td><td>No</td><td>No</td><td>Universal</td><td>Photos that open anywhere</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW TO CONVERT (funnel) -->
+    <section class="band section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">How to open or convert a <code>.jxl</code> file</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          Since most apps can't open JPEG XL, the practical answer is to convert it to something
+          universal. Both tools below run entirely in your browser — your file is decoded locally
+          and never uploaded to a server:
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          <strong>Need it to open anywhere, or to keep the file small?</strong> Use the
+          <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG converter</a>. JPG opens
+          in virtually every app on every platform, with adjustable quality.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 24px;">
+          <strong>Need transparency, or a lossless copy for editing?</strong> Use
+          <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a> instead — PNG is
+          lossless and preserves the alpha channel exactly.
+        </p>
+        <a href="/jxl-to-png/" class="btn btn-primary btn-lg">
+          Convert a JXL file
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 20px">Frequently asked</h2>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            How do I open a .jxl file?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">On a recent Apple device, Safari and the built-in Preview/Quick Look open .jxl files directly. On Windows, Android, or in Chrome, Edge and Firefox they usually won't open at all — the simplest fix is to <a href="/jxl-to-jpg/" style="color:var(--accent)">convert it to JPG</a> or <a href="/jxl-to-png/" style="color:var(--accent)">to PNG</a>.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Is JPEG XL better than AVIF or WebP?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">Technically JPEG XL matches or beats both on compression and adds features like lossless JPEG recompression and very high bit depth. In practice AVIF and WebP win today because they work in every major browser and JPEG XL doesn't. For anything you need to share now, AVIF or WebP are the safer choice.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Why did Chrome remove JPEG XL?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">Chrome had JPEG XL behind an experimental flag, then removed that support in Chrome 110 (early 2023), citing insufficient ecosystem interest and maintenance cost. Edge follows Chrome. As of 2026 neither ships support, so a .jxl file won't display in those browsers.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Is JPEG XL lossless?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">It can be both. JPEG XL supports a true lossless mode that stores every pixel exactly, and a lossy mode that trades some detail for much smaller files. It can also losslessly recompress an existing JPEG to roughly 20% smaller with no quality change.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Will JPEG XL replace JPEG?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">That was the goal, and it still might over time — JPEG XL is royalty-free and technically strong. But adoption depends on browsers and operating systems shipping support. Until Chrome and Firefox enable it by default, JPEG remains the universal default.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .cmp {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    min-width: 640px;
+  }
+  .cmp th,
+  .cmp td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .cmp thead th {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    background: var(--surface-2, rgba(127, 127, 127, 0.06));
+  }
+  .cmp tbody th {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .cmp tbody td {
+    color: var(--text-2);
+  }
+  .cmp tbody tr:last-child th,
+  .cmp tbody tr:last-child td {
+    border-bottom: none;
+  }
+</style>
