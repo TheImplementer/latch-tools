@@ -8,6 +8,13 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "JPG to AVIF", "item": "https://latchtools.com/jpg-to-avif/" }
+      ]
+    },
+    {
       "@type": "SoftwareApplication",
       "name": "JPG to AVIF Converter",
       "applicationCategory": "MultimediaApplication",
@@ -62,6 +69,7 @@ const structuredData = {
 <Layout
   title="Convert JPG to AVIF — Free, Private, No Upload · Latch Tools"
   description="Convert JPG images to AVIF in your browser — modern AV1 compression makes files much smaller at the same quality. Adjustable quality. No uploads, no sign-up — files never leave your device."
+  ogImage="/og/jpg-to-avif.png"
 >
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />

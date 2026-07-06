@@ -8,6 +8,13 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Base64 to Image", "item": "https://latchtools.com/base64-to-image/" }
+      ]
+    },
+    {
       "@type": "SoftwareApplication",
       "name": "Base64 to Image Converter",
       "applicationCategory": "DeveloperApplication",
@@ -61,6 +68,7 @@ const structuredData = {
 <Layout
   title="Convert Base64 to Image — Free, Private, No Upload · Latch Tools"
   description="Decode a Base64 string or data URI back into an image in your browser — preview and download as PNG, JPG, GIF, WebP or SVG. No uploads, no sign-up — nothing leaves your device."
+  ogImage="/og/base64-to-image.png"
 >
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />

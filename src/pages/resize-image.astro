@@ -8,6 +8,13 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Resize Image", "item": "https://latchtools.com/resize-image/" }
+      ]
+    },
+    {
       "@type": "SoftwareApplication",
       "name": "Image Resizer for Passport, Visa & LinkedIn",
       "applicationCategory": "MultimediaApplication",
@@ -62,6 +69,7 @@ const structuredData = {
 <Layout
   title="Resize Image for Passport, Visa & LinkedIn — Free · Latch Tools"
   description="Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, or LinkedIn. All resizing happens in your browser. No uploads, no sign-up."
+  ogImage="/og/resize-image.png"
 >
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />

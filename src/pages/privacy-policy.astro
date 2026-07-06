@@ -7,6 +7,7 @@ import Footer from '../components/Footer.astro';
 <Layout
   title="Privacy Policy — Latch Tools"
   description="Latch Tools processes all files locally in your browser. No uploads, no tracking, no stored data. Read the full privacy policy."
+  ogImage="/og/privacy-policy.png"
 >
   <Header />
 
@@ -61,25 +62,29 @@ import Footer from '../components/Footer.astro';
 
           <h2>Cookies</h2>
           <p>
-            Latch currently sets no cookies and uses no tracking scripts.
-            If analytics or advertising are added in future, this policy will be updated
-            before any such scripts are enabled, and a compliant consent banner will be
-            shown to visitors in the UK and EU.
+            Latch sets no cookies. The one measurement tool it uses — Cloudflare Web
+            Analytics (see below) — is cookieless and stores nothing on your device, so
+            no consent banner is required. If cookie-based analytics or advertising are
+            ever added, this policy will be updated before any such scripts are enabled,
+            and a compliant consent banner will be shown to visitors in the UK and EU.
           </p>
 
           <h2>Analytics</h2>
           <p>
-            There is no analytics at this time. If lightweight, privacy-respecting
-            analytics are added later (for example, aggregate page-view counts with no
-            individual tracking), this policy will be updated to describe them.
+            Latch uses <a href="https://www.cloudflare.com/web-analytics/" rel="noopener noreferrer" target="_blank" style="color: var(--accent-text)">Cloudflare Web Analytics</a>,
+            a privacy-first service that measures aggregate page views and performance.
+            It is cookieless, sets nothing on your device, does not fingerprint you, and
+            collects no personal data or cross-site identifiers. It also cannot see or
+            access the files you work with — all file processing stays in your browser and
+            never reaches any analytics script.
           </p>
 
           <h2>Third-party scripts</h2>
           <p>
-            Latch loads fonts from Google Fonts. Google may record that your browser
-            requested a font file; see
-            <a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank" style="color: var(--accent-text)">Google's privacy policy</a>.
-            No other third-party scripts are loaded.
+            Fonts are self-hosted, so no third-party font service is contacted. The only
+            third-party script Latch loads is the cookieless Cloudflare Web Analytics
+            beacon described above, which cannot access the files you work with. No other
+            third-party scripts are loaded.
           </p>
 
           <h2>Your rights (UK &amp; EU)</h2>

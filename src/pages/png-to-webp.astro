@@ -8,6 +8,13 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "PNG to WebP", "item": "https://latchtools.com/png-to-webp/" }
+      ]
+    },
+    {
       "@type": "SoftwareApplication",
       "name": "PNG to WebP Converter",
       "applicationCategory": "MultimediaApplication",
@@ -67,6 +74,7 @@ const structuredData = {
 <Layout
   title="PNG to WebP Converter — Free, Smaller Files · Latch Tools"
   description="Convert PNG images to WebP in your browser, with adjustable quality. Transparency preserved. No uploads, no sign-up — files never leave your device."
+  ogImage="/og/png-to-webp.png"
 >
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />

@@ -8,6 +8,13 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "WebP a PNG", "item": "https://latchtools.com/webp-a-png/" }
+      ]
+    },
+    {
       "@type": "SoftwareApplication",
       "name": "Convertidor de WebP a PNG",
       "applicationCategory": "MultimediaApplication",
@@ -68,6 +75,7 @@ const structuredData = {
   lang="es"
   title="Convertidor WebP a PNG — Gratis, conserva la transparencia · Latch Tools"
   description="Convierte imágenes WebP a PNG en tu navegador. Se conserva la transparencia. Sin subir archivos ni registro: tus archivos nunca salen de tu dispositivo."
+  ogImage="/og/webp-a-png.png"
 >
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
