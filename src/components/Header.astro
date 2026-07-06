@@ -1,5 +1,12 @@
 ---
 import BrandMark from './BrandMark.astro';
+import LangSwitcher from './LangSwitcher.astro';
+
+interface Props {
+  enUrl?: string;
+  esUrl?: string;
+}
+const { enUrl, esUrl } = Astro.props;
 ---
 <header class="hdr">
   <div class="wrap hdr-in">
@@ -15,6 +22,7 @@ import BrandMark from './BrandMark.astro';
         <span class="dot"></span>
         100% on-device
       </span>
+      {enUrl && esUrl && <LangSwitcher current="en" enUrl={enUrl} esUrl={esUrl} />}
     </nav>
   </div>
 </header>

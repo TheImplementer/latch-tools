@@ -466,6 +466,31 @@ button {
   background: var(--success);
   box-shadow: 0 0 0 3px var(--success-weak);
 }
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+}
+.lang-switch .lang-opt {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: color 0.15s;
+}
+.lang-switch a.lang-opt:hover {
+  color: var(--text);
+}
+.lang-switch .lang-opt.is-current {
+  color: var(--text);
+  font-weight: 600;
+}
+.lang-switch .lang-sep {
+  font-size: 12.5px;
+  color: var(--text-3);
+}
 @media (max-width: 760px) {
   .nav .nav-link {
     display: none;

@@ -1,0 +1,17 @@
+---
+interface Props {
+  current: 'en' | 'es';
+  enUrl: string;
+  esUrl: string;
+}
+const { current, enUrl, esUrl } = Astro.props;
+---
+<div class="lang-switch" role="group" aria-label={current === 'es' ? 'Idioma' : 'Language'}>
+  {current === 'en'
+    ? <span class="lang-opt is-current" lang="en" aria-current="page">English</span>
+    : <a class="lang-opt" lang="en" hreflang="en" href={enUrl}>English</a>}
+  <span class="lang-sep" aria-hidden="true">·</span>
+  {current === 'es'
+    ? <span class="lang-opt is-current" lang="es" aria-current="page">Español</span>
+    : <a class="lang-opt" lang="es" hreflang="es" href={esUrl}>Español</a>}
+</div>
