@@ -1,0 +1,192 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+import RedactWidget from '../components/RedactWidget.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Blur Face", "item": "https://latchtools.com/blur-face/" }
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Blur Faces in Photos",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Blur faces in a photo directly in your browser to protect identities before you share. No upload — the image never leaves your device.",
+      "url": "https://latchtools.com/blur-face/"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to blur a face in a photo",
+      "step": [
+        { "@type": "HowToStep", "name": "Add your photo", "text": "Drag your image onto the editor, or click Browse to pick it from your device." },
+        { "@type": "HowToStep", "name": "Draw over each face", "text": "Drag a box over every face you want to hide. Add as many boxes as you need." },
+        { "@type": "HowToStep", "name": "Set the strength", "text": "Turn the blur strength up until the face is fully unrecognisable." },
+        { "@type": "HowToStep", "name": "Download the result", "text": "Save the image. The blur is baked into the pixels, so the hidden face cannot be recovered." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Are my photos uploaded anywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server, and the tool keeps working even if you go offline after loading the page." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can the blurred face be recovered later?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The blur is rendered into the actual pixels of the exported image at full resolution — it is not a layer or overlay sitting on top. Once you download and share the result, there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain." }
+        },
+        {
+          "@type": "Question",
+          "name": "How much should I blur a face?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Turn the strength up until no facial features are recognisable — for a small or low-resolution face, use the strongest setting. If you'd prefer mosaic blocks or a solid bar instead of a soft blur, the Pixelate and Redact tools do the same job with a different look." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I blur more than one face?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a separate box over each face — there is no limit. You can move, resize, or delete any box before you export." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work on my phone?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The editor supports touch, so you can draw and adjust boxes with your finger on a phone or tablet just as you would with a mouse." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Blur Faces in Photos — Free & Private · Latch Tools"
+  description="Blur faces in a photo to protect identities before sharing. Runs entirely in your browser — the photo is never uploaded."
+  ogImage="/og/blur-face.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Blur Face</span>
+        </nav>
+        <h1>Blur faces in a photo</h1>
+        <p>Hide faces before you post — protect bystanders, children, or anyone who didn't agree to be shared. Draw a box over each face and download.</p>
+        <TrustPill />
+        <ul class="tool-features">
+          <li>Blur any number of faces at once</li>
+          <li>Baked into the pixels — not a removable overlay</li>
+          <li>The photo never leaves your device</li>
+        </ul>
+      </div>
+
+      <RedactWidget heading="Blur a face" defaultEffect="blur" applyLabel="Blur & download" />
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to blur a face</h2>
+          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Add your photo</h4>
+          <p>Drag your image onto the editor, or click Browse. JPEG, PNG, and WebP are all accepted.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>Draw over each face</h4>
+          <p>Drag a box over every face you want to hide. Add as many as you like; move or resize any box afterwards.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>Set the strength</h4>
+          <p>Raise the strength until no facial features remain — use the strongest setting for small or distant faces.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Download</h4>
+          <p>Save the result. The blur is rendered into the pixels, so the hidden face can't be recovered.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY / PRIVACY -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">Why blur a face locally?</h2>
+        </div>
+      </div>
+      <p class="muted" style="font-size:15.5px;line-height:1.65">
+        Blurring a face is usually about privacy — a stranger in the background, a child, a colleague, or a witness who shouldn't be identifiable. It makes little sense to hand that same photo to a remote server just to hide it. Latch does the whole job in your browser: the image is decoded, edited, and re-encoded on your own device, and no copy is ever sent anywhere.
+      </p>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        The result matters too. Some tools draw a blur as a separate layer that can be peeled back from the file. Here the blur is composited straight into the exported pixels at full resolution, so once you share the image there's no sharp original hiding underneath. For anything sensitive, turn the strength up until the face is completely unreadable.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">Are my photos uploaded anywhere?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server, and the tool keeps working even if you go offline after loading the page.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Can the blurred face be recovered later?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">No. The blur is rendered into the actual pixels of the exported image at full resolution — it is not a layer sitting on top. Once you download and share the result there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">How much should I blur a face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Turn the strength up until no facial features are recognisable — for a small or low-resolution face, use the strongest setting. Prefer mosaic blocks or a solid bar instead of a soft blur? The <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">pixelate</a> and <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact</a> tools do the same job with a different look.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Can I blur more than one face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Yes. Draw a separate box over each face — there is no limit. You can move, resize, or delete any box before you export.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Does it work on my phone?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Yes. The editor supports touch, so you can draw and adjust boxes with your finger on a phone or tablet just as you would with a mouse.</p>
+        </details>
+      </div>
+
+      <p class="muted" style="font-size:14px;margin-top:30px">
+        Related privacy tools: <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">Blur part of an image</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/blur-license-plate/" style="color:var(--accent-text);font-weight:600">Blur a license plate</a> · <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
