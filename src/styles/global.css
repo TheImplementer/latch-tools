@@ -527,8 +527,9 @@ h1.hero-h {
   gap: 20px;
 }
 @media (max-width: 760px) {
+  /* !important overrides any per-page inline grid-template-columns. */
   .steps {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 .step {
@@ -1205,13 +1206,14 @@ h1.hero-h {
   gap: 16px;
 }
 @media (max-width: 860px) {
+  /* !important overrides any per-page inline grid-template-columns. */
   .howto {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 @media (max-width: 480px) {
   .howto {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 .howto-step {
