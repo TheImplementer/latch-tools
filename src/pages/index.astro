@@ -12,8 +12,8 @@ import TrustPill from '../components/TrustPill.astro';
   <Header />
 
   <!-- HERO -->
-  <section style="background:radial-gradient(62% 120% at 50% -8%, var(--accent-weak), transparent 60%)">
-    <div class="wrap" style="text-align:center;display:flex;flex-direction:column;align-items:center;padding:80px 28px 44px">
+  <section style="background:radial-gradient(62% 120% at 50% -8%, var(--accent-soft), transparent 60%)">
+    <div class="wrap" style="text-align:center;display:flex;flex-direction:column;align-items:center;padding:72px 28px 40px">
       <span class="eyebrow">
         <span class="bar"></span>
         Private by design
@@ -30,396 +30,83 @@ import TrustPill from '../components/TrustPill.astro';
         </a>
         <a class="btn btn-ghost btn-lg" href="#how">How it works</a>
       </div>
-      <div style="margin-top:30px">
-        <TrustPill />
-      </div>
+      <TrustPill
+        lead="Your files stay on this device."
+        text="Every tool runs in your browser — nothing is uploaded or stored."
+      />
     </div>
   </section>
 
-  <!-- TOOLS -->
-  <section class="section" id="tools" style="padding-top:34px">
+  <!-- TOOLS DIRECTORY -->
+  <section class="tool-finder" id="tools">
     <div class="wrap">
-      <div class="sec-head">
+      <div class="finder-top">
         <div>
-          <h2 class="sec-title">Pick a tool</h2>
-          <p class="sec-desc">A growing set of focused image tools — each one does a single job, well.</p>
+          <h2 class="sec-title" style="font-size:clamp(24px,3.4vw,30px)">Choose a tool</h2>
+          <p class="sec-desc">Start with what you need to do. Each tool opens on its own focused page.</p>
+        </div>
+        <div class="search-wrap">
+          <label for="tool-search">Search tools</label>
+          <input id="tool-search" type="search" placeholder="HEIC, resize, remove location…" data-tool-search autocomplete="off" />
         </div>
       </div>
 
-      <div class="tool-grid">
-        <a class="tool-card" href="/heic-to-jpg/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">HEIC to JPG</h3>
-          <p class="tool-desc">Turn iPhone HEIC photos into universal JPGs anything can open.</p>
-          <div class="tool-tags"><span class="chip">.heic → .jpg</span></div>
-        </a>
+      <div class="groups">
+        <section class="tool-group" data-tool-group>
+          <h3>Convert images</h3>
+          <div class="tool-list">
+            <a class="tool-row" href="/heic-to-jpg/" data-tool-row><span class="format-label">.heic → .jpg</span><span class="tool-name">HEIC to JPG</span><span class="tool-description">Make iPhone photos easy to open and share</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/heic-to-png/" data-tool-row><span class="format-label">.heic → .png</span><span class="tool-name">HEIC to PNG</span><span class="tool-description">iPhone photos to lossless PNG with transparency</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/png-to-jpg/" data-tool-row><span class="format-label">.png → .jpg</span><span class="tool-name">PNG to JPG</span><span class="tool-description">Smaller JPGs from PNGs, with quality control</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/webp-to-png/" data-tool-row><span class="format-label">.webp → .png</span><span class="tool-name">WebP to PNG</span><span class="tool-description">Turn WebP back into a universal PNG</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/webp-to-jpg/" data-tool-row><span class="format-label">.webp → .jpg</span><span class="tool-name">WebP to JPG</span><span class="tool-description">Turn WebP into a compact, shareable JPG</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/png-to-webp/" data-tool-row><span class="format-label">.png → .webp</span><span class="tool-name">PNG to WebP</span><span class="tool-description">Smaller PNGs for the web, transparency kept</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/jpg-to-webp/" data-tool-row><span class="format-label">.jpg → .webp</span><span class="tool-name">JPG to WebP</span><span class="tool-description">Shrink JPG photos to lighter WebP files</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/avif-to-jpg/" data-tool-row><span class="format-label">.avif → .jpg</span><span class="tool-name">AVIF to JPG</span><span class="tool-description">Open AVIF images anywhere as a JPG</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/avif-to-png/" data-tool-row><span class="format-label">.avif → .png</span><span class="tool-name">AVIF to PNG</span><span class="tool-description">AVIF to lossless PNG with transparency</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/png-to-avif/" data-tool-row><span class="format-label">.png → .avif</span><span class="tool-name">PNG to AVIF</span><span class="tool-description">Much smaller PNGs with the modern AVIF codec</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/jpg-to-avif/" data-tool-row><span class="format-label">.jpg → .avif</span><span class="tool-name">JPG to AVIF</span><span class="tool-description">Shrink JPGs to AVIF at the same quality</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/avif-to-webp/" data-tool-row><span class="format-label">.avif → .webp</span><span class="tool-name">AVIF to WebP</span><span class="tool-description">AVIF to widely-supported WebP</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/webp-to-avif/" data-tool-row><span class="format-label">.webp → .avif</span><span class="tool-name">WebP to AVIF</span><span class="tool-description">Compress WebP further with the AV1 codec</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/jxl-to-jpg/" data-tool-row><span class="format-label">.jxl → .jpg</span><span class="tool-name">JXL to JPG</span><span class="tool-description">Open JPEG XL files as a universal JPG</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/jxl-to-png/" data-tool-row><span class="format-label">.jxl → .png</span><span class="tool-name">JXL to PNG</span><span class="tool-description">JPEG XL to lossless PNG</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/png-to-jxl/" data-tool-row><span class="format-label">.png → .jxl</span><span class="tool-name">PNG to JXL</span><span class="tool-description">Smaller PNGs as JPEG XL, transparency kept</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/jpg-to-jxl/" data-tool-row><span class="format-label">.jpg → .jxl</span><span class="tool-name">JPG to JXL</span><span class="tool-description">Encode JPG photos to modern JPEG XL</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/jfif-to-jpg/" data-tool-row><span class="format-label">.jfif → .jpg</span><span class="tool-name">JFIF to JPG</span><span class="tool-description">Fix a .jfif so any app can open it</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/jfif-to-png/" data-tool-row><span class="format-label">.jfif → .png</span><span class="tool-name">JFIF to PNG</span><span class="tool-description">Turn a .jfif into a lossless PNG</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/svg-to-jpg/" data-tool-row><span class="format-label">.svg → .jpg</span><span class="tool-name">SVG to JPG</span><span class="tool-description">Rasterise vector SVGs to a JPG at any size</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/svg-to-png/" data-tool-row><span class="format-label">.svg → .png</span><span class="tool-name">SVG to PNG</span><span class="tool-description">Rasterise vector SVGs to PNG with transparency</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </section>
 
-        <a class="tool-card" href="/heic-to-png/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">HEIC to PNG</h3>
-          <p class="tool-desc">Convert iPhone HEIC photos to lossless PNG with transparency preserved.</p>
-          <div class="tool-tags"><span class="chip">.heic → .png</span></div>
-        </a>
+        <section class="tool-group" id="privacy" data-tool-group>
+          <h3>Protect your privacy</h3>
+          <div class="tool-list">
+            <a class="tool-row" href="/remove-exif/" data-tool-row><span class="format-label">exif · gps</span><span class="tool-name">Remove image metadata</span><span class="tool-description">Strip location, camera and other hidden details</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/blur-face/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur a face</span><span class="tool-description">Hide someone's identity before sharing a photo</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/blur-license-plate/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur a license plate</span><span class="tool-description">Hide a number plate in a vehicle photo</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/blur-image/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur part of an image</span><span class="tool-description">Blur a face, logo or text — anything you box over</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/pixelate-image/" data-tool-row><span class="format-label">pixelate</span><span class="tool-name">Pixelate an image</span><span class="tool-description">Censor names and faces with pixel blocks</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/redact-image/" data-tool-row><span class="format-label">redact</span><span class="tool-name">Redact an image</span><span class="tool-description">Black out details permanently — nothing left underneath</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </section>
 
-        <a class="tool-card" href="/png-to-jpg/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="11" y="5" width="2" height="14" rx="1" fill="currentColor" stroke="none" opacity=".22"/><path d="M3 12h5m0 0L5.5 9.5M8 12l-2.5 2.5"/><path d="M21 12h-5m0 0l2.5-2.5M16 12l2.5 2.5"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">PNG to JPG</h3>
-          <p class="tool-desc">Convert PNG images to JPG with adjustable quality, right in your browser.</p>
-          <div class="tool-tags"><span class="chip">.png → .jpg</span></div>
-        </a>
-
-        <a class="tool-card" href="/webp-to-png/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">WebP to PNG</h3>
-          <p class="tool-desc">Convert WebP images back to lossless, universally-supported PNG.</p>
-          <div class="tool-tags"><span class="chip">.webp → .png</span></div>
-        </a>
-
-        <a class="tool-card" href="/webp-to-jpg/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">WebP to JPG</h3>
-          <p class="tool-desc">Convert WebP images to compact, universally-supported JPGs with adjustable quality.</p>
-          <div class="tool-tags"><span class="chip">.webp → .jpg</span></div>
-        </a>
-
-        <a class="tool-card" href="/png-to-webp/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">PNG to WebP</h3>
-          <p class="tool-desc">Convert PNG images to smaller WebP files — transparency preserved.</p>
-          <div class="tool-tags"><span class="chip">.png → .webp</span></div>
-        </a>
-
-        <a class="tool-card" href="/jpg-to-webp/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">JPG to WebP</h3>
-          <p class="tool-desc">Convert JPG photos to smaller WebP files with adjustable quality.</p>
-          <div class="tool-tags"><span class="chip">.jpg → .webp</span></div>
-        </a>
-
-        <a class="tool-card" href="/avif-to-jpg/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">AVIF to JPG</h3>
-          <p class="tool-desc">Convert modern AVIF images to universal JPGs anything can open.</p>
-          <div class="tool-tags"><span class="chip">.avif → .jpg</span></div>
-        </a>
-
-        <a class="tool-card" href="/avif-to-png/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">AVIF to PNG</h3>
-          <p class="tool-desc">Convert AVIF images to lossless PNG with transparency preserved.</p>
-          <div class="tool-tags"><span class="chip">.avif → .png</span></div>
-        </a>
-
-        <a class="tool-card" href="/png-to-avif/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">PNG to AVIF</h3>
-          <p class="tool-desc">Shrink PNGs to modern AVIF — much smaller files, transparency kept.</p>
-          <div class="tool-tags"><span class="chip">.png → .avif</span></div>
-        </a>
-
-        <a class="tool-card" href="/jpg-to-avif/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">JPG to AVIF</h3>
-          <p class="tool-desc">Shrink JPGs to modern AVIF — same quality, a fraction of the size.</p>
-          <div class="tool-tags"><span class="chip">.jpg → .avif</span></div>
-        </a>
-
-        <a class="tool-card" href="/avif-to-webp/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">AVIF to WebP</h3>
-          <p class="tool-desc">Convert AVIF images to widely-supported WebP, transparency kept.</p>
-          <div class="tool-tags"><span class="chip">.avif → .webp</span></div>
-        </a>
-
-        <a class="tool-card" href="/webp-to-avif/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">WebP to AVIF</h3>
-          <p class="tool-desc">Shrink WebP images further with the modern AV1 codec.</p>
-          <div class="tool-tags"><span class="chip">.webp → .avif</span></div>
-        </a>
-
-        <a class="tool-card" href="/jxl-to-jpg/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">JXL to JPG</h3>
-          <p class="tool-desc">Open JPEG XL files anywhere by converting them to a universal JPG.</p>
-          <div class="tool-tags"><span class="chip">.jxl → .jpg</span></div>
-        </a>
-
-        <a class="tool-card" href="/jxl-to-png/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">JXL to PNG</h3>
-          <p class="tool-desc">Convert JPEG XL images to lossless PNG with transparency preserved.</p>
-          <div class="tool-tags"><span class="chip">.jxl → .png</span></div>
-        </a>
-
-        <a class="tool-card" href="/png-to-jxl/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">PNG to JXL</h3>
-          <p class="tool-desc">Encode PNG images to JPEG XL — smaller files with transparency preserved.</p>
-          <div class="tool-tags"><span class="chip">.png → .jxl</span></div>
-        </a>
-
-        <a class="tool-card" href="/jpg-to-jxl/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">JPG to JXL</h3>
-          <p class="tool-desc">Encode JPG photos to JPEG XL with the modern codec, right in your browser.</p>
-          <div class="tool-tags"><span class="chip">.jpg → .jxl</span></div>
-        </a>
-
-        <a class="tool-card" href="/jfif-to-jpg/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">JFIF to JPG</h3>
-          <p class="tool-desc">A JFIF is just a JPEG — fix the extension so any app can open it.</p>
-          <div class="tool-tags"><span class="chip">.jfif → .jpg</span></div>
-        </a>
-
-        <a class="tool-card" href="/jfif-to-png/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">JFIF to PNG</h3>
-          <p class="tool-desc">Turn a .jfif into a lossless PNG that opens in any app.</p>
-          <div class="tool-tags"><span class="chip">.jfif → .png</span></div>
-        </a>
-
-        <a class="tool-card" href="/svg-to-jpg/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/><rect x="3" y="17" width="4" height="4" rx="1"/><rect x="17" y="17" width="4" height="4" rx="1"/><path d="M7 5h10M5 7v10M19 7v10M7 19h10"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">SVG to JPG</h3>
-          <p class="tool-desc">Rasterise SVG vector graphics to a JPG at any size you choose.</p>
-          <div class="tool-tags"><span class="chip">.svg → .jpg</span></div>
-        </a>
-
-        <a class="tool-card" href="/svg-to-png/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="4" height="4" rx="1"/><rect x="17" y="3" width="4" height="4" rx="1"/><rect x="3" y="17" width="4" height="4" rx="1"/><rect x="17" y="17" width="4" height="4" rx="1"/><path d="M7 5h10M5 7v10M19 7v10M7 19h10"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">SVG to PNG</h3>
-          <p class="tool-desc">Rasterise SVG vector graphics to lossless PNG with transparency preserved.</p>
-          <div class="tool-tags"><span class="chip">.svg → .png</span></div>
-        </a>
-
-        <a class="tool-card" href="/resize-image/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3v14a2 2 0 0 0 2 2h14"/><path d="M19 21V7a2 2 0 0 0-2-2H3"/><circle cx="12" cy="10" r="2"/><path d="M9 15.2a3 3 0 0 1 6 0"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Resize for passport &amp; visa</h3>
-          <p class="tool-desc">Crop to official passport, visa and LinkedIn photo presets in seconds.</p>
-          <div class="tool-tags"><span class="chip">presets</span><span class="chip">LinkedIn</span></div>
-        </a>
-
-        <a class="tool-card" href="/remove-exif/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5h7l8.5 8.5-6.5 6.5L4.5 11V4.5z"/><circle cx="8" cy="8" r="1.3"/><path d="M3.5 20.5L20.5 3.5"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Remove image metadata</h3>
-          <p class="tool-desc">Strip EXIF, GPS location and camera data before you share a photo.</p>
-          <div class="tool-tags"><span class="chip">EXIF</span><span class="chip">GPS</span></div>
-        </a>
-
-        <a class="tool-card" href="/blur-face/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="4.2"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/><path d="M9.2 8h5.6M9.8 10.2h4.4" opacity=".45"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Blur a face</h3>
-          <p class="tool-desc">Blur faces to protect identities before you share a photo.</p>
-          <div class="tool-tags"><span class="chip">faces</span><span class="chip">privacy</span></div>
-        </a>
-
-        <a class="tool-card" href="/blur-license-plate/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="9" rx="1.6"/><path d="M6 12h2.2M10.2 12h2.2"/><rect x="14.4" y="10.4" width="4" height="3.2" fill="currentColor" stroke="none" opacity=".25"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Blur a license plate</h3>
-          <p class="tool-desc">Hide a number plate before selling a car or posting a photo online.</p>
-          <div class="tool-tags"><span class="chip">plates</span><span class="chip">privacy</span></div>
-        </a>
-
-        <a class="tool-card" href="/pixelate-image/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M9 4.5v15M14.5 4.5v15M3.5 9.5h17M3.5 14.5h17" opacity=".45"/><rect x="9" y="9.5" width="5.5" height="5" fill="currentColor" stroke="none" opacity=".22"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Pixelate an image</h3>
-          <p class="tool-desc">Censor names, faces and details in screenshots with solid blocks.</p>
-          <div class="tool-tags"><span class="chip">redact</span><span class="chip">screenshots</span></div>
-        </a>
-
-        <a class="tool-card" href="/redact-image/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><rect x="6" y="8.4" width="8.5" height="2.4" fill="currentColor" stroke="none"/><rect x="6" y="13" width="12" height="2.4" fill="currentColor" stroke="none" opacity=".5"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Redact an image</h3>
-          <p class="tool-desc">Black out names and numbers on documents — permanent, nothing left underneath.</p>
-          <div class="tool-tags"><span class="chip">blackout</span><span class="chip">documents</span></div>
-        </a>
-
-        <a class="tool-card" href="/blur-image/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="2.4"/><path d="M3.8 17l3.6-3.4 2.2 2 3.4-3.3 4 3.8" opacity=".5"/><path d="M15.5 6.5l5 5M20.5 6.5l-5 5" opacity=".9"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Blur part of an image</h3>
-          <p class="tool-desc">Blur a face, background, logo or text — anything you draw a box over.</p>
-          <div class="tool-tags"><span class="chip">blur</span><span class="chip">privacy</span></div>
-        </a>
-
-        <a class="tool-card" href="/image-to-base64/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Image to Base64</h3>
-          <p class="tool-desc">Encode any image to a Base64 data URI — copy as a data URI, CSS or HTML.</p>
-          <div class="tool-tags"><span class="chip">image → base64</span></div>
-        </a>
-
-        <a class="tool-card" href="/base64-to-image/">
-          <span class="tool-ic">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6"/></svg>
-          </span>
-          <span class="tool-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
-          </span>
-          <h3 class="tool-name">Base64 to Image</h3>
-          <p class="tool-desc">Decode a Base64 string or data URI back into a downloadable image.</p>
-          <div class="tool-tags"><span class="chip">base64 → image</span></div>
-        </a>
-
-        <a class="tool-card" href="mailto:hello@latchtools.com?subject=Tool%20suggestion" style="background:transparent;border-style:dashed;justify-content:center;align-items:flex-start">
-          <span class="tool-ic" style="background:var(--surface-2);color:var(--text-3)">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-          <h3 class="tool-name" style="color:var(--text-2)">Need another tool?</h3>
-          <p class="tool-desc">Tell us what you'd convert or clean next — we build the most-asked ones first.</p>
-        </a>
+        <section class="tool-group" data-tool-group>
+          <h3>Resize and encode</h3>
+          <div class="tool-list">
+            <a class="tool-row" href="/resize-image/" data-tool-row><span class="format-label">resize</span><span class="tool-name">Resize for passport &amp; visa</span><span class="tool-description">Crop to passport, visa and LinkedIn presets</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/image-to-base64/" data-tool-row><span class="format-label">base64</span><span class="tool-name">Image to Base64</span><span class="tool-description">Encode an image to a Base64 data URI</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/base64-to-image/" data-tool-row><span class="format-label">base64</span><span class="tool-name">Base64 to Image</span><span class="tool-description">Decode a Base64 string back into an image</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="mailto:hello@latchtools.com?subject=Tool%20suggestion" data-tool-row><span class="format-label">suggest</span><span class="tool-name">Need another tool?</span><span class="tool-description">Tell us what to build next — we ship the most-asked first</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </section>
       </div>
+      <p class="no-results" data-no-results hidden>No tools match that search.</p>
     </div>
   </section>
 
   <!-- HOW IT WORKS -->
-  <section class="section" id="how" style="padding-top:0">
+  <section class="section" id="how" style="padding-top:8px">
     <div class="wrap">
       <div class="sec-head">
         <div>
@@ -434,7 +121,7 @@ import TrustPill from '../components/TrustPill.astro';
           </div>
           <div class="step-n">Step 01</div>
           <h3>Choose a tool</h3>
-          <p>Pick the conversion or edit you need from the grid above. Each one opens on its own focused page.</p>
+          <p>Pick the conversion or edit you need from the list above. Each one opens on its own focused page.</p>
         </div>
         <div class="step">
           <div class="step-ic">
@@ -456,40 +143,26 @@ import TrustPill from '../components/TrustPill.astro';
     </div>
   </section>
 
-  <!-- PRIVACY BAND -->
-  <section class="band" id="privacy">
-    <div class="wrap" style="padding:56px 28px">
-      <div class="band-grid">
-        <div class="band-item">
-          <span class="bi-ic">
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-          </span>
-          <div>
-            <h4>On-device only</h4>
-            <p>Files are processed by your browser's own engine. They are never uploaded to a server — there is no server to upload to.</p>
-          </div>
-        </div>
-        <div class="band-item">
-          <span class="bi-ic">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.8a14 14 0 0 1 20 0M5 12.2a9 9 0 0 1 14 0M8.3 15.6a4.5 4.5 0 0 1 7.4 0"/><circle cx="12" cy="19" r="1"/><path d="M3 3l18 18" stroke-width="1.6"/></svg>
-          </span>
-          <div>
-            <h4>Works offline</h4>
-            <p>Once the page has loaded you can switch off Wi-Fi entirely and every tool keeps working, exactly the same.</p>
-          </div>
-        </div>
-        <div class="band-item">
-          <span class="bi-ic">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6m3 0v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v5M14 11v5"/></svg>
-          </span>
-          <div>
-            <h4>Nothing is stored</h4>
-            <p>No accounts, no upload history, no trackers. Refresh the page and there is no trace of your file left behind.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <Footer />
 </Layout>
+
+<script>
+  // Homepage tool search: filter rows by text, hide empty groups, toggle the empty state.
+  const search = document.querySelector<HTMLInputElement>('[data-tool-search]');
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-tool-row]')];
+  const groups = [...document.querySelectorAll<HTMLElement>('[data-tool-group]')];
+  const empty = document.querySelector<HTMLElement>('[data-no-results]');
+  search?.addEventListener('input', () => {
+    const query = search.value.trim().toLowerCase();
+    let visible = 0;
+    rows.forEach((row) => {
+      const match = row.textContent!.toLowerCase().includes(query);
+      row.hidden = !match;
+      if (match) visible++;
+    });
+    groups.forEach((group) => {
+      group.hidden = !group.querySelector('[data-tool-row]:not([hidden])');
+    });
+    if (empty) empty.hidden = visible > 0;
+  });
+</script>

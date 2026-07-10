@@ -2,18 +2,19 @@
 import BrandMark from './BrandMark.astro';
 ---
 <footer class="ftr">
-  <div class="wrap ftr-in">
-    <div>
-      <a class="brand" href="/" style="font-size:17px">
-        <BrandMark size={26} />
-        <span>Latch</span>
-      </a>
-      <p>Private, browser-based file tools. Built to run entirely on your device — no uploads, no trackers, no nonsense.</p>
-    </div>
-    <div class="ftr-cols">
-      <div class="ftr-col ftr-col-tools">
-        <h5>Tools</h5>
-        <div class="ftr-links">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="Latch home" style="font-size:17px">
+          <BrandMark size={26} />
+          <span>Latch</span>
+        </a>
+        <p>Private, browser-based file tools. Built to run entirely on your device — no uploads, no trackers, no nonsense.</p>
+      </div>
+
+      <div class="footer-column footer-column--tools">
+        <h5>Convert</h5>
+        <nav aria-label="Image conversion tools">
           <a href="/heic-to-jpg/">HEIC to JPG</a>
           <a href="/heic-to-png/">HEIC to PNG</a>
           <a href="/png-to-jpg/">PNG to JPG</a>
@@ -35,25 +36,42 @@ import BrandMark from './BrandMark.astro';
           <a href="/jfif-to-png/">JFIF to PNG</a>
           <a href="/svg-to-jpg/">SVG to JPG</a>
           <a href="/svg-to-png/">SVG to PNG</a>
-          <a href="/resize-image/">Resize photo</a>
+        </nav>
+      </div>
+
+      <div class="footer-column">
+        <h5>Protect &amp; edit</h5>
+        <nav aria-label="Privacy and editing tools">
           <a href="/remove-exif/">Remove metadata</a>
           <a href="/blur-image/">Blur image</a>
           <a href="/blur-face/">Blur face</a>
           <a href="/blur-license-plate/">Blur license plate</a>
           <a href="/pixelate-image/">Pixelate image</a>
           <a href="/redact-image/">Redact image</a>
+          <a href="/resize-image/">Resize photo</a>
           <a href="/image-to-base64/">Image to Base64</a>
           <a href="/base64-to-image/">Base64 to Image</a>
-        </div>
+        </nav>
       </div>
-      <div class="ftr-col">
+
+      <div class="footer-column">
         <h5>Latch</h5>
-        <a href="/#how">How it works</a>
-        <a href="/#privacy">Privacy</a>
-        <a href="/about/">About</a>
-        <a href="/jpeg-xl/">JPEG XL</a>
-        <a href="/privacy-policy/">Privacy policy</a>
+        <nav aria-label="About Latch">
+          <a href="/#how">How it works</a>
+          <a href="/#privacy">Privacy</a>
+          <a href="/jpeg-xl/">JPEG XL</a>
+          <a href="/about/">About</a>
+          <a href="/privacy-policy/">Privacy policy</a>
+        </nav>
       </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Latch Tools</span>
+      <nav class="footer-nav" aria-label="Legal">
+        <a href="/privacy-policy/">Privacy policy</a>
+        <a href="/about/">About</a>
+      </nav>
     </div>
   </div>
 </footer>

@@ -2,20 +2,27 @@
 import BrandMark from './BrandMark.astro';
 ---
 <footer class="ftr">
-  <div class="wrap ftr-in">
-    <div>
-      <a class="brand" href="/" style="font-size:17px">
-        <BrandMark size={26} />
-        <span>Latch</span>
-      </a>
-      <p>Herramientas privadas para tus archivos, directamente en tu navegador. Todo se procesa en tu dispositivo: sin subidas, sin rastreadores, sin complicaciones.</p>
-    </div>
-    <div class="ftr-cols">
-      <div class="ftr-col">
-        <h5>Latch</h5>
-        <a href="/about/">Acerca de</a>
-        <a href="/privacy-policy/">Política de privacidad</a>
+  <div class="wrap">
+    <div class="footer-grid footer-grid--es">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="Latch inicio" style="font-size:17px">
+          <BrandMark size={26} />
+          <span>Latch</span>
+        </a>
+        <p>Herramientas privadas para tus archivos, directamente en tu navegador. Todo se procesa en tu dispositivo: sin subidas, sin rastreadores, sin complicaciones.</p>
       </div>
+
+      <div class="footer-column">
+        <h5>Latch</h5>
+        <nav aria-label="Sobre Latch">
+          <a href="/about/">Acerca de</a>
+          <a href="/privacy-policy/">Política de privacidad</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Latch Tools</span>
     </div>
   </div>
 </footer>

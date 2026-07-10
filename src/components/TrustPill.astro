@@ -1,15 +1,16 @@
 ---
 interface Props {
   variant?: 'default' | 'inline' | 'soft';
+  lead?: string;
   text?: string;
 }
-const { variant = 'default', text = 'Your files never leave this device' } = Astro.props;
-const cls = ['trust', variant === 'inline' ? 'trust--inline' : '', variant === 'soft' ? 'trust--soft' : ''].filter(Boolean).join(' ');
+const { variant = 'default', lead, text = 'Your files never leave this device' } = Astro.props;
+const cls = ['trust', variant === 'inline' ? 'trust--inline' : ''].filter(Boolean).join(' ');
 ---
 <span class={cls}>
-  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <rect x="3" y="7" width="10" height="6.5" rx="1.6"/>
-    <path d="M5 7V5a3 3 0 0 1 6 0v2"/>
+  <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M9 2l5.5 2v3.8c0 3.6-2.3 6-5.5 7.2-3.2-1.2-5.5-3.6-5.5-7.2V4z"/>
+    <path d="m6.5 9 1.6 1.6 3.4-3.5"/>
   </svg>
-  {text}
+  <span>{lead && <strong>{lead}{' '}</strong>}{text}</span>
 </span>

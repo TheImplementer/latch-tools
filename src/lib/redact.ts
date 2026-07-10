@@ -267,13 +267,13 @@ export function initRedactWidget(root: HTMLElement): void {
       const h = rc.h * H;
       const isSel = i === selected;
       ctx.lineWidth = Math.max(1.5, ratio * 1.5);
-      ctx.strokeStyle = isSel ? "#4d8bff" : "rgba(255,255,255,0.9)";
+      ctx.strokeStyle = isSel ? "#55c28b" : "rgba(255,255,255,0.9)";
       ctx.setLineDash(isSel ? [] : [ratio * 5, ratio * 4]);
       ctx.strokeRect(x, y, w, h);
       ctx.setLineDash([]);
       if (isSel) {
         const pts = cornerPoints({ x: x, y: y, w: w, h: h });
-        ctx.fillStyle = "#4d8bff";
+        ctx.fillStyle = "#55c28b";
         for (const key of Object.keys(pts) as Corner[]) {
           const p = pts[key];
           ctx.beginPath();

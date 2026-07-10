@@ -89,11 +89,7 @@ const structuredData = {
         <h1>Resize image for passport, visa, and social profiles</h1>
         <p>Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, LinkedIn, or any custom size — all in your browser.</p>
         <TrustPill />
-        <ul class="tool-features">
-          <li>Presets for passport, visa, and LinkedIn</li>
-          <li>Custom pixel dimensions supported</li>
-          <li>No quality loss on export</li>
-        </ul>
+        <p class="quick-details">JPEG, PNG, WebP · up to 10 at once · 50 MB each</p>
       </div>
 
       <!-- WIDGET -->
@@ -129,10 +125,6 @@ const structuredData = {
               Browse files
             </button>
             <p class="dz-hint" id="dz-hint">Accepts JPEG, PNG, WebP · up to 10 files, 50 MB each</p>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Resizing happens right here in your browser — nothing is uploaded.
           </div>
         </div>
 
@@ -173,10 +165,6 @@ const structuredData = {
               <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
             </button>
           </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            These images stay on your device the entire time.
-          </div>
         </div>
 
         <!-- STATE: processing -->
@@ -199,10 +187,6 @@ const structuredData = {
           </div>
           <div class="actions">
             <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancel</button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Your browser is doing the work — no file has been sent anywhere.
           </div>
         </div>
 
@@ -228,10 +212,6 @@ const structuredData = {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
             </button>
           </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Close this tab and every file is gone — nothing was kept.
-          </div>
         </div>
 
         <!-- STATE: error -->
@@ -243,6 +223,11 @@ const structuredData = {
             <div>
               <div class="et" id="err-title">We couldn't resize that file</div>
               <div class="es" id="err-message"></div>
+              <p class="help-text">The original file has not been changed.</p>
+              <details class="support-details" id="err-support" hidden>
+                <summary>Technical details</summary>
+                <code id="err-code"></code>
+              </details>
             </div>
           </div>
           <div class="filelist" id="error-list" aria-live="assertive"></div>
@@ -252,10 +237,6 @@ const structuredData = {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
               Try another file
             </button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            The file stayed on your device — even when something goes wrong.
           </div>
         </div>
       </div>
@@ -716,14 +697,14 @@ const structuredData = {
     const valid = incoming.filter((f) => f.type.startsWith('image/'));
 
     if (valid.length === 0 && incoming.length > 0) {
-      showError('Unsupported file type', 'Please drop an image file (JPEG, PNG, or WebP).', files);
+      showError('Unsupported file type', 'Please drop an image file (JPEG, PNG, or WebP).', files, 'UNSUPPORTED_FILE_TYPE');
       return;
     }
     if (valid.length === 0) return;
 
     const oversized = valid.find((f) => f.size > MAX_SIZE_BYTES);
     if (oversized) {
-      showError('File too large', `${oversized.name} must be under ${MAX_SIZE_MB} MB.`, files);
+      showError('File too large', `${oversized.name} must be under ${MAX_SIZE_MB} MB.`, files, 'FILE_TOO_LARGE');
       return;
     }
 
@@ -827,7 +808,8 @@ const structuredData = {
           showError(
             `Couldn't resize ${entry.file.name}`,
             `<code>${escHtml(entry.file.name)}</code> looks corrupted or isn't a valid image.`,
-            files.filter((_, j) => j !== i)
+            files.filter((_, j) => j !== i),
+            'PROCESS_FAILED'
           );
           return;
         }
@@ -981,9 +963,16 @@ const structuredData = {
     showState('drop');
   });
 
-  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+  function showError(title: string, message: string, remainingFiles: FileEntry[], code?: string) {
     $('err-title').textContent = title;
     $('err-message').innerHTML = message;
+    const support = $('err-support');
+    if (code) {
+      $('err-code').textContent = code;
+      support.hidden = false;
+    } else {
+      support.hidden = true;
+    }
     const errorList = $('error-list');
     errorList.innerHTML = `
       <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">

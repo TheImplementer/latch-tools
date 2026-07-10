@@ -98,11 +98,7 @@ const structuredData = {
         <h1>Convertidor de WebP a PNG</h1>
         <p>Convierte imágenes WebP en PNG sin pérdida, directamente en tu navegador. La transparencia se conserva.</p>
         <TrustPill text="Tus archivos nunca salen de tu dispositivo" />
-        <ul class="tool-features">
-          <li>Conserva la transparencia a la perfección</li>
-          <li>Convierte hasta 10 archivos a la vez</li>
-          <li>Funciona sin conexión tras la primera carga</li>
-        </ul>
+        <p class="quick-details">.webp · hasta 10 a la vez · 50 MB cada uno</p>
       </div>
 
       <!-- WIDGET -->
@@ -139,24 +135,21 @@ const structuredData = {
             </button>
             <p class="dz-hint" id="dz-hint">Acepta .webp · hasta 10 archivos, 50 MB cada uno</p>
           </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            La conversión ocurre aquí mismo, en tu navegador: no se sube nada.
-          </div>
         </div>
 
         <!-- STATE: selected -->
         <div id="state-selected" class="widget-state" hidden>
-          <div class="filelist" id="filelist" aria-live="polite" aria-label="Archivos seleccionados"></div>
+          <div class="batch-heading">
+            <h2 id="batch-title">Imágenes listas</h2>
+            <span id="batch-count"></span>
+          </div>
+          <div class="filelist file-list" id="filelist" aria-live="polite" aria-label="Imágenes seleccionadas"></div>
+          <p class="batch-summary" id="batch-summary"></p>
           <div class="actions">
             <button class="btn btn-primary grow" type="button" id="convert-btn">
-              Convertir a PNG
+              <span id="convert-label">Convertir a PNG</span>
               <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
             </button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Estas imágenes permanecen en tu dispositivo en todo momento.
           </div>
         </div>
 
@@ -181,10 +174,6 @@ const structuredData = {
           <div class="actions">
             <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancelar</button>
           </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Tu navegador hace el trabajo: no se ha enviado ningún archivo a ningún lugar.
-          </div>
         </div>
 
         <!-- STATE: done -->
@@ -198,6 +187,7 @@ const structuredData = {
               <div class="rs">Guardado como PNG · nunca salió de tu dispositivo</div>
             </div>
           </div>
+          <div class="result-summary" id="result-summary"></div>
           <div class="filelist" id="results-list" aria-live="polite" aria-label="Archivos convertidos"></div>
           <div class="actions">
             <button class="btn btn-secondary" type="button" id="convert-another-btn">
@@ -208,10 +198,6 @@ const structuredData = {
               <span id="download-all-label">Descargar</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
             </button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Cierra esta pestaña y todo desaparece: no se guardó nada.
           </div>
         </div>
 
@@ -224,6 +210,11 @@ const structuredData = {
             <div>
               <div class="et" id="err-title">No pudimos convertir ese archivo</div>
               <div class="es" id="err-message"></div>
+              <p class="help-text">El archivo original no se ha modificado.</p>
+              <details class="support-details" id="err-support" hidden>
+                <summary>Detalles técnicos</summary>
+                <code id="err-code"></code>
+              </details>
             </div>
           </div>
           <div class="filelist" id="error-list" aria-live="assertive"></div>
@@ -233,10 +224,6 @@ const structuredData = {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
               Probar con otro archivo
             </button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            El archivo permaneció en tu dispositivo, incluso cuando algo falla.
           </div>
         </div>
       </div>
@@ -466,6 +453,10 @@ const structuredData = {
   const removeAndContinueBtn = $('remove-continue-btn');
   const tryAnotherBtn = $('try-another-btn');
   const widgetTitle = $('widget-title');
+  const batchTitle = $('batch-title');
+  const batchCount = $('batch-count');
+  const batchSummary = $('batch-summary');
+  const convertLabel = $('convert-label');
 
   // ---- Drop zone ----
   dropzone.addEventListener('dragover', (e) => {
@@ -513,14 +504,14 @@ const structuredData = {
     });
 
     if (valid.length === 0 && incoming.length > 0) {
-      showError('Tipo de archivo no admitido', `Suelta un archivo <code>.webp</code>.`, files);
+      showError('Tipo de archivo no admitido', `Suelta un archivo <code>.webp</code>.`, files, 'UNSUPPORTED_FILE_TYPE');
       return;
     }
     if (valid.length === 0) return;
 
     const oversized = valid.find((f) => f.size > MAX_SIZE_BYTES);
     if (oversized) {
-      showError('Archivo demasiado grande', `${oversized.name} debe pesar menos de ${MAX_SIZE_MB} MB.`, files);
+      showError('Archivo demasiado grande', `${oversized.name} debe pesar menos de ${MAX_SIZE_MB} MB.`, files, 'FILE_TOO_LARGE');
       return;
     }
 
@@ -545,6 +536,17 @@ const structuredData = {
     }
   }
 
+  function updateBatchMeta() {
+    const n = files.length;
+    const total = files.reduce((s, e) => s + e.file.size, 0);
+    batchTitle.textContent = n === 1 ? 'Imagen lista' : 'Imágenes listas';
+    batchCount.textContent = `${n} de ${MAX_FILES}`;
+    batchSummary.textContent = n === 1
+      ? `${formatBytes(total)} · se descarga como PNG`
+      : `${formatBytes(total)} en total · se descarga como un único ZIP`;
+    convertLabel.textContent = n === 1 ? 'Convertir a PNG' : `Convertir ${n} imágenes a PNG`;
+  }
+
   function renderFileList() {
     fileList.innerHTML = '';
     files.forEach((entry, i) => {
@@ -563,6 +565,7 @@ const structuredData = {
       row.querySelector('button')!.addEventListener('click', () => removeFile(i));
       fileList.appendChild(row);
     });
+    updateBatchMeta();
   }
 
   convertBtn.addEventListener('click', startConversion);
@@ -593,7 +596,8 @@ const structuredData = {
           showError(
             `No se pudo convertir ${entry.file.name}`,
             `<code>${escHtml(entry.file.name)}</code> parece estar dañado o no es una imagen WebP válida.`,
-            files.filter((_, j) => j !== i)
+            files.filter((_, j) => j !== i),
+            'CONVERT_FAILED'
           );
           return;
         }
@@ -644,6 +648,23 @@ const structuredData = {
   function showDone() {
     const count = results.length;
     doneTitleEl.textContent = `¡Listo! — ${count} ${count === 1 ? 'imagen convertida' : 'imágenes convertidas'}`;
+    const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
+    const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
+    const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;
+    $('result-summary').innerHTML = `
+      <div class="result-card">
+        <div class="result-label">Original</div>
+        <strong>${count} ${count === 1 ? 'imagen' : 'imágenes'} WebP</strong>
+        <span>${formatBytes(totalOriginal)}</span>
+      </div>
+      <div class="saving">${savedPct > 0 ? savedPct + '% más pequeño' : 'Convertido'}<small>${savedPct > 0 ? formatBytes(totalOriginal - totalOutput) + ' ahorrado' : formatBytes(totalOutput) + ' en total'}</small></div>
+      <div class="result-card output">
+        <div class="result-label">${count === 1 ? 'Resultado' : 'Resultados'} PNG</div>
+        <strong>${count} ${count === 1 ? 'archivo' : 'archivos'} PNG</strong>
+        <span>${formatBytes(totalOutput)}</span>
+      </div>
+    `;
+
     resultsList.innerHTML = '';
     results.forEach((r) => {
       const row = document.createElement('div');
@@ -663,7 +684,7 @@ const structuredData = {
       resultsList.appendChild(row);
     });
     widgetTitle.textContent = `${count} ${count === 1 ? 'imagen convertida' : 'imágenes convertidas'}`;
-    $('download-all-label').textContent = count > 1 ? `Descargar todo (${count})` : 'Descargar';
+    $('download-all-label').textContent = count > 1 ? `Descargar ${count} PNG · ZIP` : 'Descargar PNG';
     showState('done');
   }
 
@@ -697,9 +718,16 @@ const structuredData = {
     showState('drop');
   });
 
-  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+  function showError(title: string, message: string, remainingFiles: FileEntry[], code?: string) {
     $('err-title').textContent = title;
     $('err-message').innerHTML = message;
+    const support = $('err-support');
+    if (code) {
+      $('err-code').textContent = code;
+      support.hidden = false;
+    } else {
+      support.hidden = true;
+    }
     const errorList = $('error-list');
     errorList.innerHTML = `
       <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">

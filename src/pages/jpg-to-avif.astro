@@ -89,11 +89,7 @@ const structuredData = {
         <h1>JPG to AVIF converter</h1>
         <p>Make your JPGs a fraction of the size. Convert JPG to modern AVIF right here in your browser — same visual quality, much smaller files.</p>
         <TrustPill />
-        <ul class="tool-features">
-          <li>Much smaller files than JPG</li>
-          <li>Same visual quality</li>
-          <li>Batch convert up to 10 files</li>
-        </ul>
+        <p class="quick-details">.jpg and .jpeg · up to 10 at once · 50 MB each</p>
       </div>
 
       <!-- WIDGET -->
@@ -130,15 +126,16 @@ const structuredData = {
             </button>
             <p class="dz-hint" id="dz-hint">Accepts .jpg and .jpeg · up to 10 files, 50 MB each</p>
           </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Conversion happens right here in your browser — nothing is uploaded.
-          </div>
         </div>
 
         <!-- STATE: selected -->
         <div id="state-selected" class="widget-state" hidden>
-          <div class="filelist" id="filelist" aria-live="polite" aria-label="Selected files"></div>
+          <div class="batch-heading">
+            <h2 id="batch-title">Images ready</h2>
+            <span id="batch-count"></span>
+          </div>
+          <div class="filelist file-list" id="filelist" aria-live="polite" aria-label="Selected images"></div>
+          <p class="batch-summary" id="batch-summary"></p>
           <!-- AVIF output options -->
           <div class="opts" id="avif-opts">
             <div class="opt">
@@ -157,13 +154,9 @@ const structuredData = {
           </div>
           <div class="actions">
             <button class="btn btn-primary grow" type="button" id="convert-btn">
-              Convert to AVIF
+              <span id="convert-label">Convert to AVIF</span>
               <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
             </button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            These images stay on your device the entire time.
           </div>
         </div>
 
@@ -188,10 +181,6 @@ const structuredData = {
           <div class="actions">
             <button class="btn btn-ghost grow" type="button" id="cancel-btn">Cancel</button>
           </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Your browser is doing the work — no file has been sent anywhere.
-          </div>
         </div>
 
         <!-- STATE: done -->
@@ -205,6 +194,7 @@ const structuredData = {
               <div class="rs">Saved as AVIF · stayed on your device the whole time</div>
             </div>
           </div>
+          <div class="result-summary" id="result-summary"></div>
           <div class="filelist" id="results-list" aria-live="polite" aria-label="Converted files"></div>
           <div class="actions">
             <button class="btn btn-secondary" type="button" id="convert-another-btn">
@@ -215,10 +205,6 @@ const structuredData = {
               <span id="download-all-label">Download</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
             </button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            Close this tab and every file is gone — nothing was kept.
           </div>
         </div>
 
@@ -231,6 +217,11 @@ const structuredData = {
             <div>
               <div class="et" id="err-title">We couldn't convert that file</div>
               <div class="es" id="err-message"></div>
+              <p class="help-text">The original file has not been changed.</p>
+              <details class="support-details" id="err-support" hidden>
+                <summary>Technical details</summary>
+                <code id="err-code"></code>
+              </details>
             </div>
           </div>
           <div class="filelist" id="error-list" aria-live="assertive"></div>
@@ -240,10 +231,6 @@ const structuredData = {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
               Try another file
             </button>
-          </div>
-          <div class="widget-foot">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-            The file stayed on your device — even when something goes wrong.
           </div>
         </div>
       </div>
@@ -465,6 +452,10 @@ const structuredData = {
   const removeAndContinueBtn = $('remove-continue-btn');
   const tryAnotherBtn = $('try-another-btn');
   const widgetTitle = $('widget-title');
+  const batchTitle = $('batch-title');
+  const batchCount = $('batch-count');
+  const batchSummary = $('batch-summary');
+  const convertLabel = $('convert-label');
 
   qualitySlider.addEventListener('input', () => {
     qualityVal.textContent = qualitySlider.value;
@@ -523,14 +514,14 @@ const structuredData = {
     });
 
     if (valid.length === 0 && incoming.length > 0) {
-      showError('Unsupported file type', `Please drop a <code>.jpg</code> file.`, files);
+      showError('Unsupported file type', `Please drop a <code>.jpg</code> file.`, files, 'UNSUPPORTED_FILE_TYPE');
       return;
     }
     if (valid.length === 0) return;
 
     const oversized = valid.find((f) => f.size > MAX_SIZE_BYTES);
     if (oversized) {
-      showError('File too large', `${oversized.name} must be under ${MAX_SIZE_MB} MB.`, files);
+      showError('File too large', `${oversized.name} must be under ${MAX_SIZE_MB} MB.`, files, 'FILE_TOO_LARGE');
       return;
     }
 
@@ -555,6 +546,17 @@ const structuredData = {
     }
   }
 
+  function updateBatchMeta() {
+    const n = files.length;
+    const total = files.reduce((s, e) => s + e.file.size, 0);
+    batchTitle.textContent = n === 1 ? 'Image ready' : 'Images ready';
+    batchCount.textContent = `${n} of ${MAX_FILES}`;
+    batchSummary.textContent = n === 1
+      ? `${formatBytes(total)} · downloads as a AVIF`
+      : `${formatBytes(total)} total · downloads as a single ZIP`;
+    convertLabel.textContent = n === 1 ? 'Convert to AVIF' : `Convert ${n} images to AVIF`;
+  }
+
   function renderFileList() {
     fileList.innerHTML = '';
     files.forEach((entry, i) => {
@@ -573,6 +575,7 @@ const structuredData = {
       row.querySelector('button')!.addEventListener('click', () => removeFile(i));
       fileList.appendChild(row);
     });
+    updateBatchMeta();
   }
 
   convertBtn.addEventListener('click', startConversion);
@@ -605,7 +608,8 @@ const structuredData = {
           showError(
             `Couldn't convert ${entry.file.name}`,
             `We couldn't convert <code>${escHtml(entry.file.name)}</code>. It may be corrupt or not a valid JPG image.`,
-            files.filter((_, j) => j !== i)
+            files.filter((_, j) => j !== i),
+            'CONVERT_FAILED'
           );
           return;
         }
@@ -654,6 +658,23 @@ const structuredData = {
   function showDone() {
     const count = results.length;
     doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
+    const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
+    const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;
+    $('result-summary').innerHTML = `
+      <div class="result-card">
+        <div class="result-label">Original</div>
+        <strong>${count} JPG image${count !== 1 ? 's' : ''}</strong>
+        <span>${formatBytes(totalOriginal)}</span>
+      </div>
+      <div class="saving">${savedPct > 0 ? savedPct + '% smaller' : 'Converted'}<small>${savedPct > 0 ? formatBytes(totalOriginal - totalOutput) + ' saved' : formatBytes(totalOutput) + ' total'}</small></div>
+      <div class="result-card output">
+        <div class="result-label">AVIF result${count !== 1 ? 's' : ''}</div>
+        <strong>${count} AVIF file${count !== 1 ? 's' : ''}</strong>
+        <span>${formatBytes(totalOutput)}</span>
+      </div>
+    `;
+
     resultsList.innerHTML = '';
     results.forEach((r) => {
       const saving = Math.round((1 - r.blob.size / r.originalSize) * 100);
@@ -674,7 +695,7 @@ const structuredData = {
       resultsList.appendChild(row);
     });
     widgetTitle.textContent = `${count} image${count !== 1 ? 's' : ''} converted`;
-    $('download-all-label').textContent = count > 1 ? `Download all (${count})` : 'Download';
+    $('download-all-label').textContent = count > 1 ? `Download ${count} AVIFs · ZIP` : 'Download AVIF';
     showState('done');
   }
 
@@ -708,9 +729,16 @@ const structuredData = {
     showState('drop');
   });
 
-  function showError(title: string, message: string, remainingFiles: FileEntry[]) {
+  function showError(title: string, message: string, remainingFiles: FileEntry[], code?: string) {
     $('err-title').textContent = title;
     $('err-message').innerHTML = message;
+    const support = $('err-support');
+    if (code) {
+      $('err-code').textContent = code;
+      support.hidden = false;
+    } else {
+      support.hidden = true;
+    }
     const errorList = $('error-list');
     errorList.innerHTML = `
       <div class="filerow" style="border-color:color-mix(in srgb,var(--danger) 35%,var(--border))">

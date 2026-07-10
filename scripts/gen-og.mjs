@@ -22,7 +22,7 @@ const logoUri = `data:image/png;base64,${logoPng.toString("base64")}`;
 const arrowUri =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 24 24' fill='none' stroke='#4b8bff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12h14M13 6l6 6-6 6'/></svg>`,
+    `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 24 24' fill='none' stroke='#55c28b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12h14M13 6l6 6-6 6'/></svg>`,
   );
 
 // hyperscript for satori's React-element-like nodes (no JSX in a plain .mjs)
@@ -47,9 +47,10 @@ const FMT = {
 };
 const fmt = (t) => FMT[t] ?? t.toUpperCase();
 
-const BG = "#0b1220";
-const MUTED = "#9aa4b2";
-const ACCENT = "#4b8bff";
+// v4 "balanced green utility" — dark card so the white logo/text stay legible.
+const BG = "#141814";
+const MUTED = "#a9b3ac";
+const ACCENT = "#55c28b";
 
 function brandRow() {
   return h(

@@ -16,12 +16,8 @@ const { enUrl, esUrl } = Astro.props;
     </a>
     <nav class="nav" aria-label="Primary">
       <a class="nav-link" href="/#tools">Tools</a>
-      <a class="nav-link" href="/#how">How it works</a>
+      <a class="nav-link" href="/jpeg-xl/">JPEG XL</a>
       <a class="nav-link" href="/#privacy">Privacy</a>
-      <span class="nav-cta">
-        <span class="dot"></span>
-        100% on-device
-      </span>
       {enUrl && esUrl && <LangSwitcher current="en" enUrl={enUrl} esUrl={esUrl} />}
     </nav>
   </div>

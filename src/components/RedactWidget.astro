@@ -51,10 +51,6 @@ const showStrength = defaultEffect !== 'blackout';
       </button>
       <p class="dz-hint" id="redact-dz-hint">Accepts JPEG, PNG, WebP · one image at a time, up to 50 MB</p>
     </div>
-    <div class="widget-foot">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"></rect><path d="M5 7V5a3 3 0 0 1 6 0v2"></path></svg>
-      Everything happens right here in your browser — nothing is uploaded.
-    </div>
   </div>
 
   <!-- STATE: editor -->
@@ -94,10 +90,6 @@ const showStrength = defaultEffect !== 'blackout';
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"></path><path d="M5 19h14"></path></svg>
       </button>
     </div>
-    <div class="widget-foot">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"></rect><path d="M5 7V5a3 3 0 0 1 6 0v2"></path></svg>
-      The effect is baked into the pixels — not a removable overlay.
-    </div>
   </div>
 
   <!-- STATE: processing -->
@@ -110,10 +102,6 @@ const showStrength = defaultEffect !== 'blackout';
           <div class="ps">Baking the effect in at full resolution</div>
         </div>
       </div>
-    </div>
-    <div class="widget-foot">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"></rect><path d="M5 7V5a3 3 0 0 1 6 0v2"></path></svg>
-      Your browser is doing the work — no file has been sent anywhere.
     </div>
   </div>
 
@@ -139,10 +127,6 @@ const showStrength = defaultEffect !== 'blackout';
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"></path><path d="M5 19h14"></path></svg>
       </button>
     </div>
-    <div class="widget-foot">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"></rect><path d="M5 7V5a3 3 0 0 1 6 0v2"></path></svg>
-      Close this tab and every file is gone — nothing was kept.
-    </div>
   </div>
 
   <!-- STATE: error -->
@@ -154,6 +138,7 @@ const showStrength = defaultEffect !== 'blackout';
       <div>
         <div class="et" data-el="err-title">Something went wrong</div>
         <div class="es" data-el="err-message"></div>
+        <p class="help-text">The original image has not been changed.</p>
       </div>
     </div>
     <div class="actions">
@@ -161,10 +146,6 @@ const showStrength = defaultEffect !== 'blackout';
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"></path></svg>
         Try another file
       </button>
-    </div>
-    <div class="widget-foot">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6"></rect><path d="M5 7V5a3 3 0 0 1 6 0v2"></path></svg>
-      The file stayed on your device — even when something goes wrong.
     </div>
   </div>
 

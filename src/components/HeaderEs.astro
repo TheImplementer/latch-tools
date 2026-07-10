@@ -15,10 +15,6 @@ const { enUrl, esUrl } = Astro.props;
       <span>Latch</span>
     </a>
     <nav class="nav" aria-label="Principal">
-      <span class="nav-cta">
-        <span class="dot"></span>
-        100% en tu dispositivo
-      </span>
       {enUrl && esUrl && <LangSwitcher current="es" enUrl={enUrl} esUrl={esUrl} />}
     </nav>
   </div>
