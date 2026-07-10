@@ -432,13 +432,15 @@ h1.hero-h {
   gap: 18px;
 }
 @media (max-width: 900px) {
+  /* !important overrides the per-page inline grid-template-columns
+     (repeat(3|4,1fr)) on related-tools grids so they reflow on small screens. */
   .tool-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 @media (max-width: 560px) {
   .tool-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
