@@ -44,7 +44,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Will a .jxl file open everywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No — this is the main catch. As of 2026 only Safari and recent Apple devices open JPEG XL directly; Chrome, Edge, Firefox, and most apps do not. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or use a widely supported format instead." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or use a widely supported format instead." }
         },
         {
           "@type": "Question",
@@ -285,7 +285,7 @@ const structuredData = {
         PNG is lossless and universal, but the files are large. <a href="/jpeg-xl/" style="color:var(--accent)">JPEG XL</a> is a modern format that stores the same image far smaller — often half the size or less — while keeping the alpha channel, so transparency survives the conversion. For archiving a photo library or squeezing more into limited storage, that's a meaningful saving.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        The honest catch is compatibility. As of 2026, JPEG XL only opens natively in Safari and recent Apple devices — Chrome, Edge, Firefox, and many apps still can't display a <code>.jxl</code> file. So this conversion makes sense for storage, archiving, or an all-Apple workflow, not for sharing a file that has to open anywhere.
+        The honest catch is compatibility. Today, JPEG XL only opens natively in Apple's Safari by default — Chrome, Edge and Firefox have added JPEG XL decoders but keep them off by default, so for most people a <code>.jxl</code> file still won't display (see the full <a href="/jpeg-xl/" style="color:var(--accent)">browser support picture</a>). So this conversion makes sense for storage, archiving, or an all-Apple workflow, not for sharing a file that has to open anywhere.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
         If you need the picture back in a universal format later, it converts straight back with <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a>. And if broad support matters more than the format itself, <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> gives you similar compression in a format every current browser can open today.
@@ -319,7 +319,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No — this is the main catch. As of 2026 only Safari and recent Apple devices open JPEG XL directly; Chrome, Edge, Firefox, and most apps do not. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or try <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> instead.</p>
+          <p class="faq-a">No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl (more on <a href="/jpeg-xl/" style="color:var(--accent)">browser support</a>). JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or try <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> instead.</p>
         </details>
 
         <details class="faq-item">

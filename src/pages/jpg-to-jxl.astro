@@ -44,7 +44,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Will a .jxl file open everywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No — this is the main catch. As of 2026 only Safari and recent Apple devices open JPEG XL directly; Chrome, Edge, Firefox, and most apps do not. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or use a widely supported format instead." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or use a widely supported format instead." }
         },
         {
           "@type": "Question",
@@ -288,7 +288,7 @@ const structuredData = {
         Both formats are lossy, so this tool re-encodes the decoded image. At a sensible quality the result is visually indistinguishable from the JPG while being lighter. Bear in mind you can't recover detail the original JPG already discarded — JPEG XL simply stores what's there more efficiently.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        The honest catch is compatibility: as of 2026 only Safari and recent Apple devices open <code>.jxl</code> files — Chrome, Edge, Firefox, and many apps still can't. Keep the original JPG if you need universal reach, convert back any time with <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a>, or use <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> for similar savings in a format every current browser supports.
+        The honest catch is compatibility: today only Apple's Safari opens <code>.jxl</code> files by default. Chrome, Edge and Firefox have added JPEG XL decoders but keep them off by default, so for most people a <code>.jxl</code> still won't open — see the full <a href="/jpeg-xl/" style="color:var(--accent)">browser support picture</a>. Keep the original JPG if you need universal reach, convert back any time with <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a>, or use <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> for similar savings in a format every current browser supports.
       </p>
     </div>
   </section>
@@ -319,7 +319,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No — this is the main catch. As of 2026 only Safari and recent Apple devices open JPEG XL directly; Chrome, Edge, Firefox, and most apps do not. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or try <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> instead.</p>
+          <p class="faq-a">No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl (more on <a href="/jpeg-xl/" style="color:var(--accent)">browser support</a>). JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or try <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> instead.</p>
         </details>
 
         <details class="faq-item">
