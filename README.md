@@ -19,9 +19,9 @@ grep -rn "sendBeacon"     src/
 grep -rn "WebSocket"      src/
 ```
 
-The only external URLs referenced in the codebase are `schema.org` and `w3.org` (XML/JSON-LD namespace identifiers — not network requests), the site's own canonical URLs, and a single link to Cloudflare's analytics page in the privacy policy.
+The only external URLs referenced in the codebase are `schema.org` and `w3.org` (XML/JSON-LD namespace identifiers — not network requests) and the site's own canonical URLs.
 
-**Full disclosure on analytics:** the production site loads one third-party beacon — [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/) — which is cookieless, collects no personal data, and is injected at the edge by Cloudflare Pages (it is not in this source tree). It measures page views only. It never receives, and structurally cannot access, the files you work with, because your files are never handed to any code that talks to the network.
+**No analytics, no third-party scripts.** The site loads no analytics, no tracking beacon, and no third-party scripts of any kind — the only code that runs is the tool's own. Beyond the standard server logs any web host generates, nothing about your visit is recorded.
 
 ## Tools
 
