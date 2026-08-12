@@ -20,3 +20,9 @@ yarn-error.log*
 
 # os
 .DS_Store
+
+# local-only detector eval harness + image fixtures.
+# Never commit, and keep them OUT of public/ — everything under public/ is
+# copied into dist/ and would be published by `wrangler pages deploy ./dist`.
+src/pages/detect-harness.astro
+public/fixtures/

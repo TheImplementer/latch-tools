@@ -54,8 +54,12 @@ export default defineConfig({
   vite: {
     // jSquash WASM codecs break Vite's dependency optimizer — exclude them so
     // they load correctly as lazy dynamic imports. (jSquash README workaround.)
+    // onnxruntime-web is here for the same reason: pre-bundling it makes the
+    // dev server churn "Outdated Optimize Dep" reloads on first detector use.
+    // Note this only affects `astro dev` — if a production build ever breaks on
+    // ORT, the cause is asset resolution, not this list.
     optimizeDeps: {
-      exclude: ["@jsquash/avif", "@jsquash/jxl"],
+      exclude: ["@jsquash/avif", "@jsquash/jxl", "onnxruntime-web"],
     },
     // The AVIF encoder ships a multithreaded variant that bundles a Web Worker.
     // Rollup can't code-split the default `iife` worker format, so emit ES
