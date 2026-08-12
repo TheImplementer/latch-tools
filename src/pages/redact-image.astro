@@ -89,7 +89,7 @@ const structuredData = {
         <h1>Redact sensitive details in an image</h1>
         <p>Black out names, account numbers, addresses, or signatures on a document, statement, ID, or screenshot. Draw a bar over each detail — the covered pixels are replaced for good, with nothing left underneath.</p>
         <TrustPill />
-        <p class="quick-details">JPEG, PNG, WebP · one image at a time · up to 50 MB</p>
+        <p class="quick-details">JPEG, PNG, WebP · up to 30 images at once · 50 MB each</p>
       </div>
 
       <RedactWidget heading="Black out sensitive details" defaultEffect="blackout" applyLabel="Redact & download" />
@@ -179,7 +179,11 @@ const structuredData = {
       </div>
 
       <p class="muted" style="font-size:14px;margin-top:30px">
-        Related privacy tools: <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">Blur part of an image</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
+        Related privacy tools: <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">Blur part of an image</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/blur-license-plate/" style="color:var(--accent-text);font-weight:600">Blur a license plate</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
+      </p>
+
+      <p class="muted" style="font-size:14px;margin-top:12px">
+        Why a black bar and not a blur? See <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">how blurred and pixelated details get narrowed back down</a>.
       </p>
     </div>
   </section>

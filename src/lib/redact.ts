@@ -1,16 +1,21 @@
 // -----------------------------------------------------------------------
 // Redaction engine — shared by blur-face, pixelate-image, blur-license-plate.
 //
-// The user drops one image, drags one or more rectangles over the areas to
-// hide, and picks an effect (blur or pixelate) + strength. The effect is
-// rendered live on a stage canvas at preview resolution, then re-applied at
-// the image's FULL resolution on export so the obscured pixels are baked in
+// The user drops one or more images, drags rectangles over the areas to hide,
+// and picks an effect (blur or pixelate) + strength. The effect is rendered
+// live on a stage canvas at preview resolution, then re-applied at each
+// image's FULL resolution on export so the obscured pixels are baked in
 // irreversibly — there is no overlay to peel off. Everything runs on the
-// Canvas API; no library, no upload.
+// Canvas API; no library (bar a lazy JSZip for multi-file download), no upload.
 //
 // Coordinates are stored normalised (0–1, relative to the image) so the same
 // region maps cleanly onto both the scaled preview and the full-res export,
-// independent of device-pixel-ratio or display size.
+// independent of device-pixel-ratio or display size — and so a set of boxes
+// can be copied across a batch of similarly-framed photos ("apply to all").
+//
+// Memory: we never hold N full-resolution images. Each item keeps only a tiny
+// thumbnail plus its regions; the stage canvas exists for the active item
+// alone, and export decodes one file at a time and releases it straight after.
 // -----------------------------------------------------------------------
 
 export type Effect = "blur" | "pixelate" | "blackout";
@@ -36,18 +41,37 @@ interface Rect {
   h: number;
 }
 
+/** One queued image. Deliberately holds no full-res pixels — see header note. */
+interface Item {
+  file: File;
+  iw: number;
+  ih: number;
+  thumbUrl: string;
+  regions: Rect[];
+}
+
+interface Result {
+  name: string;
+  blob: Blob;
+  areas: number;
+}
+
 type Panel = "drop" | "editor" | "processing" | "done" | "error";
 type Mode = "idle" | "creating" | "moving" | "resizing";
 type Corner = "nw" | "ne" | "se" | "sw";
 
 const MAX_SIZE_MB = 50;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+const MAX_FILES = 30;
 const MAX_STAGE = 1400; // longest-side backing resolution for the preview canvas
+const THUMB = 96; // filmstrip thumbnail longest side
 const HANDLE_CSS = 11; // resize-handle hit size, in CSS pixels
 const MIN_REGION = 0.012; // discard drags smaller than this (normalised)
 
 const clamp = (v: number, lo: number, hi: number) =>
   Math.max(lo, Math.min(hi, v));
+
+const raf = () => new Promise((r) => requestAnimationFrame(() => r(null)));
 
 function makeCanvas(
   w: number,
@@ -68,6 +92,10 @@ function normalise(r: Rect): Rect {
     w: Math.abs(r.w),
     h: Math.abs(r.h),
   };
+}
+
+function plural(n: number, word: string): string {
+  return `${n} ${word}${n === 1 ? "" : "s"}`;
 }
 
 export function initRedactWidget(root: HTMLElement): void {
@@ -96,25 +124,33 @@ export function initRedactWidget(root: HTMLElement): void {
   );
   const undoBtn = q<HTMLButtonElement>('[data-el="undo-btn"]');
   const clearBtn = q<HTMLButtonElement>('[data-el="clear-btn"]');
+  const applyAllBtn = q<HTMLButtonElement>('[data-el="apply-all-btn"]');
   const applyBtn = q<HTMLButtonElement>('[data-el="apply-btn"]');
+  const applyLabelEl = q('[data-el="apply-label"]');
   const editorHint = q('[data-el="editor-hint"]');
+  const strip = q('[data-el="filmstrip"]');
+  const stripAddBtn = q<HTMLButtonElement>('[data-el="strip-add"]');
   const widgetTitle = q('[data-el="widget-title"]');
+  const procTitle = q('[data-el="proc-title"]');
+  const procSub = q('[data-el="proc-sub"]');
+  const procMeter = q('[data-el="proc-meter"]');
+  const procFill = q('[data-el="proc-fill"]');
+  const procCount = q('[data-el="proc-count"]');
+  const procPct = q('[data-el="proc-pct"]');
   const donePreview = q('[data-el="done-preview"]');
   const doneTitle = q('[data-el="done-title"]');
   const doneSub = q('[data-el="done-sub"]');
   const downloadBtn = q('[data-el="download-btn"]');
+  const downloadLabelEl = q('[data-el="download-label"]');
   const anotherBtn = q('[data-el="another-btn"]');
   const errTitle = q('[data-el="err-title"]');
   const errMessage = q('[data-el="err-message"]');
   const tryAnotherBtn = q('[data-el="try-another-btn"]');
 
   // ---- State ----
-  let bitmap: ImageBitmap | null = null;
-  let baseCanvas: HTMLCanvasElement | null = null; // full-resolution source image
-  let stageImg: HTMLCanvasElement | null = null; // image drawn at stage resolution (preview sampling source)
-  let iw = 0;
-  let ih = 0;
-  let regions: Rect[] = [];
+  let items: Item[] = [];
+  let active = -1;
+  let stageImg: HTMLCanvasElement | null = null; // active item, at stage resolution
   let selected = -1;
   const effect: Effect = defaultEffect; // fixed per page — no in-widget switching
   let strength = 3;
@@ -122,10 +158,19 @@ export function initRedactWidget(root: HTMLElement): void {
   let activeCorner: Corner | null = null;
   let dragStart = { x: 0, y: 0 };
   let dragOrigin: Rect = { x: 0, y: 0, w: 0, h: 0 };
-  let sourceFile: File | null = null;
-  let resultBlob: Blob | null = null;
-  let resultName = "";
+  let results: Result[] = [];
   let doneUrl: string | null = null;
+
+  /** Regions of the item currently on the stage. Empty array when none loaded. */
+  function regions(): Rect[] {
+    return active >= 0 && items[active] ? items[active].regions : [];
+  }
+  function totalRegions(): number {
+    return items.reduce((n, it) => n + it.regions.length, 0);
+  }
+  function itemsWithRegions(): Item[] {
+    return items.filter((it) => it.regions.length > 0);
+  }
 
   function showPanel(name: Panel) {
     for (const [k, el] of Object.entries(panels)) el.hidden = k !== name;
@@ -246,8 +291,10 @@ export function initRedactWidget(root: HTMLElement): void {
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(stageImg, 0, 0, W, H);
 
+    const rs = regions();
+
     // Baked-look preview: each region drawn with the real effect.
-    for (const rc of regions) {
+    for (const rc of rs) {
       const px = Math.round(rc.x * W);
       const py = Math.round(rc.y * H);
       const pw = Math.round(rc.w * W);
@@ -260,7 +307,7 @@ export function initRedactWidget(root: HTMLElement): void {
     const cssW = stage.getBoundingClientRect().width || W;
     const ratio = W / cssW;
     const handle = HANDLE_CSS * ratio;
-    regions.forEach((rc, i) => {
+    rs.forEach((rc, i) => {
       const x = rc.x * W;
       const y = rc.y * H;
       const w = rc.w * W;
@@ -288,17 +335,67 @@ export function initRedactWidget(root: HTMLElement): void {
   }
 
   function updateHint() {
-    const n = regions.length;
+    const n = regions().length;
+    const batch = items.length > 1;
+    const where = batch ? ` on image ${active + 1}` : "";
     if (n === 0) {
-      editorHint.textContent =
-        "Drag a box over the area you want to hide. Add as many as you need.";
+      editorHint.textContent = batch
+        ? `Drag a box over the area you want to hide${where}. Each image keeps its own boxes.`
+        : "Drag a box over the area you want to hide. Add as many as you need.";
     } else {
       const verb = EFFECT_VERB[effect];
-      editorHint.textContent = `${n} area${n !== 1 ? "s" : ""} will be ${verb}. Drag to add more, or click one to move, resize, or delete it.`;
+      editorHint.textContent = `${plural(n, "area")}${where} will be ${verb}. Drag to add more, or click one to move, resize, or delete it.`;
     }
-    applyBtn.disabled = n === 0;
     undoBtn.disabled = n === 0;
     clearBtn.disabled = n === 0;
+    applyAllBtn.disabled = n === 0 || items.length < 2;
+    applyAllBtn.hidden = items.length < 2;
+
+    // Export is enabled by ANY marked-up image, not just the visible one.
+    const total = totalRegions();
+    applyBtn.disabled = total === 0;
+    const base =
+      applyLabelEl.dataset.base ?? applyLabelEl.textContent ?? "Apply";
+    const marked = itemsWithRegions().length;
+    applyLabelEl.textContent =
+      batch && marked > 0 ? `${base} (${marked}/${items.length})` : base;
+  }
+
+  // ---- Filmstrip ----
+  function renderStrip() {
+    strip.hidden = items.length < 2;
+    if (items.length < 2) {
+      strip.querySelectorAll("[data-thumb]").forEach((n) => n.remove());
+      return;
+    }
+    strip.querySelectorAll("[data-thumb]").forEach((n) => n.remove());
+    items.forEach((it, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "strip-item" + (i === active ? " is-active" : "");
+      btn.dataset.thumb = String(i);
+      btn.setAttribute(
+        "aria-label",
+        `Image ${i + 1} of ${items.length}: ${it.file.name}${it.regions.length ? `, ${plural(it.regions.length, "area")} marked` : ", no areas marked"}`,
+      );
+      if (i === active) btn.setAttribute("aria-current", "true");
+      const img = document.createElement("img");
+      img.src = it.thumbUrl;
+      img.alt = "";
+      img.decoding = "async";
+      btn.appendChild(img);
+      if (it.regions.length) {
+        const badge = document.createElement("span");
+        badge.className = "strip-badge";
+        badge.textContent = String(it.regions.length);
+        badge.setAttribute("aria-hidden", "true");
+        btn.appendChild(badge);
+      }
+      btn.addEventListener("click", () => {
+        if (i !== active) void setActive(i);
+      });
+      strip.insertBefore(btn, stripAddBtn);
+    });
   }
 
   // ---- Hit testing ----
@@ -321,26 +418,27 @@ export function initRedactWidget(root: HTMLElement): void {
   }
   // Topmost region under the point (regions drawn in order → last wins).
   function regionAt(p: { x: number; y: number }): number {
-    for (let i = regions.length - 1; i >= 0; i--)
-      if (insideRect(regions[i], p)) return i;
+    const rs = regions();
+    for (let i = rs.length - 1; i >= 0; i--) if (insideRect(rs[i], p)) return i;
     return -1;
   }
 
   // ---- Pointer interaction ----
   function onPointerDown(e: PointerEvent) {
-    if (!bitmap) return;
+    if (!stageImg) return;
+    const rs = regions();
     stage.setPointerCapture(e.pointerId);
     stage.focus();
     const p = stageToNorm(stage, e.clientX, e.clientY);
     dragStart = p;
 
     // Resize handle of the selected region takes priority.
-    if (selected >= 0) {
-      const corner = hitCorner(regions[selected], p);
+    if (selected >= 0 && rs[selected]) {
+      const corner = hitCorner(rs[selected], p);
       if (corner) {
         mode = "resizing";
         activeCorner = corner;
-        dragOrigin = { ...regions[selected] };
+        dragOrigin = { ...rs[selected] };
         return;
       }
     }
@@ -348,14 +446,14 @@ export function initRedactWidget(root: HTMLElement): void {
     if (hit >= 0) {
       selected = hit;
       mode = "moving";
-      dragOrigin = { ...regions[hit] };
+      dragOrigin = { ...rs[hit] };
       updateHint();
       draw();
       return;
     }
     // Empty space → start a new region.
-    selected = regions.length;
-    regions.push({ x: p.x, y: p.y, w: 0, h: 0 });
+    selected = rs.length;
+    rs.push({ x: p.x, y: p.y, w: 0, h: 0 });
     mode = "creating";
     dragOrigin = { x: p.x, y: p.y, w: 0, h: 0 };
     draw();
@@ -368,10 +466,11 @@ export function initRedactWidget(root: HTMLElement): void {
       updateCursor(p);
       return;
     }
-    if (selected < 0) return;
+    const rs = regions();
+    if (selected < 0 || !rs[selected]) return;
 
     if (mode === "creating") {
-      regions[selected] = {
+      rs[selected] = {
         x: dragOrigin.x,
         y: dragOrigin.y,
         w: p.x - dragOrigin.x,
@@ -382,29 +481,29 @@ export function initRedactWidget(root: HTMLElement): void {
       const dy = p.y - dragStart.y;
       const nx = clamp(dragOrigin.x + dx, 0, 1 - dragOrigin.w);
       const ny = clamp(dragOrigin.y + dy, 0, 1 - dragOrigin.h);
-      regions[selected] = { x: nx, y: ny, w: dragOrigin.w, h: dragOrigin.h };
+      rs[selected] = { x: nx, y: ny, w: dragOrigin.w, h: dragOrigin.h };
     } else if (mode === "resizing" && activeCorner) {
-      let { x, y, w, h } = dragOrigin;
+      const { x, y, w, h } = dragOrigin;
       const right = x + w;
       const bottom = y + h;
       if (activeCorner === "nw")
-        regions[selected] = normalise({
+        rs[selected] = normalise({
           x: p.x,
           y: p.y,
           w: right - p.x,
           h: bottom - p.y,
         });
       else if (activeCorner === "ne")
-        regions[selected] = normalise({
+        rs[selected] = normalise({
           x: x,
           y: p.y,
           w: p.x - x,
           h: bottom - p.y,
         });
       else if (activeCorner === "se")
-        regions[selected] = normalise({ x: x, y: y, w: p.x - x, h: p.y - y });
+        rs[selected] = normalise({ x: x, y: y, w: p.x - x, h: p.y - y });
       else
-        regions[selected] = normalise({
+        rs[selected] = normalise({
           x: p.x,
           y: y,
           w: right - p.x,
@@ -417,27 +516,30 @@ export function initRedactWidget(root: HTMLElement): void {
   function onPointerUp(e: PointerEvent) {
     if (stage.hasPointerCapture(e.pointerId))
       stage.releasePointerCapture(e.pointerId);
-    if (mode === "creating" && selected >= 0) {
-      const rc = normalise(regions[selected]);
+    const rs = regions();
+    if (mode === "creating" && selected >= 0 && rs[selected]) {
+      const rc = normalise(rs[selected]);
       if (rc.w < MIN_REGION || rc.h < MIN_REGION) {
-        regions.splice(selected, 1); // too small — treat as a click, discard
+        rs.splice(selected, 1); // too small — treat as a click, discard
         selected = -1;
       } else {
-        regions[selected] = rc;
+        rs[selected] = rc;
       }
-    } else if (mode === "resizing" && selected >= 0) {
-      regions[selected] = normalise(regions[selected]);
+    } else if (mode === "resizing" && selected >= 0 && rs[selected]) {
+      rs[selected] = normalise(rs[selected]);
     }
     mode = "idle";
     activeCorner = null;
     updateHint();
+    renderStrip();
     draw();
   }
 
   function updateCursor(p: { x: number; y: number }) {
+    const rs = regions();
     let cursor = "crosshair";
-    if (selected >= 0) {
-      const corner = hitCorner(regions[selected], p);
+    if (selected >= 0 && rs[selected]) {
+      const corner = hitCorner(rs[selected], p);
       if (corner === "nw" || corner === "se") cursor = "nwse-resize";
       else if (corner === "ne" || corner === "sw") cursor = "nesw-resize";
       else if (regionAt(p) >= 0) cursor = "move";
@@ -448,11 +550,12 @@ export function initRedactWidget(root: HTMLElement): void {
   }
 
   function onKeyDown(e: KeyboardEvent) {
-    if (selected < 0) return;
+    const rs = regions();
+    if (selected < 0 || !rs[selected]) return;
     const step = e.shiftKey ? 0.05 : 0.01;
-    const rc = regions[selected];
+    const rc = rs[selected];
     if (e.key === "Delete" || e.key === "Backspace") {
-      regions.splice(selected, 1);
+      rs.splice(selected, 1);
       selected = -1;
       e.preventDefault();
     } else if (e.key === "Escape") {
@@ -473,6 +576,7 @@ export function initRedactWidget(root: HTMLElement): void {
       return;
     }
     updateHint();
+    renderStrip();
     draw();
   }
 
@@ -482,7 +586,7 @@ export function initRedactWidget(root: HTMLElement): void {
   stage.addEventListener("pointercancel", onPointerUp);
   stage.addEventListener("keydown", onKeyDown);
   window.addEventListener("resize", () => {
-    if (bitmap) draw();
+    if (stageImg) draw();
   });
 
   // ---- Strength control (blur/pixelate only; blackout omits it) ----
@@ -492,16 +596,35 @@ export function initRedactWidget(root: HTMLElement): void {
   });
 
   undoBtn.addEventListener("click", () => {
-    regions.pop();
+    regions().pop();
     selected = -1;
     updateHint();
+    renderStrip();
     draw();
   });
   clearBtn.addEventListener("click", () => {
-    regions = [];
+    if (active >= 0 && items[active]) items[active].regions = [];
     selected = -1;
     updateHint();
+    renderStrip();
     draw();
+  });
+
+  // Copy the current image's boxes onto every other image in the batch. The
+  // whole point of bulk mode: listing/dashcam photos are framed alike, so one
+  // box over the plate usually lands correctly on all of them. Boxes are
+  // normalised, so this survives differing pixel dimensions.
+  applyAllBtn.addEventListener("click", () => {
+    if (active < 0 || !items[active]) return;
+    const src = items[active].regions;
+    if (!src.length) return;
+    items.forEach((it, i) => {
+      if (i === active) return;
+      it.regions = src.map((r) => ({ ...r }));
+    });
+    editorHint.textContent = `Copied ${plural(src.length, "box")} onto all ${items.length} images. Click any thumbnail to check and adjust it.`;
+    updateHint();
+    renderStrip();
   });
 
   // ---- File intake ----
@@ -511,81 +634,178 @@ export function initRedactWidget(root: HTMLElement): void {
     return (b / (1024 * 1024)).toFixed(1) + " MB";
   }
 
-  async function acceptFile(file: File) {
-    if (!file.type.startsWith("image/")) {
-      showError(
-        "Unsupported file type",
-        "Please choose an image file — JPEG, PNG, or WebP.",
-      );
-      return;
-    }
-    if (file.size > MAX_SIZE_BYTES) {
-      showError(
-        "File too large",
-        `${file.name} is ${formatBytes(file.size)}. The limit is ${MAX_SIZE_MB} MB.`,
-      );
-      return;
-    }
+  async function makeThumb(bmp: ImageBitmap): Promise<string> {
+    const scale = Math.min(1, THUMB / Math.max(bmp.width, bmp.height));
+    const t = makeCanvas(bmp.width * scale, bmp.height * scale);
+    t.ctx.imageSmoothingEnabled = true;
+    t.ctx.imageSmoothingQuality = "high";
+    t.ctx.drawImage(bmp, 0, 0, t.canvas.width, t.canvas.height);
+    const blob = await new Promise<Blob | null>((res) =>
+      t.canvas.toBlob(res, "image/jpeg", 0.7),
+    );
+    return blob ? URL.createObjectURL(blob) : "";
+  }
+
+  function setProgress(done: number, total: number, label: string) {
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    procFill.style.width = pct + "%";
+    procCount.textContent = label;
+    procPct.textContent = pct + "%";
+  }
+
+  /** Build the stage canvas for one item. Decodes, draws, releases. */
+  async function setActive(i: number) {
+    const it = items[i];
+    if (!it) return;
+    active = i;
+    selected = -1;
+    let bmp: ImageBitmap | null = null;
     try {
-      const bmp = await createImageBitmap(file);
-      closeBitmap();
-      bitmap = bmp;
-      iw = bmp.width;
-      ih = bmp.height;
-      sourceFile = file;
-
-      const base = makeCanvas(iw, ih);
-      base.ctx.drawImage(bmp, 0, 0);
-      baseCanvas = base.canvas;
-
-      const scale = Math.min(1, MAX_STAGE / Math.max(iw, ih));
-      const sw = Math.round(iw * scale);
-      const sh = Math.round(ih * scale);
+      bmp = await createImageBitmap(it.file);
+      const scale = Math.min(1, MAX_STAGE / Math.max(it.iw, it.ih));
+      const sw = Math.round(it.iw * scale);
+      const sh = Math.round(it.ih * scale);
       stage.width = sw;
       stage.height = sh;
-      stage.style.aspectRatio = `${iw} / ${ih}`;
+      stage.style.aspectRatio = `${it.iw} / ${it.ih}`;
       const si = makeCanvas(sw, sh);
       si.ctx.drawImage(bmp, 0, 0, sw, sh);
       stageImg = si.canvas;
-
-      regions = [];
-      selected = -1;
-      if (strengthInput) strengthInput.value = String(strength);
-      widgetTitle.textContent = "Draw over what to hide";
-      updateHint();
-      draw();
-      showPanel("editor");
-    } catch {
-      showError(
-        "We couldn't open that image",
-        "The file looks corrupted or is in a format your browser cannot decode.",
-      );
+    } finally {
+      bmp?.close();
     }
+    widgetTitle.textContent =
+      items.length > 1
+        ? `Image ${i + 1} of ${items.length}`
+        : "Draw over what to hide";
+    renderStrip();
+    updateHint();
+    draw();
+  }
+
+  /** Add files to the queue — used by both first drop and "Add more". */
+  async function acceptFiles(list: File[], append = false) {
+    const imgs = list.filter((f) => f.type.startsWith("image/"));
+    if (imgs.length === 0) {
+      showError(
+        "Unsupported file type",
+        "Please choose image files — JPEG, PNG, or WebP.",
+      );
+      return;
+    }
+
+    const room = MAX_FILES - (append ? items.length : 0);
+    const chosen = imgs.slice(0, Math.max(0, room));
+    const dropped = imgs.length - chosen.length;
+    if (chosen.length === 0) {
+      showError(
+        "That's too many images",
+        `You can work on up to ${MAX_FILES} images at once. Finish this batch, then start another.`,
+      );
+      return;
+    }
+
+    // Decoding a large batch takes a moment — show the working state.
+    const showLoader = chosen.length > 1;
+    if (showLoader) {
+      procTitle.textContent = "Loading your images";
+      procSub.textContent =
+        "Reading them in your browser — nothing is uploaded";
+      procMeter.hidden = false;
+      setProgress(0, chosen.length, `0 of ${chosen.length}`);
+      widgetTitle.textContent = "Loading…";
+      showPanel("processing");
+      await raf();
+    }
+
+    const accepted: Item[] = [];
+    const skipped: string[] = [];
+    for (let i = 0; i < chosen.length; i++) {
+      const f = chosen[i];
+      if (showLoader) {
+        setProgress(
+          i,
+          chosen.length,
+          `${i + 1} of ${chosen.length} · ${f.name}`,
+        );
+        await raf();
+      }
+      if (f.size > MAX_SIZE_BYTES) {
+        skipped.push(`${f.name} (${formatBytes(f.size)})`);
+        continue;
+      }
+      let bmp: ImageBitmap | null = null;
+      try {
+        bmp = await createImageBitmap(f);
+        const thumbUrl = await makeThumb(bmp);
+        accepted.push({
+          file: f,
+          iw: bmp.width,
+          ih: bmp.height,
+          thumbUrl,
+          regions: [],
+        });
+      } catch {
+        skipped.push(f.name);
+      } finally {
+        bmp?.close();
+      }
+    }
+
+    if (accepted.length === 0) {
+      showError(
+        "We couldn't open those images",
+        skipped.length === 1
+          ? `${skipped[0]} is over the ${MAX_SIZE_MB} MB limit, corrupted, or in a format your browser cannot decode.`
+          : `None of those files could be opened. They may be over the ${MAX_SIZE_MB} MB limit, corrupted, or in a format your browser cannot decode.`,
+      );
+      return;
+    }
+
+    if (append) {
+      items = items.concat(accepted);
+    } else {
+      releaseItems();
+      items = accepted;
+    }
+
+    if (strengthInput) strengthInput.value = String(strength);
+    await setActive(append ? items.length - accepted.length : 0);
+    showPanel("editor");
+
+    // Non-fatal: some files were left out. Say so without losing the good ones.
+    const notes: string[] = [];
+    if (skipped.length)
+      notes.push(
+        `Skipped ${plural(skipped.length, "file")}: ${skipped.slice(0, 3).join(", ")}${skipped.length > 3 ? "…" : ""}.`,
+      );
+    if (dropped > 0)
+      notes.push(`Only the first ${MAX_FILES} images were added.`);
+    if (notes.length) editorHint.textContent = notes.join(" ");
   }
 
   // ---- Apply + export ----
-  async function apply() {
-    if (!baseCanvas || regions.length === 0 || !sourceFile) return;
-    showPanel("processing");
-    widgetTitle.textContent = "Applying…";
 
-    // Yield a frame so the processing state paints before the (sync) encode.
-    await new Promise((r) => requestAnimationFrame(() => r(null)));
-
+  /** Bake the regions into one image at full resolution. */
+  async function renderOne(it: Item): Promise<Result> {
+    let bmp: ImageBitmap | null = null;
     try {
-      const out = makeCanvas(iw, ih);
-      out.ctx.drawImage(baseCanvas, 0, 0);
-      for (const rc of regions) {
-        const x = Math.round(rc.x * iw);
-        const y = Math.round(rc.y * ih);
-        const w = Math.round(rc.w * iw);
-        const h = Math.round(rc.h * ih);
-        const tile = processRegion(baseCanvas, x, y, w, h);
+      bmp = await createImageBitmap(it.file);
+      const base = makeCanvas(it.iw, it.ih);
+      base.ctx.drawImage(bmp, 0, 0);
+      const out = makeCanvas(it.iw, it.ih);
+      out.ctx.drawImage(base.canvas, 0, 0);
+      for (const rc of it.regions) {
+        const x = Math.round(rc.x * it.iw);
+        const y = Math.round(rc.y * it.ih);
+        const w = Math.round(rc.w * it.iw);
+        const h = Math.round(rc.h * it.ih);
+        const tile = processRegion(base.canvas, x, y, w, h);
         if (tile) out.ctx.drawImage(tile.canvas, tile.dx, tile.dy);
       }
 
       const isJpeg =
-        /jpe?g/i.test(sourceFile.type) || /\.jpe?g$/i.test(sourceFile.name);
+        /jpe?g/i.test(it.file.type) || /\.jpe?g$/i.test(it.file.name);
       const outType = isJpeg ? "image/jpeg" : "image/png";
       const ext = isJpeg ? "jpg" : "png";
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -595,10 +815,48 @@ export function initRedactWidget(root: HTMLElement): void {
           0.92,
         );
       });
+      const stem = it.file.name.replace(/\.[^.]+$/, "");
+      return {
+        name: `${stem}-${EFFECT_SUFFIX[effect]}.${ext}`,
+        blob,
+        areas: it.regions.length,
+      };
+    } finally {
+      bmp?.close();
+    }
+  }
 
-      const stem = sourceFile.name.replace(/\.[^.]+$/, "");
-      resultBlob = blob;
-      resultName = `${stem}-${EFFECT_SUFFIX[effect]}.${ext}`;
+  async function apply() {
+    const pending = itemsWithRegions();
+    if (pending.length === 0) return;
+    const batch = pending.length > 1;
+
+    procTitle.textContent = batch
+      ? `Rendering ${plural(pending.length, "image")}`
+      : "Rendering your image";
+    procSub.textContent = "Baking the effect in at full resolution";
+    procMeter.hidden = !batch;
+    setProgress(0, pending.length, batch ? `0 of ${pending.length}` : "");
+    widgetTitle.textContent = "Applying…";
+    showPanel("processing");
+
+    // Yield a frame so the processing state paints before the (sync) encode.
+    await raf();
+
+    results = [];
+    try {
+      for (let i = 0; i < pending.length; i++) {
+        if (batch) {
+          setProgress(
+            i,
+            pending.length,
+            `${i + 1} of ${pending.length} · ${pending[i].file.name}`,
+          );
+          await raf();
+        }
+        results.push(await renderOne(pending[i]));
+      }
+      setProgress(pending.length, pending.length, "");
       showDone();
     } catch {
       showError(
@@ -610,51 +868,73 @@ export function initRedactWidget(root: HTMLElement): void {
   applyBtn.addEventListener("click", apply);
 
   function showDone() {
-    if (!resultBlob) return;
+    if (results.length === 0) return;
     if (doneUrl) URL.revokeObjectURL(doneUrl);
-    doneUrl = URL.createObjectURL(resultBlob);
+    const first = results[0];
+    doneUrl = URL.createObjectURL(first.blob);
     donePreview.innerHTML = "";
     const img = document.createElement("img");
     img.src = doneUrl;
-    img.alt = `Your image with ${regions.length} area${regions.length !== 1 ? "s" : ""} ${EFFECT_VERB[effect]}`;
+    img.alt = `Your image with ${plural(first.areas, "area")} ${EFFECT_VERB[effect]}`;
     img.decoding = "async";
     donePreview.appendChild(img);
 
-    const n = regions.length;
     const verb = EFFECT_VERB[effect];
-    doneTitle.textContent = `Done — ${n} area${n !== 1 ? "s" : ""} ${verb}`;
-    doneSub.textContent = `${formatBytes(resultBlob.size)} · baked in for good, and it never left your device`;
+    const areas = results.reduce((n, r) => n + r.areas, 0);
+    const bytes = results.reduce((n, r) => n + r.blob.size, 0);
+    if (results.length > 1) {
+      doneTitle.textContent = `Done — ${plural(results.length, "image")}, ${plural(areas, "area")} ${verb}`;
+      doneSub.textContent = `${formatBytes(bytes)} total · baked in for good, and none of it left your device`;
+      downloadLabelEl.textContent = "Download all (.zip)";
+    } else {
+      doneTitle.textContent = `Done — ${plural(areas, "area")} ${verb}`;
+      doneSub.textContent = `${formatBytes(bytes)} · baked in for good, and it never left your device`;
+      downloadLabelEl.textContent = "Download";
+    }
     widgetTitle.textContent = "Ready to download";
     showPanel("done");
   }
 
-  function download() {
-    if (!resultBlob) return;
+  function saveBlob(blob: Blob, name: string) {
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(resultBlob);
-    a.download = resultName;
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   }
-  downloadBtn.addEventListener("click", download);
+
+  async function download() {
+    if (results.length === 0) return;
+    if (results.length === 1) {
+      saveBlob(results[0].blob, results[0].name);
+      return;
+    }
+    // Lazy — JSZip is only ever fetched by users who actually ran a batch.
+    const { default: JSZip } = await import("jszip");
+    const zip = new JSZip();
+    for (const r of results) zip.file(r.name, r.blob);
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    saveBlob(zipBlob, `${EFFECT_SUFFIX[effect]}-images.zip`);
+  }
+  downloadBtn.addEventListener("click", () => void download());
 
   // ---- Reset / error ----
-  function closeBitmap() {
-    if (bitmap) bitmap.close();
-    bitmap = null;
+  function releaseItems() {
+    for (const it of items) if (it.thumbUrl) URL.revokeObjectURL(it.thumbUrl);
+    items = [];
   }
   function reset() {
-    closeBitmap();
-    baseCanvas = null;
+    releaseItems();
+    active = -1;
     stageImg = null;
-    regions = [];
     selected = -1;
-    resultBlob = null;
-    sourceFile = null;
+    results = [];
     if (doneUrl) {
       URL.revokeObjectURL(doneUrl);
       doneUrl = null;
     }
+    strip.hidden = true;
+    strip.querySelectorAll("[data-thumb]").forEach((n) => n.remove());
     widgetTitle.textContent = "Hide anything private";
     showPanel("drop");
   }
@@ -669,39 +949,52 @@ export function initRedactWidget(root: HTMLElement): void {
   }
 
   // ---- Drop zone wiring ----
+  let appendNext = false;
   dropzone.addEventListener("dragover", (e) => {
     e.preventDefault();
     dropzone.classList.add("is-drag");
-    dzTitle.textContent = "Drop to load your image";
+    dzTitle.textContent = "Drop to load your images";
   });
   ["dragleave", "dragend"].forEach((ev) =>
     dropzone.addEventListener(ev, () => {
       dropzone.classList.remove("is-drag");
-      dzTitle.textContent = "Drag & drop your image";
+      dzTitle.textContent = "Drag & drop your images";
     }),
   );
   dropzone.addEventListener("drop", (e) => {
     e.preventDefault();
     dropzone.classList.remove("is-drag");
-    dzTitle.textContent = "Drag & drop your image";
-    const file = (e as DragEvent).dataTransfer?.files?.[0];
-    if (file) acceptFile(file);
+    dzTitle.textContent = "Drag & drop your images";
+    const files = Array.from((e as DragEvent).dataTransfer?.files ?? []);
+    if (files.length) {
+      appendNext = false;
+      void acceptFiles(files);
+    }
   });
-  dropzone.addEventListener("click", () => fileInput.click());
+  dropzone.addEventListener("click", () => {
+    appendNext = false;
+    fileInput.click();
+  });
   dropzone.addEventListener("keydown", (e) => {
     const ke = e as KeyboardEvent;
     if (ke.key === "Enter" || ke.key === " ") {
       e.preventDefault();
+      appendNext = false;
       fileInput.click();
     }
   });
   browseBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+    appendNext = false;
+    fileInput.click();
+  });
+  stripAddBtn.addEventListener("click", () => {
+    appendNext = true;
     fileInput.click();
   });
   fileInput.addEventListener("change", () => {
-    const file = fileInput.files?.[0];
-    if (file) acceptFile(file);
+    const files = Array.from(fileInput.files ?? []);
+    if (files.length) void acceptFiles(files, appendNext);
     fileInput.value = "";
   });
 

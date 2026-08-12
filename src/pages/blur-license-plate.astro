@@ -50,7 +50,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Can the plate number be recovered from the blurred image?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution, not added as a removable layer. Use a high strength so no characters are legible — a light blur over a few large characters can sometimes be reversed, so make sure the plate is completely unreadable." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution, not added as a removable layer. Use a high strength so no characters are legible — a light blur over a few large characters can sometimes be reversed, so make sure the plate is completely unreadable. If the plate really matters, a solid blackout is the only option that cannot be reversed at all." }
         },
         {
           "@type": "Question",
@@ -89,7 +89,7 @@ const structuredData = {
         <h1>Blur a license plate</h1>
         <p>Selling a car, sharing a dashcam still, or posting a street photo? Hide the number plate first. Draw a box over it and download — the plate never becomes public.</p>
         <TrustPill />
-        <p class="quick-details">JPEG, PNG, WebP · one image at a time · up to 50 MB</p>
+        <p class="quick-details">JPEG, PNG, WebP · up to 30 images at once · 50 MB each</p>
       </div>
 
       <RedactWidget heading="Blur a license plate" defaultEffect="blur" applyLabel="Blur & download" />
@@ -166,7 +166,7 @@ const structuredData = {
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can the plate number be recovered from the blurred image?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution, not added as a removable layer. Use a high strength so no characters are legible — a light blur over a few large characters can sometimes be reversed, so make sure the plate is completely unreadable.</p>
+          <p class="faq-a">Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution, not added as a removable layer. Use a high strength so no characters are legible — a light blur over a few large characters can sometimes be reversed, so make sure the plate is completely unreadable. For the full picture, see <a href="/unblur-license-plate/" style="color:var(--accent)">can a blurred license plate be unblurred?</a></p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I blur several plates in one photo?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
@@ -180,6 +180,10 @@ const structuredData = {
 
       <p class="muted" style="font-size:14px;margin-top:30px">
         Related privacy tools: <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">Blur part of an image</a> · <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
+      </p>
+
+      <p class="muted" style="font-size:14px;margin-top:12px">
+        Before you post it: <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">can a blurred license plate be unblurred?</a> — when a blur is too light to hold, and what to use instead.
       </p>
     </div>
   </section>
