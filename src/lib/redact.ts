@@ -18,6 +18,11 @@
 // alone, and export decodes one file at a time and releases it straight after.
 // -----------------------------------------------------------------------
 
+// Type-only: erased at build, so this does NOT create a static edge to the
+// detector. src/lib/detect.ts must only ever be reached via `await import()`
+// from inside the click handler, or ONNX Runtime lands in the eager bundle.
+import type { DetectKind, Detection } from "./detect";
+
 export type Effect = "blur" | "pixelate" | "blackout";
 
 // Per-effect labels, kept in one place so hint/filename stay in sync.
@@ -67,6 +72,7 @@ const MAX_STAGE = 1400; // longest-side backing resolution for the preview canva
 const THUMB = 96; // filmstrip thumbnail longest side
 const HANDLE_CSS = 11; // resize-handle hit size, in CSS pixels
 const MIN_REGION = 0.012; // discard drags smaller than this (normalised)
+const EFFECT_PREVIEW_MAX = 16; // above this, skip the effect pass mid-drag
 
 const clamp = (v: number, lo: number, hi: number) =>
   Math.max(lo, Math.min(hi, v));
@@ -105,6 +111,14 @@ export function initRedactWidget(root: HTMLElement): void {
   const defaultEffect: Effect =
     de === "pixelate" ? "pixelate" : de === "blackout" ? "blackout" : "blur";
 
+  // Auto-detection is opt-in per page. `null` everywhere it isn't configured,
+  // in which case no button exists and none of the detect code path runs.
+  const dk = root.dataset.detect;
+  const detectKind: DetectKind | null =
+    dk === "face" || dk === "plate" ? dk : null;
+  const detectNoun = root.dataset.detectNoun ?? "faces";
+  const detectOne = detectNoun.replace(/s$/, "");
+
   // ---- Elements ----
   const panels: Record<Panel, HTMLElement> = {
     drop: q('[data-panel="drop"]'),
@@ -121,6 +135,21 @@ export function initRedactWidget(root: HTMLElement): void {
   // Strength only renders on blur/pixelate pages (blackout ignores it) — may be absent.
   const strengthInput = root.querySelector<HTMLInputElement>(
     '[data-el="strength"]',
+  );
+  // Optional like strengthInput — q() would hand back a null typed as
+  // HTMLElement on the pages that don't render these.
+  const detectBtn = root.querySelector<HTMLButtonElement>(
+    '[data-el="detect-btn"]',
+  );
+  const detectSpin = root.querySelector<HTMLElement>('[data-el="detect-spin"]');
+  const detectLabelEl = root.querySelector<HTMLElement>(
+    '[data-el="detect-label"]',
+  );
+  const detectCancelBtn = root.querySelector<HTMLButtonElement>(
+    '[data-el="detect-cancel"]',
+  );
+  const detectCancelRow = root.querySelector<HTMLElement>(
+    '[data-el="detect-cancel-row"]',
   );
   const undoBtn = q<HTMLButtonElement>('[data-el="undo-btn"]');
   const clearBtn = q<HTMLButtonElement>('[data-el="clear-btn"]');
@@ -160,6 +189,11 @@ export function initRedactWidget(root: HTMLElement): void {
   let dragOrigin: Rect = { x: 0, y: 0, w: 0, h: 0 };
   let results: Result[] = [];
   let doneUrl: string | null = null;
+  let detectBusy = false;
+  let detectCancelled = false;
+  // Set when the runtime can't start at all — retrying won't help, so the
+  // button goes away rather than offering something that can only fail.
+  let detectDead = false;
 
   /** Regions of the item currently on the stage. Empty array when none loaded. */
   function regions(): Rect[] {
@@ -294,13 +328,22 @@ export function initRedactWidget(root: HTMLElement): void {
     const rs = regions();
 
     // Baked-look preview: each region drawn with the real effect.
-    for (const rc of rs) {
-      const px = Math.round(rc.x * W);
-      const py = Math.round(rc.y * H);
-      const pw = Math.round(rc.w * W);
-      const ph = Math.round(rc.h * H);
-      const tile = processRegion(stageImg, px, py, pw, ph);
-      if (tile) ctx.drawImage(tile.canvas, tile.dx, tile.dy);
+    //
+    // processRegion is expensive (blur runs a halving-downscale chain) and this
+    // function fires on every pointermove. Hand-drawn counts stay in the low
+    // single digits, but auto-detect can put 40+ boxes on a crowd shot, so
+    // while a drag is in flight we skip the effect pass and let the outlines
+    // below carry the interaction. Releasing the pointer repaints in full.
+    const liveDrag = mode !== "idle" && rs.length > EFFECT_PREVIEW_MAX;
+    if (!liveDrag) {
+      for (const rc of rs) {
+        const px = Math.round(rc.x * W);
+        const py = Math.round(rc.y * H);
+        const pw = Math.round(rc.w * W);
+        const ph = Math.round(rc.h * H);
+        const tile = processRegion(stageImg, px, py, pw, ph);
+        if (tile) ctx.drawImage(tile.canvas, tile.dx, tile.dy);
+      }
     }
 
     // UI chrome (outlines + handles) — not baked into the export.
@@ -334,22 +377,49 @@ export function initRedactWidget(root: HTMLElement): void {
     });
   }
 
-  function updateHint() {
+  // Repaint the hint line and re-derive every button's enabled state.
+  //
+  // `note` replaces the computed hint for one-off messages ("Copied 3 boxes
+  // onto all 12 images"). It exists because this function owns editorHint
+  // outright: a caller that set editorHint.textContent itself and then called
+  // updateHint() had its message silently overwritten on the next line.
+  function updateHint(note?: string) {
     const n = regions().length;
     const batch = items.length > 1;
     const where = batch ? ` on image ${active + 1}` : "";
+    let hint: string;
     if (n === 0) {
-      editorHint.textContent = batch
+      hint = batch
         ? `Drag a box over the area you want to hide${where}. Each image keeps its own boxes.`
         : "Drag a box over the area you want to hide. Add as many as you need.";
     } else {
       const verb = EFFECT_VERB[effect];
-      editorHint.textContent = `${plural(n, "area")}${where} will be ${verb}. Drag to add more, or click one to move, resize, or delete it.`;
+      hint = `${plural(n, "area")}${where} will be ${verb}. Drag to add more, or click one to move, resize, or delete it.`;
     }
+    editorHint.textContent = note ?? hint;
+    syncControls();
+  }
+
+  // Button enabled/disabled/label state, split out of updateHint so it can be
+  // re-derived without overwriting a one-off note that is still on screen.
+  function syncControls() {
+    const n = regions().length;
+    const batch = items.length > 1;
     undoBtn.disabled = n === 0;
     clearBtn.disabled = n === 0;
     applyAllBtn.disabled = n === 0 || items.length < 2;
     applyAllBtn.hidden = items.length < 2;
+
+    if (detectBtn) {
+      detectBtn.hidden = !detectKind || detectDead;
+      detectBtn.disabled = detectBusy || items.length === 0;
+      if (detectLabelEl && !detectBusy) {
+        const base = detectLabelEl.dataset.base ?? "Find";
+        detectLabelEl.textContent = batch
+          ? `${base} in all ${items.length}`
+          : base;
+      }
+    }
 
     // Export is enabled by ANY marked-up image, not just the visible one.
     const total = totalRegions();
@@ -622,9 +692,247 @@ export function initRedactWidget(root: HTMLElement): void {
       if (i === active) return;
       it.regions = src.map((r) => ({ ...r }));
     });
-    editorHint.textContent = `Copied ${plural(src.length, "box")} onto all ${items.length} images. Click any thumbnail to check and adjust it.`;
-    updateHint();
+    updateHint(
+      `Copied ${plural(src.length, "box")} onto all ${items.length} images. Click any thumbnail to check and adjust it.`,
+    );
     renderStrip();
+  });
+
+  // ---- Auto-detection ----
+  //
+  // The detector proposes boxes; it never applies them. Everything it finds
+  // lands in items[].regions as an ordinary Rect the user can move, resize or
+  // delete, and export still needs an explicit click. Recall is good, not
+  // perfect, so the copy below always asks the user to check the result.
+
+  // A detected box is tight — YuNet frames eyebrows-to-chin, ear-to-ear, which
+  // leaves identifiable hair and jawline outside the blur. Plates need far less
+  // (over-padding there just obscures bodywork).
+  const DETECT_PAD: Record<
+    DetectKind,
+    { x: number; top: number; bot: number }
+  > = {
+    face: { x: 0.14, top: 0.28, bot: 0.14 },
+    plate: { x: 0.1, top: 0.12, bot: 0.12 },
+  };
+  // Longest side we decode to for detection. Above the model's own input, well
+  // below full res — the point is to keep memory flat across a batch.
+  const DETECT_SOURCE_MAX = 1024;
+  const DETECT_DEDUPE_IOU = 0.35;
+  const MAX_REGIONS_PER_ITEM = 60;
+
+  function rectIou(a: Rect, b: Rect): number {
+    const x1 = Math.max(a.x, b.x);
+    const y1 = Math.max(a.y, b.y);
+    const x2 = Math.min(a.x + a.w, b.x + b.w);
+    const y2 = Math.min(a.y + a.h, b.y + b.h);
+    const iw = x2 - x1;
+    const ih = y2 - y1;
+    if (iw <= 0 || ih <= 0) return 0;
+    const inter = iw * ih;
+    return inter / (a.w * a.h + b.w * b.h - inter);
+  }
+
+  /**
+   * Merge detections into one item's regions. Returns how many were added.
+   *
+   * Merges, never replaces: hand-drawn boxes are the user's work and there is
+   * no undo deeper than a single pop(). Skipping anything that overlaps an
+   * existing box also makes re-running detect idempotent.
+   */
+  function addDetections(it: Item, dets: Detection[]): number {
+    if (!detectKind) return 0;
+    const pad = DETECT_PAD[detectKind];
+    let added = 0;
+
+    for (const d of dets) {
+      if (it.regions.length >= MAX_REGIONS_PER_ITEM) break;
+
+      const px = d.w * pad.x;
+      const x = clamp(d.x - px, 0, 1);
+      const y = clamp(d.y - d.h * pad.top, 0, 1);
+      const r: Rect = {
+        x,
+        y,
+        w: clamp(d.x + d.w + px, 0, 1) - x,
+        h: clamp(d.y + d.h + d.h * pad.bot, 0, 1) - y,
+      };
+
+      // Same floor the manual path enforces on pointerup — a detector box the
+      // drag path would have rejected is an inconsistency users hit on resize.
+      if (r.w < MIN_REGION || r.h < MIN_REGION) continue;
+      if (it.regions.some((e) => rectIou(e, r) > DETECT_DEDUPE_IOU)) continue;
+
+      it.regions.push(r);
+      added++;
+    }
+    return added;
+  }
+
+  function setDetectBusy(on: boolean, label?: string) {
+    detectBusy = on;
+    if (detectSpin) detectSpin.hidden = !on;
+    if (detectBtn) detectBtn.setAttribute("aria-busy", on ? "true" : "false");
+    if (detectLabelEl && label) detectLabelEl.textContent = label;
+  }
+
+  /** Plain-language, never a stack. Detection failing must not lose any work. */
+  function detectMessage(e: unknown): string {
+    const reason =
+      e && typeof e === "object" && "reason" in e
+        ? (e as { reason: string }).reason
+        : "run";
+    if (reason === "fetch")
+      return `Couldn't load the ${detectOne} finder — you may be offline. You can still draw boxes by hand.`;
+    if (reason === "unsupported" || reason === "init")
+      return `The ${detectOne} finder can't run in this browser. Draw boxes by hand instead — everything else works.`;
+    return `The ${detectOne} finder ran into a problem. Draw boxes by hand instead.`;
+  }
+
+  /** Decode one queued item small enough for the detector, aspect preserved. */
+  function decodeForDetect(it: Item): Promise<ImageBitmap> {
+    const long = Math.max(it.iw, it.ih);
+    if (long <= DETECT_SOURCE_MAX) return createImageBitmap(it.file);
+    // Supplying only one dimension keeps the aspect ratio.
+    return createImageBitmap(
+      it.file,
+      it.iw >= it.ih
+        ? { resizeWidth: DETECT_SOURCE_MAX, resizeQuality: "high" }
+        : { resizeHeight: DETECT_SOURCE_MAX, resizeQuality: "high" },
+    );
+  }
+
+  function foundSummary(added: number, imagesHit: number, skipped: number) {
+    const tail = skipped
+      ? ` (${plural(skipped, "image")} couldn't be scanned.)`
+      : "";
+    if (added === 0) {
+      return `No ${detectNoun} found automatically. Drag a box over anything you want to hide.${tail}`;
+    }
+    const where =
+      items.length > 1
+        ? ` across ${imagesHit} of ${items.length} images — click each thumbnail to check`
+        : " — check the boxes";
+    return `Found ${plural(added, detectOne)}${where}, and add any the finder missed.${tail}`;
+  }
+
+  async function runDetect() {
+    if (!detectKind || detectBusy || items.length === 0) return;
+    // Never mutate regions mid-drag: `selected` indexes into that array.
+    if (mode !== "idle") return;
+
+    const batch = items.length > 1;
+    setDetectBusy(true, "Loading…");
+    updateHint(`Looking for ${detectNoun}…`);
+
+    let added = 0;
+    let imagesHit = 0;
+    let skipped = 0;
+    detectCancelled = false;
+
+    try {
+      // The module chunk itself is a network fetch, so losing connectivity
+      // fails here rather than inside detect(). Report it as such — "you may be
+      // offline" is far more useful than a generic failure.
+      const { detect, prewarm } = await import("./detect").catch(() => {
+        throw { reason: "fetch" };
+      });
+
+      if (!batch) {
+        setDetectBusy(true, "Finding…");
+        // The active item is already decoded at stage resolution, so a
+        // single-image run costs no extra decode.
+        if (stageImg && items[active])
+          added = addDetections(
+            items[active],
+            await detect(detectKind, stageImg),
+          );
+        if (added) imagesHit = 1;
+        updateHint(foundSummary(added, imagesHit, skipped));
+        return;
+      }
+
+      // Batch: same shape as apply() — processing panel, meter, yield a frame
+      // between items so progress actually paints.
+      procTitle.textContent = `Looking for ${detectNoun} in ${plural(items.length, "image")}`;
+      procSub.textContent = "Running on your device — nothing is uploaded";
+      procMeter.hidden = false;
+      if (detectCancelRow) detectCancelRow.hidden = false;
+      setProgress(0, items.length, `0 of ${items.length}`);
+      widgetTitle.textContent = "Finding…";
+      showPanel("processing");
+      await raf();
+
+      // Fetch runtime + weights before the bar starts, so the first tick isn't
+      // a multi-second stall on a 13MB download.
+      await prewarm(detectKind);
+
+      for (let i = 0; i < items.length && !detectCancelled; i++) {
+        setProgress(
+          i,
+          items.length,
+          `${i + 1} of ${items.length} · ${items[i].file.name}`,
+        );
+        await raf();
+        let bmp: ImageBitmap | null = null;
+        try {
+          const src =
+            i === active && stageImg
+              ? stageImg
+              : (bmp = await decodeForDetect(items[i]));
+          const n = addDetections(items[i], await detect(detectKind, src));
+          added += n;
+          if (n) imagesHit++;
+        } catch {
+          // One unreadable image must not abandon the whole batch.
+          skipped++;
+        } finally {
+          bmp?.close();
+        }
+      }
+      setProgress(items.length, items.length, "");
+      showPanel("editor");
+      updateHint(
+        detectCancelled
+          ? `Stopped. ${foundSummary(added, imagesHit, skipped)}`
+          : foundSummary(added, imagesHit, skipped),
+      );
+    } catch (e) {
+      // Deliberately NOT showError(): its only exit is reset(), which would
+      // release every item and destroy boxes the user drew by hand. A failed
+      // optional helper must never cost the user work.
+      if (
+        e &&
+        typeof e === "object" &&
+        "reason" in e &&
+        ((e as { reason: string }).reason === "init" ||
+          (e as { reason: string }).reason === "unsupported")
+      ) {
+        detectDead = true;
+      }
+      showPanel("editor");
+      updateHint(detectMessage(e));
+    } finally {
+      if (detectCancelRow) detectCancelRow.hidden = true;
+      widgetTitle.textContent =
+        items.length > 1
+          ? `Image ${active + 1} of ${items.length}`
+          : "Draw over what to hide";
+      setDetectBusy(false);
+      // syncControls, not updateHint — the summary message must survive.
+      syncControls();
+      renderStrip();
+      draw();
+      // The button's ancestor was hidden while the processing panel was up, so
+      // focus fell to <body>. Put it back where the user left it.
+      if (detectBtn && !detectBtn.hidden && !detectBtn.disabled)
+        detectBtn.focus();
+    }
+  }
+
+  detectBtn?.addEventListener("click", () => void runDetect());
+  detectCancelBtn?.addEventListener("click", () => {
+    detectCancelled = true;
   });
 
   // ---- File intake ----

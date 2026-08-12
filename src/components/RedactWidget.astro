@@ -6,8 +6,14 @@ export interface Props {
   heading: string; // widget-header title, e.g. "Blur a face"
   defaultEffect: 'blur' | 'pixelate' | 'blackout';
   applyLabel: string; // primary button, e.g. "Blur & download"
+  // Opt a page into on-device auto-detection. Omitted on the generic effect
+  // pages: the detector is what makes blur-face and blur-license-plate
+  // genuinely different tools rather than the same widget with new copy.
+  detect?: 'face' | 'plate' | null;
 }
-const { heading, defaultEffect, applyLabel } = Astro.props;
+const { heading, defaultEffect, applyLabel, detect = null } = Astro.props;
+const detectLabel = detect === 'plate' ? 'Find plates' : 'Find faces';
+const detectNoun = detect === 'plate' ? 'plates' : 'faces';
 const PILL: Record<string, string> = { blur: 'BLURRED', pixelate: 'PIXELATED', blackout: 'REDACTED' };
 const pillTo = PILL[defaultEffect] ?? 'BLURRED';
 
@@ -21,7 +27,7 @@ const otherEffects = (['blur', 'pixelate', 'blackout'] as const).filter((e) => e
 const showStrength = defaultEffect !== 'blackout';
 ---
 
-<div class="widget redact-widget" data-default-effect={defaultEffect} role="region" aria-label={heading}>
+<div class="widget redact-widget" data-default-effect={defaultEffect} data-detect={detect ?? undefined} data-detect-noun={detect ? detectNoun : undefined} role="region" aria-label={heading}>
   <div class="widget-head">
     <span
       class="wt"
@@ -72,6 +78,13 @@ const showStrength = defaultEffect !== 'blackout';
         </div>
       )}
       <div class="redact-tool-actions">
+        {detect && (
+          <button class="btn-icon-text is-detect" type="button" data-el="detect-btn" disabled hidden>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M21 16v3a2 2 0 0 1-2 2h-3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><circle cx="12" cy="12" r="3.2"></circle></svg>
+            <span class="detect-spin" data-el="detect-spin" hidden aria-hidden="true"></span>
+            <span data-el="detect-label" data-base={detectLabel}>{detectLabel}</span>
+          </button>
+        )}
         <button class="btn-icon-text" type="button" data-el="apply-all-btn" disabled hidden>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M4 16V6a2 2 0 0 1 2-2h10"></path></svg>
           Copy boxes to all
@@ -118,6 +131,12 @@ const showStrength = defaultEffect !== 'blackout';
           <span data-el="proc-pct">0%</span>
         </div>
       </div>
+      {detect && (
+        <div class="proc-cancel-row" data-el="detect-cancel-row" hidden>
+          <button class="btn btn-ghost" type="button" data-el="detect-cancel">Stop scanning</button>
+          <span class="proc-cancel-note">Finishes the image it's on, then stops. Boxes already found are kept.</span>
+        </div>
+      )}
     </div>
   </div>
 
@@ -230,6 +249,37 @@ const showStrength = defaultEffect !== 'blackout';
     display: flex;
     gap: 4px;
     margin-left: auto;
+    /* On a detector page in batch mode this row holds four buttons, which
+       overflows the widget column on a phone. The outer .redact-toolbar wraps;
+       this inner group has to as well. */
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  /* Auto-detect reads as the suggested next step, so it carries the accent
+     while undo/clear stay quiet. Deliberately sets no `display` — that lets it
+     inherit the .btn-icon-text[hidden] rule below instead of needing its own. */
+  .btn-icon-text.is-detect {
+    color: var(--accent-text);
+  }
+  .btn-icon-text.is-detect:hover:not(:disabled) {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .detect-spin {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: detect-spin 0.7s linear infinite;
+  }
+  .detect-spin[hidden] {
+    display: none;
+  }
+  @keyframes detect-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
   .btn-icon-text {
     display: inline-flex;
@@ -371,11 +421,28 @@ const showStrength = defaultEffect !== 'blackout';
   .proc-meter[hidden] {
     display: none;
   }
+  .proc-cancel-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .proc-cancel-row[hidden] {
+    display: none;
+  }
+  .proc-cancel-note {
+    font-size: 12px;
+    color: var(--text-3);
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .filmstrip :global(.strip-item),
     .strip-add {
       transition: none;
+    }
+    .detect-spin {
+      animation: none;
     }
   }
 
