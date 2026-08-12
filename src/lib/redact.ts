@@ -1,5 +1,8 @@
 // -----------------------------------------------------------------------
-// Redaction engine — shared by blur-face, pixelate-image, blur-license-plate.
+// Image redaction — the file queue, the export, and the copy. The drag-a-box
+// interaction and the effect maths live in ./regions, shared with the PDF
+// tool; this module owns everything that is specific to "N image files in, N
+// image files out".
 //
 // The user drops one or more images, drags rectangles over the areas to hide,
 // and picks an effect (blur or pixelate) + strength. The effect is rendered
@@ -23,28 +26,24 @@
 // from inside the click handler, or ONNX Runtime lands in the eager bundle.
 import type { DetectKind, Detection } from "./detect";
 
-export type Effect = "blur" | "pixelate" | "blackout";
+import {
+  bakeRegions,
+  clamp,
+  createRegionEditor,
+  EFFECT_SUFFIX,
+  EFFECT_VERB,
+  makeCanvas,
+  MAX_STAGE,
+  MIN_REGION,
+  plural,
+  raf,
+  releaseCanvas,
+  THUMB,
+  type Effect,
+  type Rect,
+} from "./regions";
 
-// Per-effect labels, kept in one place so hint/filename stay in sync.
-// (The header pill label lives in the component now — effect is fixed per page.)
-const EFFECT_VERB: Record<Effect, string> = {
-  blur: "blurred",
-  pixelate: "pixelated",
-  blackout: "blacked out",
-};
-const EFFECT_SUFFIX: Record<Effect, string> = {
-  blur: "blurred",
-  pixelate: "pixelated",
-  blackout: "redacted",
-};
-
-/** A redaction region in normalised image space (x,y = top-left, 0–1). */
-interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+export type { Effect };
 
 /** One queued image. Deliberately holds no full-res pixels — see header note. */
 interface Item {
@@ -62,47 +61,10 @@ interface Result {
 }
 
 type Panel = "drop" | "editor" | "processing" | "done" | "error";
-type Mode = "idle" | "creating" | "moving" | "resizing";
-type Corner = "nw" | "ne" | "se" | "sw";
 
 const MAX_SIZE_MB = 50;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 const MAX_FILES = 30;
-const MAX_STAGE = 1400; // longest-side backing resolution for the preview canvas
-const THUMB = 96; // filmstrip thumbnail longest side
-const HANDLE_CSS = 11; // resize-handle hit size, in CSS pixels
-const MIN_REGION = 0.012; // discard drags smaller than this (normalised)
-const EFFECT_PREVIEW_MAX = 16; // above this, skip the effect pass mid-drag
-
-const clamp = (v: number, lo: number, hi: number) =>
-  Math.max(lo, Math.min(hi, v));
-
-const raf = () => new Promise((r) => requestAnimationFrame(() => r(null)));
-
-function makeCanvas(
-  w: number,
-  h: number,
-): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } {
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.round(w));
-  canvas.height = Math.max(1, Math.round(h));
-  const ctx = canvas.getContext("2d")!;
-  return { canvas, ctx };
-}
-
-/** Normalise a rect so width/height are positive (top-left origin). */
-function normalise(r: Rect): Rect {
-  return {
-    x: r.w < 0 ? r.x + r.w : r.x,
-    y: r.h < 0 ? r.y + r.h : r.y,
-    w: Math.abs(r.w),
-    h: Math.abs(r.h),
-  };
-}
-
-function plural(n: number, word: string): string {
-  return `${n} ${word}${n === 1 ? "" : "s"}`;
-}
 
 export function initRedactWidget(root: HTMLElement): void {
   const q = <T extends HTMLElement = HTMLElement>(sel: string) =>
@@ -145,11 +107,12 @@ export function initRedactWidget(root: HTMLElement): void {
   const detectLabelEl = root.querySelector<HTMLElement>(
     '[data-el="detect-label"]',
   );
-  const detectCancelBtn = root.querySelector<HTMLButtonElement>(
-    '[data-el="detect-cancel"]',
-  );
+  // Shared with the PDF tool's export cancel — same row, same markup, so the
+  // hooks aren't detector-specific.
+  const detectCancelBtn =
+    root.querySelector<HTMLButtonElement>('[data-el="cancel"]');
   const detectCancelRow = root.querySelector<HTMLElement>(
-    '[data-el="detect-cancel-row"]',
+    '[data-el="cancel-row"]',
   );
   const undoBtn = q<HTMLButtonElement>('[data-el="undo-btn"]');
   const clearBtn = q<HTMLButtonElement>('[data-el="clear-btn"]');
@@ -180,13 +143,8 @@ export function initRedactWidget(root: HTMLElement): void {
   let items: Item[] = [];
   let active = -1;
   let stageImg: HTMLCanvasElement | null = null; // active item, at stage resolution
-  let selected = -1;
   const effect: Effect = defaultEffect; // fixed per page — no in-widget switching
   let strength = 3;
-  let mode: Mode = "idle";
-  let activeCorner: Corner | null = null;
-  let dragStart = { x: 0, y: 0 };
-  let dragOrigin: Rect = { x: 0, y: 0, w: 0, h: 0 };
   let results: Result[] = [];
   let doneUrl: string | null = null;
   let detectBusy = false;
@@ -210,172 +168,20 @@ export function initRedactWidget(root: HTMLElement): void {
     for (const [k, el] of Object.entries(panels)) el.hidden = k !== name;
   }
 
-  // ---- Effect maths (resolution-independent: scaled to region size) ----
-  function blurRadius(minSidePx: number): number {
-    const frac = 0.045 * strength + 0.035; // strength 1 → 0.08 … 5 → 0.26 of the shorter side
-    return Math.max(3, Math.round(minSidePx * frac));
-  }
-  function blockSize(minSidePx: number): number {
-    const blocksAcross = [16, 12, 9, 6, 4][strength - 1] ?? 9; // higher strength → coarser
-    return Math.max(4, Math.round(minSidePx / blocksAcross));
-  }
-
-  // Produce the obscured tile for one region, sampled from `src` at the given
-  // pixel rect. Returns the inner region canvas plus where to paste it. Blur
-  // uses a padded crop so edges sample real neighbours (clean, no transparent
-  // ring) while only the region itself is written back.
-  function processRegion(
-    src: HTMLCanvasElement,
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-  ): { canvas: HTMLCanvasElement; dx: number; dy: number } | null {
-    if (w < 2 || h < 2) return null;
-    const minSide = Math.min(w, h);
-
-    if (effect === "blackout") {
-      // Solid fill — the strongest redaction: the underlying pixels are
-      // replaced outright, so nothing remains to recover. Ignores strength.
-      const inner = makeCanvas(w, h);
-      inner.ctx.fillStyle = "#000000";
-      inner.ctx.fillRect(0, 0, w, h);
-      return { canvas: inner.canvas, dx: x, dy: y };
-    }
-
-    if (effect === "blur") {
-      // Blur by averaging: shrink the region down, then scale it back up with
-      // smoothing on. We deliberately avoid ctx.filter='blur()' — it is a
-      // silent no-op in Safari/WebKit. Downscale in halving steps: a single
-      // large downscale aliases high-frequency detail in WebKit (leaving the
-      // region only half-blurred), whereas repeated 2× averaging is clean and
-      // consistent across engines.
-      const r = blurRadius(minSide);
-      const dsW = Math.max(1, Math.round(w / r));
-      const dsH = Math.max(1, Math.round(h / r));
-      let curW = w;
-      let curH = h;
-      let cur = makeCanvas(curW, curH);
-      cur.ctx.imageSmoothingEnabled = true;
-      cur.ctx.imageSmoothingQuality = "high";
-      cur.ctx.drawImage(src, x, y, w, h, 0, 0, curW, curH);
-      while (curW > dsW * 2 || curH > dsH * 2) {
-        const nW = Math.max(dsW, Math.floor(curW / 2));
-        const nH = Math.max(dsH, Math.floor(curH / 2));
-        const next = makeCanvas(nW, nH);
-        next.ctx.imageSmoothingEnabled = true;
-        next.ctx.imageSmoothingQuality = "high";
-        next.ctx.drawImage(cur.canvas, 0, 0, curW, curH, 0, 0, nW, nH);
-        cur = next;
-        curW = nW;
-        curH = nH;
-      }
-      // Final clean downscale to the exact target size, then upscale back.
-      const small = makeCanvas(dsW, dsH);
-      small.ctx.imageSmoothingEnabled = true;
-      small.ctx.imageSmoothingQuality = "high";
-      small.ctx.drawImage(cur.canvas, 0, 0, curW, curH, 0, 0, dsW, dsH);
-      const inner = makeCanvas(w, h);
-      inner.ctx.imageSmoothingEnabled = true;
-      inner.ctx.imageSmoothingQuality = "high";
-      inner.ctx.drawImage(small.canvas, 0, 0, dsW, dsH, 0, 0, w, h);
-      return { canvas: inner.canvas, dx: x, dy: y };
-    }
-
-    // Pixelate: average down, then scale back up with smoothing off (blocks).
-    const block = blockSize(minSide);
-    const smallW = Math.max(1, Math.round(w / block));
-    const smallH = Math.max(1, Math.round(h / block));
-    const small = makeCanvas(smallW, smallH);
-    small.ctx.imageSmoothingEnabled = true;
-    small.ctx.drawImage(src, x, y, w, h, 0, 0, smallW, smallH);
-    const inner = makeCanvas(w, h);
-    inner.ctx.imageSmoothingEnabled = false;
-    inner.ctx.drawImage(small.canvas, 0, 0, smallW, smallH, 0, 0, w, h);
-    return { canvas: inner.canvas, dx: x, dy: y };
-  }
-
-  // ---- Stage rendering ----
-  function stageToNorm(
-    el: HTMLCanvasElement,
-    clientX: number,
-    clientY: number,
-  ): { x: number; y: number } {
-    const rect = el.getBoundingClientRect();
-    return {
-      x: clamp((clientX - rect.left) / rect.width, 0, 1),
-      y: clamp((clientY - rect.top) / rect.height, 0, 1),
-    };
-  }
-
-  function cornerPoints(r: Rect): Record<Corner, { x: number; y: number }> {
-    return {
-      nw: { x: r.x, y: r.y },
-      ne: { x: r.x + r.w, y: r.y },
-      se: { x: r.x + r.w, y: r.y + r.h },
-      sw: { x: r.x, y: r.y + r.h },
-    };
-  }
-
-  function draw() {
-    if (!stageImg) return;
-    const ctx = stage.getContext("2d")!;
-    const W = stage.width;
-    const H = stage.height;
-    ctx.clearRect(0, 0, W, H);
-    ctx.drawImage(stageImg, 0, 0, W, H);
-
-    const rs = regions();
-
-    // Baked-look preview: each region drawn with the real effect.
-    //
-    // processRegion is expensive (blur runs a halving-downscale chain) and this
-    // function fires on every pointermove. Hand-drawn counts stay in the low
-    // single digits, but auto-detect can put 40+ boxes on a crowd shot, so
-    // while a drag is in flight we skip the effect pass and let the outlines
-    // below carry the interaction. Releasing the pointer repaints in full.
-    const liveDrag = mode !== "idle" && rs.length > EFFECT_PREVIEW_MAX;
-    if (!liveDrag) {
-      for (const rc of rs) {
-        const px = Math.round(rc.x * W);
-        const py = Math.round(rc.y * H);
-        const pw = Math.round(rc.w * W);
-        const ph = Math.round(rc.h * H);
-        const tile = processRegion(stageImg, px, py, pw, ph);
-        if (tile) ctx.drawImage(tile.canvas, tile.dx, tile.dy);
-      }
-    }
-
-    // UI chrome (outlines + handles) — not baked into the export.
-    const cssW = stage.getBoundingClientRect().width || W;
-    const ratio = W / cssW;
-    const handle = HANDLE_CSS * ratio;
-    rs.forEach((rc, i) => {
-      const x = rc.x * W;
-      const y = rc.y * H;
-      const w = rc.w * W;
-      const h = rc.h * H;
-      const isSel = i === selected;
-      ctx.lineWidth = Math.max(1.5, ratio * 1.5);
-      ctx.strokeStyle = isSel ? "#55c28b" : "rgba(255,255,255,0.9)";
-      ctx.setLineDash(isSel ? [] : [ratio * 5, ratio * 4]);
-      ctx.strokeRect(x, y, w, h);
-      ctx.setLineDash([]);
-      if (isSel) {
-        const pts = cornerPoints({ x: x, y: y, w: w, h: h });
-        ctx.fillStyle = "#55c28b";
-        for (const key of Object.keys(pts) as Corner[]) {
-          const p = pts[key];
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, handle * 0.55, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = "#fff";
-          ctx.lineWidth = ratio;
-          ctx.stroke();
-        }
-      }
-    });
-  }
+  // Drawing, hit-testing and the pointer/keyboard bindings all live in
+  // ./regions — the same code the PDF tool drives. This module only has to say
+  // what is on the stage and what to do when it changes.
+  const editor = createRegionEditor({
+    stage,
+    getRegions: regions,
+    getStageImg: () => stageImg,
+    getEffect: () => effect,
+    getStrength: () => strength,
+    onEdit: (kind) => {
+      updateHint();
+      if (kind === "commit") renderStrip();
+    },
+  });
 
   // Repaint the hint line and re-derive every button's enabled state.
   //
@@ -468,216 +274,25 @@ export function initRedactWidget(root: HTMLElement): void {
     });
   }
 
-  // ---- Hit testing ----
-  function hitCorner(rc: Rect, p: { x: number; y: number }): Corner | null {
-    const rect = stage.getBoundingClientRect();
-    const tolX = HANDLE_CSS / (rect.width || 1);
-    const tolY = HANDLE_CSS / (rect.height || 1);
-    const pts = cornerPoints(rc);
-    for (const key of Object.keys(pts) as Corner[]) {
-      const c = pts[key];
-      if (Math.abs(p.x - c.x) <= tolX && Math.abs(p.y - c.y) <= tolY)
-        return key;
-    }
-    return null;
-  }
-  function insideRect(rc: Rect, p: { x: number; y: number }): boolean {
-    return (
-      p.x >= rc.x && p.x <= rc.x + rc.w && p.y >= rc.y && p.y <= rc.y + rc.h
-    );
-  }
-  // Topmost region under the point (regions drawn in order → last wins).
-  function regionAt(p: { x: number; y: number }): number {
-    const rs = regions();
-    for (let i = rs.length - 1; i >= 0; i--) if (insideRect(rs[i], p)) return i;
-    return -1;
-  }
-
-  // ---- Pointer interaction ----
-  function onPointerDown(e: PointerEvent) {
-    if (!stageImg) return;
-    const rs = regions();
-    stage.setPointerCapture(e.pointerId);
-    stage.focus();
-    const p = stageToNorm(stage, e.clientX, e.clientY);
-    dragStart = p;
-
-    // Resize handle of the selected region takes priority.
-    if (selected >= 0 && rs[selected]) {
-      const corner = hitCorner(rs[selected], p);
-      if (corner) {
-        mode = "resizing";
-        activeCorner = corner;
-        dragOrigin = { ...rs[selected] };
-        return;
-      }
-    }
-    const hit = regionAt(p);
-    if (hit >= 0) {
-      selected = hit;
-      mode = "moving";
-      dragOrigin = { ...rs[hit] };
-      updateHint();
-      draw();
-      return;
-    }
-    // Empty space → start a new region.
-    selected = rs.length;
-    rs.push({ x: p.x, y: p.y, w: 0, h: 0 });
-    mode = "creating";
-    dragOrigin = { x: p.x, y: p.y, w: 0, h: 0 };
-    draw();
-  }
-
-  function onPointerMove(e: PointerEvent) {
-    const p = stageToNorm(stage, e.clientX, e.clientY);
-
-    if (mode === "idle") {
-      updateCursor(p);
-      return;
-    }
-    const rs = regions();
-    if (selected < 0 || !rs[selected]) return;
-
-    if (mode === "creating") {
-      rs[selected] = {
-        x: dragOrigin.x,
-        y: dragOrigin.y,
-        w: p.x - dragOrigin.x,
-        h: p.y - dragOrigin.y,
-      };
-    } else if (mode === "moving") {
-      const dx = p.x - dragStart.x;
-      const dy = p.y - dragStart.y;
-      const nx = clamp(dragOrigin.x + dx, 0, 1 - dragOrigin.w);
-      const ny = clamp(dragOrigin.y + dy, 0, 1 - dragOrigin.h);
-      rs[selected] = { x: nx, y: ny, w: dragOrigin.w, h: dragOrigin.h };
-    } else if (mode === "resizing" && activeCorner) {
-      const { x, y, w, h } = dragOrigin;
-      const right = x + w;
-      const bottom = y + h;
-      if (activeCorner === "nw")
-        rs[selected] = normalise({
-          x: p.x,
-          y: p.y,
-          w: right - p.x,
-          h: bottom - p.y,
-        });
-      else if (activeCorner === "ne")
-        rs[selected] = normalise({
-          x: x,
-          y: p.y,
-          w: p.x - x,
-          h: bottom - p.y,
-        });
-      else if (activeCorner === "se")
-        rs[selected] = normalise({ x: x, y: y, w: p.x - x, h: p.y - y });
-      else
-        rs[selected] = normalise({
-          x: p.x,
-          y: y,
-          w: right - p.x,
-          h: p.y - y,
-        });
-    }
-    draw();
-  }
-
-  function onPointerUp(e: PointerEvent) {
-    if (stage.hasPointerCapture(e.pointerId))
-      stage.releasePointerCapture(e.pointerId);
-    const rs = regions();
-    if (mode === "creating" && selected >= 0 && rs[selected]) {
-      const rc = normalise(rs[selected]);
-      if (rc.w < MIN_REGION || rc.h < MIN_REGION) {
-        rs.splice(selected, 1); // too small — treat as a click, discard
-        selected = -1;
-      } else {
-        rs[selected] = rc;
-      }
-    } else if (mode === "resizing" && selected >= 0 && rs[selected]) {
-      rs[selected] = normalise(rs[selected]);
-    }
-    mode = "idle";
-    activeCorner = null;
-    updateHint();
-    renderStrip();
-    draw();
-  }
-
-  function updateCursor(p: { x: number; y: number }) {
-    const rs = regions();
-    let cursor = "crosshair";
-    if (selected >= 0 && rs[selected]) {
-      const corner = hitCorner(rs[selected], p);
-      if (corner === "nw" || corner === "se") cursor = "nwse-resize";
-      else if (corner === "ne" || corner === "sw") cursor = "nesw-resize";
-      else if (regionAt(p) >= 0) cursor = "move";
-    } else if (regionAt(p) >= 0) {
-      cursor = "move";
-    }
-    stage.style.cursor = cursor;
-  }
-
-  function onKeyDown(e: KeyboardEvent) {
-    const rs = regions();
-    if (selected < 0 || !rs[selected]) return;
-    const step = e.shiftKey ? 0.05 : 0.01;
-    const rc = rs[selected];
-    if (e.key === "Delete" || e.key === "Backspace") {
-      rs.splice(selected, 1);
-      selected = -1;
-      e.preventDefault();
-    } else if (e.key === "Escape") {
-      selected = -1;
-    } else if (e.key === "ArrowLeft") {
-      rc.x = clamp(rc.x - step, 0, 1 - rc.w);
-      e.preventDefault();
-    } else if (e.key === "ArrowRight") {
-      rc.x = clamp(rc.x + step, 0, 1 - rc.w);
-      e.preventDefault();
-    } else if (e.key === "ArrowUp") {
-      rc.y = clamp(rc.y - step, 0, 1 - rc.h);
-      e.preventDefault();
-    } else if (e.key === "ArrowDown") {
-      rc.y = clamp(rc.y + step, 0, 1 - rc.h);
-      e.preventDefault();
-    } else {
-      return;
-    }
-    updateHint();
-    renderStrip();
-    draw();
-  }
-
-  stage.addEventListener("pointerdown", onPointerDown);
-  stage.addEventListener("pointermove", onPointerMove);
-  stage.addEventListener("pointerup", onPointerUp);
-  stage.addEventListener("pointercancel", onPointerUp);
-  stage.addEventListener("keydown", onKeyDown);
-  window.addEventListener("resize", () => {
-    if (stageImg) draw();
-  });
-
   // ---- Strength control (blur/pixelate only; blackout omits it) ----
   strengthInput?.addEventListener("input", () => {
     strength = parseInt(strengthInput.value, 10) || 3;
-    draw();
+    editor.draw();
   });
 
   undoBtn.addEventListener("click", () => {
     regions().pop();
-    selected = -1;
+    editor.setSelected(-1);
     updateHint();
     renderStrip();
-    draw();
+    editor.draw();
   });
   clearBtn.addEventListener("click", () => {
     if (active >= 0 && items[active]) items[active].regions = [];
-    selected = -1;
+    editor.setSelected(-1);
     updateHint();
     renderStrip();
-    draw();
+    editor.draw();
   });
 
   // Copy the current image's boxes onto every other image in the batch. The
@@ -818,8 +433,9 @@ export function initRedactWidget(root: HTMLElement): void {
 
   async function runDetect() {
     if (!detectKind || detectBusy || items.length === 0) return;
-    // Never mutate regions mid-drag: `selected` indexes into that array.
-    if (mode !== "idle") return;
+    // Never mutate regions mid-drag: the editor's selection indexes into that
+    // array, so splicing it underneath a live drag corrupts the interaction.
+    if (!editor.isIdle()) return;
 
     const batch = items.length > 1;
     setDetectBusy(true, "Loading…");
@@ -922,7 +538,7 @@ export function initRedactWidget(root: HTMLElement): void {
       // syncControls, not updateHint — the summary message must survive.
       syncControls();
       renderStrip();
-      draw();
+      editor.draw();
       // The button's ancestor was hidden while the processing panel was up, so
       // focus fell to <body>. Put it back where the user left it.
       if (detectBtn && !detectBtn.hidden && !detectBtn.disabled)
@@ -966,7 +582,7 @@ export function initRedactWidget(root: HTMLElement): void {
     const it = items[i];
     if (!it) return;
     active = i;
-    selected = -1;
+    editor.setSelected(-1);
     let bmp: ImageBitmap | null = null;
     try {
       bmp = await createImageBitmap(it.file);
@@ -988,7 +604,7 @@ export function initRedactWidget(root: HTMLElement): void {
         : "Draw over what to hide";
     renderStrip();
     updateHint();
-    draw();
+    editor.draw();
   }
 
   /** Add files to the queue — used by both first drop and "Add more". */
@@ -1099,30 +715,20 @@ export function initRedactWidget(root: HTMLElement): void {
     let bmp: ImageBitmap | null = null;
     try {
       bmp = await createImageBitmap(it.file);
-      const base = makeCanvas(it.iw, it.ih);
-      base.ctx.drawImage(bmp, 0, 0);
-      const out = makeCanvas(it.iw, it.ih);
-      out.ctx.drawImage(base.canvas, 0, 0);
-      for (const rc of it.regions) {
-        const x = Math.round(rc.x * it.iw);
-        const y = Math.round(rc.y * it.ih);
-        const w = Math.round(rc.w * it.iw);
-        const h = Math.round(rc.h * it.ih);
-        const tile = processRegion(base.canvas, x, y, w, h);
-        if (tile) out.ctx.drawImage(tile.canvas, tile.dx, tile.dy);
-      }
+      const out = bakeRegions(bmp, it.iw, it.ih, it.regions, effect, strength);
 
       const isJpeg =
         /jpe?g/i.test(it.file.type) || /\.jpe?g$/i.test(it.file.name);
       const outType = isJpeg ? "image/jpeg" : "image/png";
       const ext = isJpeg ? "jpg" : "png";
       const blob = await new Promise<Blob>((resolve, reject) => {
-        out.canvas.toBlob(
+        out.toBlob(
           (b) => (b ? resolve(b) : reject(new Error("encode failed"))),
           outType,
           0.92,
         );
       });
+      releaseCanvas(out);
       const stem = it.file.name.replace(/\.[^.]+$/, "");
       return {
         name: `${stem}-${EFFECT_SUFFIX[effect]}.${ext}`,
@@ -1235,7 +841,7 @@ export function initRedactWidget(root: HTMLElement): void {
     releaseItems();
     active = -1;
     stageImg = null;
-    selected = -1;
+    editor.setSelected(-1);
     results = [];
     if (doneUrl) {
       URL.revokeObjectURL(doneUrl);

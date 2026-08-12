@@ -58,8 +58,26 @@ export default defineConfig({
     // dev server churn "Outdated Optimize Dep" reloads on first detector use.
     // Note this only affects `astro dev` — if a production build ever breaks on
     // ORT, the cause is asset resolution, not this list.
+    //
+    // pdfjs-dist joins them: it ships its own worker and wasm and needs no
+    // pre-bundling. pdf-lib is the opposite case and must NOT be excluded — it
+    // imports the CommonJS `pako` as a default export, which only works once
+    // Vite has converted it, so excluding it fails at runtime with "does not
+    // provide an export named 'default'".
+    //
+    // Both are reached only from a click handler, so Vite doesn't discover them
+    // at server start. For pdf-lib that meant it was optimized the first time a
+    // PDF was opened and the page then full-page reloaded, throwing away the
+    // document the user had just dropped. `include` forces it to be pre-bundled
+    // up front instead, which is what stops the reload.
     optimizeDeps: {
-      exclude: ["@jsquash/avif", "@jsquash/jxl", "onnxruntime-web"],
+      exclude: [
+        "@jsquash/avif",
+        "@jsquash/jxl",
+        "onnxruntime-web",
+        "pdfjs-dist",
+      ],
+      include: ["pdf-lib"],
     },
     // The AVIF encoder ships a multithreaded variant that bundles a Web Worker.
     // Rollup can't code-split the default `iife` worker format, so emit ES

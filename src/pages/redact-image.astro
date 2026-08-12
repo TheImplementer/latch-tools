@@ -50,7 +50,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "I've heard black-box redactions can be undone — is this safe?",
-          "acceptedAnswer": { "@type": "Answer", "text": "That well-known failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. (To redact a PDF safely you must flatten or rasterise it — drawing a box in a PDF editor is not enough.)" }
+          "acceptedAnswer": { "@type": "Answer", "text": "That well-known failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. To redact a PDF safely you must flatten or rasterise it, because drawing a box in a PDF editor is not enough — the Redact PDF tool does exactly that, rebuilding each page so the text under the bar is gone rather than covered." }
         },
         {
           "@type": "Question",
@@ -166,7 +166,7 @@ const structuredData = {
         </details>
         <details class="faq-item">
           <summary class="faq-q">I've heard black-box redactions can be undone — is this safe?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">That failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. To redact a PDF safely you must flatten or rasterise it — drawing a box in a PDF editor is not enough.</p>
+          <p class="faq-a">That failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. To redact a PDF safely you must flatten or rasterise it — drawing a box in a PDF editor is not enough, which is exactly what <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">Redact PDF</a> does for you.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I redact several things at once?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
@@ -179,7 +179,7 @@ const structuredData = {
       </div>
 
       <p class="muted" style="font-size:14px;margin-top:30px">
-        Related privacy tools: <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">Blur part of an image</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/blur-license-plate/" style="color:var(--accent-text);font-weight:600">Blur a license plate</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
+        Related privacy tools: <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">Redact a PDF</a> · <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">Blur part of an image</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/blur-license-plate/" style="color:var(--accent-text);font-weight:600">Blur a license plate</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
       </p>
 
       <p class="muted" style="font-size:14px;margin-top:12px">

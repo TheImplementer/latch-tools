@@ -18,6 +18,11 @@ yarn-error.log*
 .env.*
 !.env.example
 
+# playwright
+test-results/
+playwright-report/
+.playwright/
+
 # os
 .DS_Store
 

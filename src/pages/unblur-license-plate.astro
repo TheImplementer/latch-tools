@@ -286,11 +286,20 @@ const structuredData = {
           of its rendered appearance can move that rectangle, delete it, or simply read straight
           past it.
         </p>
-        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           Real redaction changes the underlying data. That's why the
           <a href="/redact-image/" style="color:var(--accent)">redaction tool here</a> re-encodes
           the image with the black bars written into the pixels and hands you a new file: there is
           no layer to peel off, because there is no layer.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
+          PDFs are where this bites hardest, because a PDF page is a list of drawing instructions
+          rather than a picture: the rectangle is one instruction and the text underneath is
+          another, and both survive into the file. Copy the area, or run the document through a
+          text extractor, and the words come straight back out.
+          <a href="/redact-pdf/" style="color:var(--accent)">Redacting a PDF</a> therefore has to
+          rebuild each page from its rendered pixels, so the text layer is never carried across —
+          same principle, applied to a format that hides the evidence better.
         </p>
       </div>
     </section>

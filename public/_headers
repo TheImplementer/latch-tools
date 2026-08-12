@@ -1,13 +1,18 @@
 # Cloudflare Pages response headers.
 #
 # Everything below is content-addressed: Astro fingerprints everything it emits
-# into /_astro/, and the model filenames carry their upstream release date, so a
-# new version is always a new URL. Pages otherwise serves these
-# `max-age=0, must-revalidate`, which means a revalidation round-trip for every
-# lazy WASM codec on every visit.
+# into /_astro/, the model filenames carry their upstream release date, and the
+# pdf.js assets sit under a version directory — so a new version is always a new
+# URL. Pages otherwise serves these `max-age=0, must-revalidate`, which means a
+# revalidation round-trip for every lazy WASM codec on every visit.
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
 /models/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Per-version directory (public/pdfjs/<version>/), written by
+# scripts/sync-pdfjs.mjs. A page can pull a dozen of these while rendering.
+/pdfjs/*
   Cache-Control: public, max-age=31536000, immutable

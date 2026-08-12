@@ -1,0 +1,392 @@
+// -----------------------------------------------------------------------
+// Test fixtures for the PDF tools.
+//
+// Nothing here is committed as a binary. Every fixture PDF is generated at
+// test time, for two reasons: `.gitignore` forbids fixture blobs under
+// `public/` (everything there ships to production), and a generated fixture
+// lets a test assert what the INPUT contains before asserting what the output
+// doesn't — which is the difference between proving redaction works and
+// proving nothing at all.
+// -----------------------------------------------------------------------
+
+import { createHash } from "node:crypto";
+import { crc32, deflateSync } from "node:zlib";
+import { fileURLToPath } from "node:url";
+
+/** The string the redaction tests hunt for. Must not appear in the output. */
+export const SECRET = "CONFIDENTIAL-SECRET-12345";
+
+/** Text placed at the same spot on page 2, which page 1's bar must NOT hide. */
+export const PAGE2_TEXT = "PAGE-TWO-STAYS-VISIBLE";
+
+/** A4 in PDF points. */
+const PAGE_W = 595;
+const PAGE_H = 842;
+
+/**
+ * Normalised (0–1, top-left origin) rect that generously encloses the secret
+ * text on every page. The tests drag a box over exactly this, then sample the
+ * same rect in the exported raster.
+ */
+export const SECRET_RECT = { x: 0.08, y: 0.12, w: 0.6, h: 0.1 };
+
+/** A control rect low on the page that must stay untouched (light background). */
+export const CONTROL_RECT = { x: 0.08, y: 0.6, w: 0.6, h: 0.1 };
+
+/**
+ * Build a multi-page PDF with real, extractable text.
+ *
+ * Page 1 carries SECRET, page 2 carries PAGE2_TEXT, both inside SECRET_RECT,
+ * plus a line of body text inside CONTROL_RECT on each page.
+ */
+export async function makeTextPdf(pages = 2): Promise<Uint8Array> {
+  const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
+  const doc = await PDFDocument.create();
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+
+  for (let i = 0; i < pages; i++) {
+    const page = doc.addPage([PAGE_W, PAGE_H]);
+    page.drawText(i === 0 ? SECRET : PAGE2_TEXT, {
+      x: 72,
+      // Baseline chosen so the glyphs sit inside SECRET_RECT once the page is
+      // flipped to top-left normalised coordinates.
+      y: PAGE_H - 0.17 * PAGE_H,
+      size: 18,
+      font,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Body text on page ${i + 1}. Nothing sensitive here.`, {
+      x: 72,
+      y: PAGE_H - 0.65 * PAGE_H,
+      size: 12,
+      font,
+      color: rgb(0.1, 0.1, 0.1),
+    });
+  }
+  return doc.save();
+}
+
+// ---- Encrypted fixture -------------------------------------------------
+//
+// pdf-lib cannot write encrypted PDFs and no qpdf/mutool exists on this
+// machine, so the password fixture is assembled by hand against the PDF
+// standard security handler (revision 2, RC4-40). It only has to be correct
+// enough that pdf.js demands a password and then opens with the right one —
+// which is exactly the code path the widget's password panel drives.
+
+const PAD = Uint8Array.from([
+  0x28, 0xbf, 0x4e, 0x5e, 0x4e, 0x75, 0x8a, 0x41, 0x64, 0x00, 0x4e, 0x56, 0xff,
+  0xfa, 0x01, 0x08, 0x2e, 0x2e, 0x00, 0xb6, 0xd0, 0x68, 0x3e, 0x80, 0x2f, 0x0c,
+  0xa9, 0xfe, 0x64, 0x53, 0x69, 0x7a,
+]);
+
+/** RC4. Node's OpenSSL 3 build no longer exposes it, so: 15 lines. */
+function rc4(key: Uint8Array, data: Uint8Array): Uint8Array {
+  const s = new Uint8Array(256);
+  for (let i = 0; i < 256; i++) s[i] = i;
+  for (let i = 0, j = 0; i < 256; i++) {
+    j = (j + s[i] + key[i % key.length]) & 0xff;
+    [s[i], s[j]] = [s[j], s[i]];
+  }
+  const out = new Uint8Array(data.length);
+  for (let k = 0, i = 0, j = 0; k < data.length; k++) {
+    i = (i + 1) & 0xff;
+    j = (j + s[i]) & 0xff;
+    [s[i], s[j]] = [s[j], s[i]];
+    out[k] = data[k] ^ s[(s[i] + s[j]) & 0xff];
+  }
+  return out;
+}
+
+function md5(...parts: Uint8Array[]): Uint8Array {
+  const h = createHash("md5");
+  for (const p of parts) h.update(p);
+  return new Uint8Array(h.digest());
+}
+
+/** Pad or truncate a password to the 32 bytes the handler expects. */
+function padPassword(pw: string): Uint8Array {
+  const bytes = new Uint8Array(32);
+  const raw = new TextEncoder().encode(pw).slice(0, 32);
+  bytes.set(raw);
+  bytes.set(PAD.slice(0, 32 - raw.length), raw.length);
+  return bytes;
+}
+
+const KEY_LEN = 5; // 40-bit
+const PERMS = -4; // all operations allowed; bits 1–2 reserved and clear
+
+function le32(n: number): Uint8Array {
+  const b = new Uint8Array(4);
+  new DataView(b.buffer).setInt32(0, n, true);
+  return b;
+}
+
+/** Per-object key: Algorithm 1. */
+function objectKey(key: Uint8Array, obj: number, gen: number): Uint8Array {
+  const extra = Uint8Array.from([
+    obj & 0xff,
+    (obj >> 8) & 0xff,
+    (obj >> 16) & 0xff,
+    gen & 0xff,
+    (gen >> 8) & 0xff,
+  ]);
+  return md5(key, extra).slice(0, Math.min(KEY_LEN + 5, 16));
+}
+
+const latin1 = (s: string) => Uint8Array.from(s, (c) => c.charCodeAt(0) & 0xff);
+const hex = (b: Uint8Array) =>
+  [...b].map((n) => n.toString(16).padStart(2, "0")).join("");
+
+/**
+ * A one-page, RC4-40 encrypted PDF whose visible text is SECRET.
+ * Opens with `password`; pdf.js raises PasswordException without it.
+ */
+export function makeEncryptedPdf(password: string): Uint8Array {
+  const fileId = md5(latin1("latch-tools-fixture")); // any stable 16 bytes
+
+  // Algorithm 3 — /O. With no separate owner password the user password is
+  // used for both, which is the common single-password case.
+  const oKey = md5(padPassword(password)).slice(0, KEY_LEN);
+  const O = rc4(oKey, padPassword(password));
+
+  // Algorithm 2 — the file encryption key. Derived from the USER password: get
+  // this wrong and the file opens with an empty password instead.
+  const key = md5(padPassword(password), O, le32(PERMS), fileId).slice(
+    0,
+    KEY_LEN,
+  );
+  // Algorithm 4 — /U for revision 2.
+  const U = rc4(key, PAD);
+
+  // The single content stream, encrypted under object 4's key.
+  const content = latin1(
+    `BT /F1 18 Tf 72 ${PAGE_H - 0.17 * PAGE_H} Td (${SECRET}) Tj ET\n`,
+  );
+  const encContent = rc4(objectKey(key, 4, 0), content);
+
+  const objs: string[] = [];
+  objs[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+  objs[2] = "<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
+  objs[3] =
+    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] ` +
+    `/Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>`;
+  objs[5] =
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+  objs[6] =
+    `<< /Filter /Standard /V 1 /R 2 /Length 40 /P ${PERMS} ` +
+    `/O <${hex(O)}> /U <${hex(U)}> >>`;
+
+  // Assemble with byte-accurate xref offsets.
+  const chunks: Uint8Array[] = [];
+  const offsets: number[] = [];
+  let pos = 0;
+  const push = (b: Uint8Array) => {
+    chunks.push(b);
+    pos += b.length;
+  };
+
+  push(latin1("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n"));
+  for (const n of [1, 2, 3, 4, 5, 6]) {
+    offsets[n] = pos;
+    if (n === 4) {
+      push(latin1(`4 0 obj\n<< /Length ${encContent.length} >>\nstream\n`));
+      push(encContent);
+      push(latin1("\nendstream\nendobj\n"));
+    } else {
+      push(latin1(`${n} 0 obj\n${objs[n]}\nendobj\n`));
+    }
+  }
+
+  const xrefPos = pos;
+  let xref = "xref\n0 7\n0000000000 65535 f \n";
+  for (const n of [1, 2, 3, 4, 5, 6]) {
+    xref += `${String(offsets[n]).padStart(10, "0")} 00000 n \n`;
+  }
+  push(latin1(xref));
+  push(
+    latin1(
+      `trailer\n<< /Size 7 /Root 1 0 R /Encrypt 6 0 R ` +
+        `/ID [<${hex(fileId)}> <${hex(fileId)}>] >>\n` +
+        `startxref\n${xrefPos}\n%%EOF\n`,
+    ),
+  );
+
+  const out = new Uint8Array(pos);
+  let at = 0;
+  for (const c of chunks) {
+    out.set(c, at);
+    at += c.length;
+  }
+  return out;
+}
+
+// ---- Output inspection -------------------------------------------------
+
+/**
+ * Open a PDF with pdf.js under Node, using the same self-hosted asset set the
+ * browser gets. Returns the loading task so callers can destroy it — the
+ * document proxy alone has no teardown.
+ */
+async function openInNode(bytes: Uint8Array, password?: string) {
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const base = fileURLToPath(
+    new URL("../node_modules/pdfjs-dist/", import.meta.url),
+  );
+  const task = pdfjs.getDocument({
+    // A copy every time: getDocument transfers the buffer and leaves the
+    // caller's view detached, so a second inspection of the same PDF would
+    // otherwise blow up inside the worker port.
+    data: bytes.slice(),
+    password,
+    useSystemFonts: false,
+    standardFontDataUrl: base + "standard_fonts/",
+    cMapUrl: base + "cmaps/",
+    cMapPacked: true,
+  });
+  return { task, doc: await task.promise };
+}
+
+/**
+ * Extract text per page with pdf.js, exactly as a viewer or `pdftotext` would.
+ * This is the assertion the product claim rests on: after redaction there must
+ * be nothing here to find.
+ */
+export async function extractText(bytes: Uint8Array): Promise<string[]> {
+  const { task, doc } = await openInNode(bytes);
+  const pages: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const content = await (await doc.getPage(i)).getTextContent();
+    pages.push(
+      content.items
+        .map((it) => ("str" in it ? it.str : ""))
+        .join("")
+        .trim(),
+    );
+  }
+  await task.destroy();
+  return pages;
+}
+
+/** How many text-drawing items each page holds. Zero proves rasterisation. */
+export async function countTextItems(bytes: Uint8Array): Promise<number[]> {
+  const { task, doc } = await openInNode(bytes);
+  const counts: number[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    counts.push((await (await doc.getPage(i)).getTextContent()).items.length);
+  }
+  await task.destroy();
+  return counts;
+}
+
+/**
+ * Pull the embedded page rasters back out of an exported PDF, in page order.
+ *
+ * Decoding them is left to the browser (see sampleRect in the specs) — it has
+ * a JPEG decoder and a canvas already, which keeps this dependency-free.
+ */
+export async function extractPageImages(
+  bytes: Uint8Array,
+): Promise<Uint8Array[]> {
+  const { PDFDocument, PDFName, PDFDict, PDFRawStream } =
+    await import("pdf-lib");
+  const doc = await PDFDocument.load(bytes);
+  const images: Uint8Array[] = [];
+  for (const page of doc.getPages()) {
+    const resources = page.node.Resources();
+    const xobjects = resources?.lookupMaybe(PDFName.of("XObject"), PDFDict);
+    if (!xobjects) continue;
+    for (const [, ref] of xobjects.entries()) {
+      const stream = doc.context.lookup(ref);
+      if (
+        stream instanceof PDFRawStream &&
+        stream.dict.get(PDFName.of("Subtype")) === PDFName.of("Image")
+      ) {
+        images.push(stream.getContents());
+        break; // one full-bleed raster per page
+      }
+    }
+  }
+  return images;
+}
+
+// ---- Image fixture -----------------------------------------------------
+
+/**
+ * A minimal RGBA PNG, written by hand so the tests can assert on exact pixel
+ * values without pulling in an image library.
+ *
+ * The canvas is white, with a saturated block filling SECRET_RECT (which the
+ * redaction must turn black) and another filling CONTROL_RECT (which it must
+ * leave alone).
+ */
+export function makeTestPng(width = 800, height = 1000): Uint8Array {
+  const px = new Uint8Array(width * height * 4).fill(255); // opaque white
+  const fill = (
+    r: { x: number; y: number; w: number; h: number },
+    rgb: [number, number, number],
+  ) => {
+    for (
+      let y = Math.round(r.y * height);
+      y < Math.round((r.y + r.h) * height);
+      y++
+    ) {
+      for (
+        let x = Math.round(r.x * width);
+        x < Math.round((r.x + r.w) * width);
+        x++
+      ) {
+        const i = (y * width + x) * 4;
+        px[i] = rgb[0];
+        px[i + 1] = rgb[1];
+        px[i + 2] = rgb[2];
+      }
+    }
+  };
+  fill(SECRET_RECT, [255, 235, 0]); // bright yellow — must end up black
+  fill(CONTROL_RECT, [0, 200, 255]); // bright cyan — must survive untouched
+
+  // Scanlines, each prefixed with filter type 0 (None).
+  const raw = new Uint8Array(height * (width * 4 + 1));
+  for (let y = 0; y < height; y++) {
+    raw[y * (width * 4 + 1)] = 0;
+    raw.set(
+      px.subarray(y * width * 4, (y + 1) * width * 4),
+      y * (width * 4 + 1) + 1,
+    );
+  }
+
+  const chunk = (type: string, data: Uint8Array) => {
+    const body = new Uint8Array(4 + type.length + data.length + 4);
+    const view = new DataView(body.buffer);
+    view.setUint32(0, data.length);
+    body.set(latin1(type), 4);
+    body.set(data, 8);
+    view.setUint32(
+      body.length - 4,
+      crc32(Buffer.from(body.subarray(4, body.length - 4))),
+    );
+    return body;
+  };
+
+  const ihdr = new Uint8Array(13);
+  const iv = new DataView(ihdr.buffer);
+  iv.setUint32(0, width);
+  iv.setUint32(4, height);
+  ihdr[8] = 8; // bit depth
+  ihdr[9] = 6; // colour type: RGBA
+  const parts = [
+    Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk("IHDR", ihdr),
+    chunk("IDAT", new Uint8Array(deflateSync(Buffer.from(raw)))),
+    chunk("IEND", new Uint8Array(0)),
+  ];
+  const total = parts.reduce((n, c) => n + c.length, 0);
+  const out = new Uint8Array(total);
+  let at = 0;
+  for (const c of parts) {
+    out.set(c, at);
+    at += c.length;
+  }
+  return out;
+}
