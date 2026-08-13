@@ -1,0 +1,414 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+import PdfToolWidget from '../components/PdfToolWidget.astro';
+import FlattenOptions from '../components/FlattenOptions.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Flatten PDF", "item": "https://latchtools.com/flatten-pdf/" }
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Flatten PDF",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Flatten a PDF in your browser. Rasterise every page to merge layers, annotations, comments and form fields into one uneditable layer, or bake filled form-field values into the page while keeping the text sharp and selectable. The document is never uploaded.",
+      "url": "https://latchtools.com/flatten-pdf/"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to flatten a PDF",
+      "step": [
+        { "@type": "HowToStep", "name": "Open your PDF", "text": "Drag your PDF onto the tool, or click Browse to pick it from your device. It is opened in your browser — nothing is uploaded." },
+        { "@type": "HowToStep", "name": "Choose how much to flatten", "text": "Rasterise everything merges layers, annotations, comments and form fields down into the page. Flatten form fields only bakes in your filled-in values and leaves the rest of the document, and the text, exactly as it was." },
+        { "@type": "HowToStep", "name": "Flatten", "text": "Press Flatten and download. The work happens on your device, and a long document shows its progress a page at a time." },
+        { "@type": "HowToStep", "name": "Download", "text": "Save the flattened copy. Your original file is never modified." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does flattening a PDF actually do?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A PDF is not a picture of a document. It is a stack of separate objects — the page content, plus any form fields, annotations, comments, stamps and optional layers drawn on top of it. Flattening merges those separate objects into the page itself so there is nothing left to move, edit or switch off. What gets merged depends on the mode you pick: rasterising merges everything, while flattening form fields merges only the values you typed into the form." }
+        },
+        {
+          "@type": "Question",
+          "name": "Will my filled-in form data stay?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. That is the point of flattening a form. Your answers stop being editable field values and become part of the page, so they display identically everywhere and nobody can change them or clear the form. Both modes keep them: rasterising paints them into the page image, and the form-fields mode draws them into the page content and then removes the empty fields." }
+        },
+        {
+          "@type": "Question",
+          "name": "Should I rasterise or flatten form fields only?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Flatten form fields only if you have filled in a form and want the answers locked. It keeps the text sharp, selectable and searchable, and the file stays about the same size. Rasterise if you want the whole document made uneditable — layers, annotations, comments and anything hidden all merged down. Rasterising is thorough but it destroys the text layer, so only reach for it when merging everything is genuinely what you want." }
+        },
+        {
+          "@type": "Question",
+          "name": "Will the text still be searchable?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on the mode. Flattening form fields keeps every character as real text, so search, copy and paste and screen readers all keep working. Rasterising does not: every page becomes an image, so there is no text left anywhere in the file to search or select, and a screen reader has nothing to read. That is the cost of merging everything, and it is the reason both modes exist rather than one." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my PDF uploaded anywhere?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The document is opened, flattened and rebuilt entirely in your browser. There is no upload endpoint to send it to. Once the page has loaded you can disconnect from the network and the tool still works." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can flattening be undone?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Not from the flattened file. Once form fields have been merged into the page they are ordinary page content, and a rasterised page is an image with no structure left to recover. Nothing here modifies your original, though, so keep it if you might need an editable version later. Flattening is a one-way door by design — that is what makes the result stable." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is flattening the same as redacting?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No, and this is worth being clear about. Flattening locks content in; it does not hide it. Flattening form fields actually makes your typed values easier to extract, because they become selectable page text rather than field values. Even rasterising, which does destroy the text layer, only removes what was already invisible — anything you can see on the page is still there in the pixels. If you need something gone rather than fixed in place, black it out with the PDF redaction tool instead." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I flatten a password-protected PDF?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, if you know the password — you will be asked for it when the file opens, and it is used in your browser like the file itself. Encrypted documents can only be rasterised, because baking values into an encrypted file's page content is not possible without rewriting it wholesale. The tool switches the form-fields mode off and tells you why when it sees one." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does flattening make the file smaller?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Usually the opposite, if you rasterise. A page of text stored as text is very compact; the same page stored as an image is not, so a rasterised document is often several times larger. Standard quality renders at 150 DPI and suits most documents; High renders at 300 DPI and is sharper but larger. Flattening form fields barely changes the size at all, because it adds a little page content and removes the field objects." }
+        }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Flatten PDF — Lock Form Fields & Layers Free · Latch Tools"
+  description="Flatten a PDF in your browser. Merge layers, annotations and form fields into the page, or bake a filled form's values in while keeping text sharp. Never uploaded."
+  ogImage="/og/flatten-pdf.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Flatten PDF</span>
+        </nav>
+        <h1>Flatten a PDF</h1>
+        <p>Lock a filled-in form so its answers can't be changed, or merge every layer, annotation and field down into the page so nothing can be pulled apart. Those are two different jobs, and this tool does both — clearly labelled, so you can pick the one you actually need. It all happens in your browser.</p>
+        <TrustPill />
+        <p class="quick-details">PDF · up to 150 pages · 100 MB · two flattening modes</p>
+      </div>
+
+      <PdfToolWidget heading="Lock this document down" tool="flatten" applyLabel="Flatten &amp; download" pillTo="FLAT" dropHint="Accepts PDF · up to 150 pages, 100 MB">
+        <FlattenOptions slot="options" />
+      </PdfToolWidget>
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to flatten a PDF</h2>
+          <p class="sec-desc">Four steps, and nothing leaves your device.</p>
+        </div>
+      </div>
+      <div class="howto">
+        <div class="howto-step">
+          <div class="n">1</div>
+          <h4>Open your PDF</h4>
+          <p>Drag your PDF onto the tool, or click Browse. It's opened in your browser — nothing is uploaded.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">2</div>
+          <h4>Choose how much to flatten</h4>
+          <p><em>Rasterise everything</em> merges layers, annotations, comments and fields into the page. <em>Flatten form fields only</em> bakes in your answers and leaves the text as it was.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">3</div>
+          <h4>Flatten</h4>
+          <p>Press <em>Flatten and download</em>. The work happens on your device, and a long document reports its progress a page at a time.</p>
+        </div>
+        <div class="howto-step">
+          <div class="n">4</div>
+          <h4>Download</h4>
+          <p>Save the flattened copy. Your original file is never modified, so keep it if you might need an editable version.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHICH MODE -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:880px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Which mode should you pick?</h2>
+          <p class="sec-desc">Most tools ship one of these and call it "flatten". They do different jobs.</p>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table class="cmp">
+          <thead>
+            <tr>
+              <th scope="col"><span class="vh">Property</span></th>
+              <th scope="col">Rasterise everything</th>
+              <th scope="col">Flatten form fields only</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">What it merges</th>
+              <td>Everything — layers, annotations, comments, form fields, and anything hidden</td>
+              <td>Filled-in form field values, and nothing else</td>
+            </tr>
+            <tr>
+              <th scope="row">Text afterwards</th>
+              <td>Becomes an image — can't be selected, searched or read aloud</td>
+              <td>Stays sharp, selectable and searchable</td>
+            </tr>
+            <tr>
+              <th scope="row">File size</th>
+              <td>Usually larger, sometimes several times larger</td>
+              <td>Roughly unchanged</td>
+            </tr>
+            <tr>
+              <th scope="row">Document metadata</th>
+              <td>Dropped — the file is rebuilt from scratch</td>
+              <td>Kept exactly as it was</td>
+            </tr>
+            <tr>
+              <th scope="row">Best for</th>
+              <td>Making a whole document uneditable before you send it on</td>
+              <td>Locking a form you've just filled in</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="font-size:14px;margin-top:16px">
+        If you're not sure: you filled in a form and want the answers fixed → <strong>flatten form fields only</strong>. Anything else → <strong>rasterise</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- WHAT FLATTENING MEANS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">What "flatten" actually means</h2>
+        </div>
+      </div>
+      <p class="muted" style="font-size:15.5px;line-height:1.65">
+        A PDF isn't a picture of a document — it's a stack of separate objects. There's the page content underneath, and then, layered over it, any form fields you filled in, sticky notes and comments, stamps and signatures someone dropped on, and optional layers a design tool left switched on. Each of those is still its own editable thing. That's why a form can be cleared with one click, why a comment can be dragged somewhere else, and why a document can look different in two viewers that disagree about which layers to show.
+      </p>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        Flattening merges those separate objects down into the page so there's nothing left to move, edit or switch off. The document stops being a stack and becomes a single fixed thing. What "everything" covers is exactly where the two modes differ.
+      </p>
+
+      <h3 style="font-size:17px;margin-top:26px">Rasterising: merge the lot</h3>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
+        Every page is rendered to an image, and a new PDF is built from those images. Nothing survives as a separate object because nothing survives as an object at all — the page is pixels. Layers, annotations, form fields, metadata and anything hidden in the file are simply not carried across. It's thorough in a way nothing else is, and it's the same pipeline that makes our PDF redaction genuinely safe.
+      </p>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        The cost is real and we'd rather state it than bury it: the text stops being text. You can't select it, search it, or copy a line out, and a screen reader has nothing to read — which matters if anyone you're sending it to relies on one. The file usually gets bigger, sometimes several times bigger. Don't rasterise a document just to lock a form.
+      </p>
+
+      <h3 style="font-size:17px;margin-top:26px">Flattening form fields: merge only what you typed</h3>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
+        Each field's rendered appearance is drawn into the page content, and the now-empty field is removed. The value you typed becomes ordinary page text: same font, same position, still sharp at any zoom, still selectable and searchable. The rest of the document is left completely alone, which is why the file size barely moves. Nobody can edit the values, clear the form, or tab through it afterwards, because there is no longer a form there.
+      </p>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        This mode can't always be offered, and when it can't, the tool says which of these it hit rather than quietly doing something else: the PDF has no form fields to bake in; its only fields are signature fields, which flattening would break; it's a dynamic XFA form; it's encrypted, which means its contents can't be rewritten in place; or some of its fields are hidden — and drawing those in would put values on the page that aren't visible today. In every one of those cases, rasterising still works.
+      </p>
+
+      <h3 style="font-size:17px;margin-top:26px">Flattening is not hiding</h3>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
+        This is the one thing worth getting wrong-proof. Flattening locks content <em>in</em>; it doesn't take anything <em>out</em>. Flattening a form actually makes your typed answers slightly easier to extract than they were, because they turn from field values into selectable page text. And while rasterising does destroy the text layer, everything you can still see on the page is still there in the pixels — it's merged, not removed.
+      </p>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        So if your goal is that somebody should never see a name, a number or a clause, flattening is the wrong tool and will quietly let you down. Black it out first with <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">the PDF redaction tool</a>, which removes the text rather than fixing it in place. Flatten when you want a document to stop changing; redact when you want something gone.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary class="faq-q">What does flattening a PDF actually do?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">A PDF is not a picture of a document. It's a stack of separate objects — the page content, plus any form fields, annotations, comments, stamps and optional layers drawn on top of it. Flattening merges those separate objects into the page itself, so there's nothing left to move, edit or switch off. What gets merged depends on the mode you pick: rasterising merges everything, while flattening form fields merges only the values you typed into the form.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Will my filled-in form data stay?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Yes — that's the point of flattening a form. Your answers stop being editable field values and become part of the page, so they display identically everywhere and nobody can change them or clear the form. Both modes keep them: rasterising paints them into the page image, and the form-fields mode draws them into the page content and then removes the empty fields.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Should I rasterise or flatten form fields only?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Flatten form fields only if you've filled in a form and want the answers locked. It keeps the text sharp, selectable and searchable, and the file stays about the same size. Rasterise if you want the whole document made uneditable — layers, annotations, comments and anything hidden all merged down. Rasterising is thorough but it destroys the text layer, so only reach for it when merging everything is genuinely what you want.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Will the text still be searchable?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">It depends on the mode. Flattening form fields keeps every character as real text, so search, copy-and-paste and screen readers all keep working. Rasterising doesn't: every page becomes an image, so there's no text left anywhere in the file to search or select, and a screen reader has nothing to read. That's the cost of merging everything, and it's the reason both modes exist rather than one.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Is my PDF uploaded anywhere?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">No. The document is opened, flattened and rebuilt entirely in your browser. There's no upload endpoint to send it to. Once the page has loaded you can disconnect from the network and the tool still works.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Can flattening be undone?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Not from the flattened file. Once form fields have been merged into the page they're ordinary page content, and a rasterised page is an image with no structure left to recover. Nothing here modifies your original, though, so keep it if you might need an editable version later. Flattening is a one-way door by design — that's what makes the result stable.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Is flattening the same as redacting?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">No, and this is worth being clear about. Flattening locks content in; it doesn't hide it. Flattening form fields actually makes your typed values <em>easier</em> to extract, because they become selectable page text rather than field values. Even rasterising, which does destroy the text layer, only removes what was already invisible — anything you can see on the page is still there in the pixels. If you need something gone rather than fixed in place, black it out with the <a href="/redact-pdf/">PDF redaction tool</a> instead.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Can I flatten a password-protected PDF?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Yes, if you know the password — you'll be asked for it when the file opens, and it's used in your browser like the file itself. Encrypted documents can only be rasterised, because baking values into an encrypted file's page content isn't possible without rewriting it wholesale. The tool switches the form-fields mode off and tells you why when it sees one.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Does flattening make the file smaller?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Usually the opposite, if you rasterise. A page of text stored as text is very compact; the same page stored as an image is not, so a rasterised document is often several times larger. Standard quality renders at 150 DPI and suits most documents; High renders at 300 DPI and is sharper but larger. Flattening form fields barely changes the size at all, because it adds a little page content and removes the field objects.</p>
+        </details>
+      </div>
+
+      <p class="muted" style="font-size:14px;margin-top:30px">
+        Related privacy tools: <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">Redact a PDF</a> · <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
+      </p>
+
+      <p class="muted" style="font-size:14px;margin-top:12px">
+        Worth knowing before you rely on any of this: <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">why covering something up isn't the same as removing it</a>.
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  /* Visually-hidden label for the comparison table's empty corner cell, so the
+     header row still announces sensibly. */
+  .vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Mode comparison table. Same pattern as /unblur-license-plate/ — if a third
+     page needs it, promote it to global.css rather than copying again. */
+  .table-scroll {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .cmp {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  .cmp th,
+  .cmp td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .cmp tbody tr:last-child th,
+  .cmp tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .cmp thead th {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    background: var(--surface-2, rgba(127, 127, 127, 0.06));
+  }
+  .cmp tbody th {
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .cmp tbody td {
+    color: var(--text-2);
+  }
+
+  /* Narrow screens: reflow each row into a labelled card instead of scrolling. */
+  @media (max-width: 640px) {
+    .table-scroll {
+      border: none;
+      border-radius: 0;
+    }
+    .cmp,
+    .cmp tbody,
+    .cmp tr,
+    .cmp th,
+    .cmp td {
+      display: block;
+      width: 100%;
+    }
+    .cmp thead {
+      display: none;
+    }
+    .cmp tbody tr {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px 0;
+      margin-bottom: 10px;
+    }
+    .cmp tbody th {
+      white-space: normal;
+      border-bottom: 0;
+      padding-bottom: 2px;
+    }
+    .cmp tbody td {
+      border-bottom: 0;
+      padding-top: 2px;
+    }
+    /* Without the header row, each cell has to say which mode it describes. */
+    .cmp tbody td::before {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--text-3);
+      margin-bottom: 2px;
+    }
+    .cmp tbody td:nth-of-type(1)::before {
+      content: "Rasterise everything";
+    }
+    .cmp tbody td:nth-of-type(2)::before {
+      content: "Flatten form fields only";
+    }
+  }
+</style>

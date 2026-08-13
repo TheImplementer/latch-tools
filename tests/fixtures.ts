@@ -390,3 +390,142 @@ export function makeTestPng(width = 800, height = 1000): Uint8Array {
   }
   return out;
 }
+
+// -----------------------------------------------------------------------
+// Form fixtures, for /flatten-pdf/.
+//
+// The two flatten modes make opposite promises, so the fixture has to make both
+// checkable from one document: rasterising must turn the field's VALUE into
+// pixels and leave no text at all, while form-flattening must turn that same
+// value into real extractable text.
+//
+// Note the value deliberately does NOT appear in the page's text content before
+// flattening — it lives in the widget's appearance stream. That is what lets a
+// test prove the crisp mode actually baked something in, rather than the value
+// having been ordinary page text all along.
+// -----------------------------------------------------------------------
+
+/** The value typed into makeFormPdf's visible field. */
+export const FORM_VALUE = "FORM-VALUE-98765";
+
+/** The value in the field makeFormPdf hides when asked to. */
+export const HIDDEN_VALUE = "HIDDEN-FIELD-54321";
+
+/** Where the visible field sits, normalised (0–1, top-left origin). */
+export const FIELD_RECT = { x: 0.1, y: 0.3, w: 0.5, h: 0.05 };
+
+/**
+ * Build a two-page PDF carrying a filled-in form field.
+ *
+ * Page 1 is A4 portrait and holds the field; page 2 is A4 landscape, so that
+ * "page sizes and orientation are preserved" is a real assertion rather than a
+ * tautology about a document where every page is the same shape.
+ *
+ * The field is drawn with no border and a white background on purpose: the only
+ * dark pixels inside FIELD_RECT are then the value's own glyphs, so sampling
+ * that rect in a rasterised page tests that the VALUE was baked in rather than
+ * that a widget border was.
+ */
+export async function makeFormPdf(
+  opts: { hidden?: boolean } = {},
+): Promise<Uint8Array> {
+  const { PDFDocument, PDFName, PDFNumber, StandardFonts, rgb } =
+    await import("pdf-lib");
+  const doc = await PDFDocument.create();
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+
+  const page = doc.addPage([PAGE_W, PAGE_H]);
+  page.drawText("Application form. Body text, nothing sensitive.", {
+    x: 72,
+    y: PAGE_H - 0.65 * PAGE_H,
+    size: 12,
+    font,
+    color: rgb(0.1, 0.1, 0.1),
+  });
+  // Landscape, to catch an export that normalises every page to portrait.
+  const landscape = doc.addPage([PAGE_H, PAGE_W]);
+  landscape.drawText("Continuation page, landscape.", {
+    x: 72,
+    y: PAGE_W - 0.5 * PAGE_W,
+    size: 12,
+    font,
+    color: rgb(0.1, 0.1, 0.1),
+  });
+
+  const form = doc.getForm();
+  const field = form.createTextField("applicant.name");
+  field.setText(FORM_VALUE);
+  field.addToPage(page, {
+    x: FIELD_RECT.x * PAGE_W,
+    // pdf-lib measures from the bottom-left; FIELD_RECT is top-left.
+    y: PAGE_H * (1 - FIELD_RECT.y - FIELD_RECT.h),
+    width: FIELD_RECT.w * PAGE_W,
+    height: FIELD_RECT.h * PAGE_H,
+    borderWidth: 0,
+    borderColor: rgb(1, 1, 1),
+    backgroundColor: rgb(1, 1, 1),
+    font,
+  });
+  // After addToPage, which is what creates the /DA entry this needs. Saving
+  // regenerates the appearance stream at the new size.
+  field.setFontSize(16);
+
+  if (opts.hidden) {
+    // A field flagged HIDDEN (/F bit 2). pdf.js honours the flag and leaves it
+    // off the rendered page; pdf-lib's flatten() ignores it and would draw the
+    // value in. /flatten-pdf/ has to refuse crisp mode rather than leak it.
+    const secret = form.createTextField("applicant.hidden");
+    secret.setText(HIDDEN_VALUE);
+    secret.addToPage(page, {
+      x: FIELD_RECT.x * PAGE_W,
+      y: PAGE_H * 0.5,
+      width: FIELD_RECT.w * PAGE_W,
+      height: FIELD_RECT.h * PAGE_H,
+      borderWidth: 0,
+      borderColor: rgb(1, 1, 1),
+      backgroundColor: rgb(1, 1, 1),
+      font,
+    });
+    for (const widget of secret.acroField.getWidgets()) {
+      widget.dict.set(PDFName.of("F"), PDFNumber.of(2));
+    }
+  }
+
+  return doc.save();
+}
+
+/**
+ * Count the terminal form fields in a PDF — the ones a flatten would act on.
+ *
+ * Entries without a type are the non-terminal parents of a dotted field name
+ * ("applicant" for "applicant.name"); counting them would overstate the total.
+ */
+export async function countFormFields(bytes: Uint8Array): Promise<number> {
+  const { task, doc } = await openInNode(bytes);
+  const objects = (await doc.getFieldObjects()) as Record<
+    string,
+    { type?: string }[]
+  > | null;
+  let n = 0;
+  if (objects) {
+    for (const list of Object.values(objects)) {
+      for (const f of list) if (f.type) n++;
+    }
+  }
+  await task.destroy();
+  return n;
+}
+
+/** Each page's size in points, with /Rotate applied — i.e. as displayed. */
+export async function pageSizes(
+  bytes: Uint8Array,
+): Promise<{ w: number; h: number }[]> {
+  const { task, doc } = await openInNode(bytes);
+  const sizes: { w: number; h: number }[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const vp = (await doc.getPage(i)).getViewport({ scale: 1 });
+    sizes.push({ w: Math.round(vp.width), h: Math.round(vp.height) });
+  }
+  await task.destroy();
+  return sizes;
+}

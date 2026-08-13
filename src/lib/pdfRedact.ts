@@ -18,11 +18,13 @@
 // out, a PDF is one file in and one file out, so this module owns its own
 // intake, page model and export rather than pretending a page is a File.
 //
-// Memory: exactly one full-resolution page canvas exists at a time. At 300 DPI
-// an A4 page is a ~33 MB surface, so a 150-page document would be 5 GB if they
-// were held; each is encoded to JPEG and released before the next is rendered.
+// Memory: page canvases are released as soon as they have been encoded, so a
+// long document walks through them rather than accumulating them. At 300 DPI an
+// A4 page is a ~33 MB surface and a 150-page document would be 5 GB if they were
+// all held. See ./pdfRaster, which owns the export loop and that guarantee.
 // -----------------------------------------------------------------------
 
+import { createDropzone } from "./dropzone";
 import {
   PdfOpenError,
   fitScale,
@@ -31,6 +33,12 @@ import {
   renderPage,
   type OpenedPdf,
 } from "./pdf";
+import {
+  DPI_HIGH,
+  DPI_STANDARD,
+  canvasToBlob,
+  rasterisePdf,
+} from "./pdfRaster";
 import {
   MAX_STAGE,
   THUMB,
@@ -62,27 +70,10 @@ const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 // the drop-zone copy so nobody discovers it after a two-minute wait.
 const MAX_PAGES = 150;
 
-const DPI_STANDARD = 150;
-const DPI_HIGH = 300;
-// JPEG rather than PNG: a 300 DPI A4 page is roughly 400 KB as JPEG and 5 MB as
-// PNG, and the tool already grows the file by rasterising. 0.85 keeps text
-// edges clean enough to read without ringing.
-const JPEG_QUALITY = 0.85;
-
 function formatBytes(b: number): string {
   if (b < 1024) return b + " B";
   if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
   return (b / (1024 * 1024)).toFixed(1) + " MB";
-}
-
-function canvasToBlob(canvas: HTMLCanvasElement, type: string, q: number) {
-  return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error("encode failed"))),
-      type,
-      q,
-    );
-  });
 }
 
 export function initPdfRedactWidget(root: HTMLElement): void {
@@ -428,13 +419,13 @@ export function initPdfRedactWidget(root: HTMLElement): void {
   //
   // The rule that matters: a page that fails to render must never be written
   // out. A PDF that is missing one page is obvious; a PDF where one page came
-  // through un-redacted is a leak that looks like success.
+  // through un-redacted is a leak that looks like success. ./pdfRaster owns
+  // that rule — it writes nothing until every page has rendered.
   async function exportPdf() {
     if (totalRegions() === 0 || busy) return;
     busy = true;
     cancelled = false;
     const total = pages.length;
-    const scale = dpi() / 72;
 
     procTitle.textContent = `Redacting ${plural(total, "page")}`;
     procSub.textContent =
@@ -446,52 +437,33 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     showPanel("processing");
     await raf();
 
-    let firstPageBlob: Blob | null = null;
     try {
-      const { PDFDocument } = await import("pdf-lib");
-      const out = await PDFDocument.create();
+      const out = await rasterisePdf(opened!.doc, {
+        dpi: dpi(),
+        // The bars are composited into the page's own pixels here, at export
+        // resolution. bakeRegions always returns a new canvas; pdfRaster
+        // releases whichever of the two it ends up encoding.
+        transform: (canvas, i) =>
+          pages[i].regions.length
+            ? bakeRegions(
+                canvas,
+                canvas.width,
+                canvas.height,
+                pages[i].regions,
+                "blackout",
+                1,
+              )
+            : canvas,
+        onProgress: (done) =>
+          setProgress(
+            done,
+            total,
+            done < total ? `${done + 1} of ${total}` : "",
+          ),
+        shouldCancel: () => cancelled,
+      });
 
-      for (let i = 0; i < total; i++) {
-        if (cancelled) break;
-        setProgress(i, total, `${i + 1} of ${total}`);
-        await raf();
-
-        const pg = pages[i];
-        const page = await opened!.doc.getPage(pg.n);
-        const rendered = await renderPage(page, scale);
-        page.cleanup();
-
-        const baked = pg.regions.length
-          ? bakeRegions(
-              rendered,
-              rendered.width,
-              rendered.height,
-              pg.regions,
-              "blackout",
-              1,
-            )
-          : rendered;
-
-        const blob = await canvasToBlob(baked, "image/jpeg", JPEG_QUALITY);
-        if (baked !== rendered) releaseCanvas(baked);
-        releaseCanvas(rendered);
-        if (i === 0) firstPageBlob = blob;
-
-        const img = await out.embedJpg(
-          new Uint8Array(await blob.arrayBuffer()),
-        );
-        // Size the output page from the original's points, so mixed page sizes
-        // and rotated pages come out exactly as they went in.
-        const outPage = out.addPage([pg.ptW, pg.ptH]);
-        outPage.drawImage(img, {
-          x: 0,
-          y: 0,
-          width: pg.ptW,
-          height: pg.ptH,
-        });
-      }
-
-      if (cancelled) {
+      if (!out.ok) {
         showPanel("editor");
         updateHint(
           "Stopped — nothing was exported. Your boxes are still here.",
@@ -499,15 +471,16 @@ export function initPdfRedactWidget(root: HTMLElement): void {
         return;
       }
 
-      setProgress(total, total, "");
-      const bytes = await out.save();
       const stem = (sourceFile?.name ?? "document").replace(/\.pdf$/i, "");
       result = {
-        blob: new Blob([bytes as BlobPart], { type: "application/pdf" }),
+        blob: new Blob([out.bytes as BlobPart], { type: "application/pdf" }),
         name: `${stem}-redacted.pdf`,
         bars: totalRegions(),
       };
-      showDone(firstPageBlob);
+      // Stays inside the try: the finally below decides whether to restore the
+      // editor's chrome by checking whether the done panel is showing, so
+      // showDone() has to have run by then.
+      showDone(out.firstPage);
     } catch (e) {
       // The user gets plain language; a developer gets the cause. Swallowing it
       // entirely makes an export failure impossible to diagnose from a bug
@@ -654,40 +627,15 @@ export function initPdfRedactWidget(root: HTMLElement): void {
   pwCancelBtn.addEventListener("click", () => void reset());
 
   // ---- Drop zone ----
-  dropzone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropzone.classList.add("is-drag");
-    dzTitle.textContent = "Drop to open your PDF";
-  });
-  ["dragleave", "dragend"].forEach((ev) =>
-    dropzone.addEventListener(ev, () => {
-      dropzone.classList.remove("is-drag");
-      dzTitle.textContent = "Drag & drop your PDF";
-    }),
-  );
-  dropzone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropzone.classList.remove("is-drag");
-    dzTitle.textContent = "Drag & drop your PDF";
-    const file = (e as DragEvent).dataTransfer?.files?.[0];
-    if (file) void acceptFile(file);
-  });
-  dropzone.addEventListener("click", () => fileInput.click());
-  dropzone.addEventListener("keydown", (e) => {
-    const ke = e as KeyboardEvent;
-    if (ke.key === "Enter" || ke.key === " ") {
-      e.preventDefault();
-      fileInput.click();
-    }
-  });
-  browseBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    fileInput.click();
-  });
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files?.[0];
-    if (file) void acceptFile(file);
-    fileInput.value = "";
+  // One document in, one out — so only the first file of a multi-file drop.
+  createDropzone({
+    dropzone,
+    fileInput,
+    browseBtn,
+    dzTitle,
+    idleLabel: "Drag & drop your PDF",
+    dropLabel: "Drop to open your PDF",
+    onFiles: (files) => void acceptFile(files[0]),
   });
 
   updateHint();

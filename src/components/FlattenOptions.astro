@@ -1,0 +1,175 @@
+---
+// The middle of /flatten-pdf/'s widget: pick how much to flatten.
+//
+// Slotted into PdfToolWidget's "options" slot. This file owns both the markup
+// and its styles deliberately — slotted nodes carry the scope of whichever file
+// authors them, so keeping the two together means exactly one stylesheet ever
+// targets these elements. (If the shell tried to style them it would need
+// :global, which — because Astro compiles scope attributes with :where() — would
+// silently out-specify whatever this file said.)
+//
+// The two modes are not "safe" and "safer". They answer different questions, and
+// the copy has to keep them distinct: rasterising destroys the text layer to
+// merge everything down; form-flattening keeps the text layer and only bakes in
+// field values. Someone who picks the wrong one gets a genuinely bad result.
+---
+
+<fieldset class="modes">
+  <legend class="modes-legend">How much should be flattened?</legend>
+
+  <label class="mode" data-el="mode-raster-row">
+    <input class="mode-radio" type="radio" name="flatten-mode" value="raster" data-el="mode-raster" checked />
+    <span class="mode-body">
+      <span class="mode-title">Rasterise everything <span class="mode-tag">thorough</span></span>
+      <span class="mode-desc">
+        Every page becomes an image and the PDF is rebuilt from those images. Layers,
+        annotations, comments and form fields all merge down into the page, and nothing can
+        be edited or pulled back apart. The trade: the text stops being text — not
+        selectable, not searchable, nothing for a screen reader, and a larger file.
+      </span>
+    </span>
+  </label>
+
+  <label class="mode" data-el="mode-form-row">
+    <input class="mode-radio" type="radio" name="flatten-mode" value="form" data-el="mode-form" />
+    <span class="mode-body">
+      <span class="mode-title">Flatten form fields only <span class="mode-tag">crisp</span></span>
+      <span class="mode-desc">
+        Bakes the filled-in values into the page and removes the fields, leaving the rest of
+        the document alone. Text stays sharp, selectable and searchable and the file size
+        barely moves — but layers, annotations and comments are untouched, and the file keeps
+        its existing metadata.
+      </span>
+      <span class="mode-why" data-el="mode-form-why" hidden></span>
+    </span>
+  </label>
+</fieldset>
+
+<div class="opt-row" data-el="quality-row">
+  <label for="flatten-quality">Quality</label>
+  <select class="qsel" id="flatten-quality" data-el="quality">
+    <option value="standard" selected>Standard · 150 DPI</option>
+    <option value="high">High · 300 DPI</option>
+  </select>
+</div>
+
+<style>
+  .modes {
+    margin: 16px 0 0;
+    padding: 0;
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .modes-legend {
+    padding: 0;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+
+  .mode {
+    display: flex;
+    gap: 11px;
+    padding: 13px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .mode:hover:not(.is-disabled) {
+    border-color: var(--border-strong);
+  }
+  .mode:has(.mode-radio:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  /* Focus lands on the radio, but the whole card is the hit target. */
+  .mode:has(.mode-radio:focus-visible) {
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .mode.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .mode-radio {
+    flex: 0 0 auto;
+    margin: 2px 0 0;
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    cursor: inherit;
+  }
+
+  .mode-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .mode-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--text);
+  }
+  .mode-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: var(--r-pill);
+    background: var(--surface-3);
+    color: var(--text-2);
+  }
+  .mode-desc {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  /* Why this mode is unavailable for the document actually loaded. Written by
+     the controller, so it must not rely on markup-time state. */
+  .mode-why {
+    margin-top: 3px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    font-weight: 600;
+    color: var(--text);
+  }
+  /* An explicit display would otherwise beat the UA [hidden] rule. */
+  .mode-why[hidden] {
+    display: none;
+  }
+
+  .opt-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 4px 0;
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .opt-row[hidden] {
+    display: none;
+  }
+  .opt-row label {
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mode {
+      transition: none;
+    }
+  }
+</style>

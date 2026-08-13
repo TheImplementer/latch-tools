@@ -25,6 +25,7 @@
 // detector. src/lib/detect.ts must only ever be reached via `await import()`
 // from inside the click handler, or ONNX Runtime lands in the eager bundle.
 import type { DetectKind, Detection } from "./detect";
+import { createDropzone } from "./dropzone";
 
 import {
   bakeRegions,
@@ -863,53 +864,26 @@ export function initRedactWidget(root: HTMLElement): void {
   }
 
   // ---- Drop zone wiring ----
+  //
+  // A change event can't say which control opened the picker, so this flag
+  // carries that across: the drop zone's own routes mean "start a new batch",
+  // while the filmstrip's + button means "add to the one on screen".
   let appendNext = false;
-  dropzone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropzone.classList.add("is-drag");
-    dzTitle.textContent = "Drop to load your images";
-  });
-  ["dragleave", "dragend"].forEach((ev) =>
-    dropzone.addEventListener(ev, () => {
-      dropzone.classList.remove("is-drag");
-      dzTitle.textContent = "Drag & drop your images";
-    }),
-  );
-  dropzone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropzone.classList.remove("is-drag");
-    dzTitle.textContent = "Drag & drop your images";
-    const files = Array.from((e as DragEvent).dataTransfer?.files ?? []);
-    if (files.length) {
+  const dz = createDropzone({
+    dropzone,
+    fileInput,
+    browseBtn,
+    dzTitle,
+    idleLabel: "Drag & drop your images",
+    dropLabel: "Drop to load your images",
+    onFreshSelection: () => {
       appendNext = false;
-      void acceptFiles(files);
-    }
-  });
-  dropzone.addEventListener("click", () => {
-    appendNext = false;
-    fileInput.click();
-  });
-  dropzone.addEventListener("keydown", (e) => {
-    const ke = e as KeyboardEvent;
-    if (ke.key === "Enter" || ke.key === " ") {
-      e.preventDefault();
-      appendNext = false;
-      fileInput.click();
-    }
-  });
-  browseBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    appendNext = false;
-    fileInput.click();
+    },
+    onFiles: (files) => void acceptFiles(files, appendNext),
   });
   stripAddBtn.addEventListener("click", () => {
     appendNext = true;
-    fileInput.click();
-  });
-  fileInput.addEventListener("change", () => {
-    const files = Array.from(fileInput.files ?? []);
-    if (files.length) void acceptFiles(files, appendNext);
-    fileInput.value = "";
+    dz.openPicker();
   });
 
   // Initial paint.

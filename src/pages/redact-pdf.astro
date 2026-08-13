@@ -171,6 +171,9 @@ const structuredData = {
         Destroying the text layer destroys all of it, not just the parts under your bars. The redacted PDF is a stack of images: you can't select or search its text, a screen reader can't read it aloud, and it will usually be a larger file than the original. That is the cost of the guarantee, and there isn't a version of this that keeps both. If you need a searchable document, redact this one and keep it as the shareable copy — don't try to have it both ways in a single file.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        And if nothing actually needs to be hidden — you just want the document to stop being editable, with its form fields locked and its annotations merged in — that's a different job with a cheaper answer. <a href="/flatten-pdf/" style="color:var(--accent-text);font-weight:600">Flatten it instead</a>, which can do that while leaving the text sharp and searchable.
+      </p>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
         One thing the tool can't do for you is decide what to cover. Check every page before you export, including headers, footers, page margins and anything that repeats — and remember that a document can identify someone through context as easily as through a name.
       </p>
     </div>
@@ -220,7 +223,7 @@ const structuredData = {
       </div>
 
       <p class="muted" style="font-size:14px;margin-top:30px">
-        Related privacy tools: <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
+        Related privacy tools: <a href="/flatten-pdf/" style="color:var(--accent-text);font-weight:600">Flatten a PDF</a> · <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
       </p>
 
       <p class="muted" style="font-size:14px;margin-top:12px">

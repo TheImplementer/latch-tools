@@ -132,11 +132,22 @@ export function pageSize(page: PdfPage): { ptW: number; ptH: number } {
  * The caller owns the canvas and is expected to drop it as soon as the pixels
  * have been consumed — at 300 DPI an A4 page is a ~33 MB surface, so holding
  * more than one at a time is how a long document runs a tab out of memory.
+ *
+ * `annotations` is spelled out rather than left to pdf.js's default because
+ * /flatten-pdf/'s entire promise depends on it. With annotations on, a filled
+ * form field's widget is painted from its appearance stream, so rasterising
+ * genuinely bakes the value into the page; with them off, the rebuilt document
+ * would silently come back blank where every field used to be, and look
+ * perfectly fine. Note the trap in the other direction too: `ENABLE_FORMS`
+ * reads like the *more* correct constant for a form, and is the wrong one —
+ * it hands widgets to the HTML annotation layer and omits them from the canvas.
  */
 export async function renderPage(
   page: PdfPage,
   scale: number,
+  annotations = true,
 ): Promise<HTMLCanvasElement> {
+  const { AnnotationMode } = await import("pdfjs-dist");
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(viewport.width));
@@ -146,7 +157,14 @@ export async function renderPage(
   // under it. Without this, redacted output would have black "paper".
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+  await page.render({
+    canvas,
+    canvasContext: ctx,
+    viewport,
+    annotationMode: annotations
+      ? AnnotationMode.ENABLE
+      : AnnotationMode.DISABLE,
+  }).promise;
   return canvas;
 }
 
