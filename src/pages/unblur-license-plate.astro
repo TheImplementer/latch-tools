@@ -53,6 +53,11 @@ const structuredData = {
         },
         {
           "@type": "Question",
+          "name": "Why do people blur license plates?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A number plate is a unique identifier tied to a registered keeper, so a photo showing one can connect a car — and often an address — to a named person. Cars turn up in the background of marketplace listings, dashcam clips, property photos and holiday snaps, usually without the photographer thinking about it. In the UK and EU a plate counts as personal data whenever it can identify someone, which is why dealers, letting agents and street-mapping services blur them by default. The motive is ordinary: publish the photo without publishing the person." }
+        },
+        {
+          "@type": "Question",
           "name": "Is blurring enough before publishing a photo?",
           "acceptedAnswer": { "@type": "Answer", "text": "For anything you publish, the safer technical default is irreversible removal rather than blur. Blur keeps a mathematical trace of the original; a solid blackout does not. If a plate, face, address or account number would cause real harm if it were read, use a blackout instead of relying on how blurry it looks to you." }
         }
@@ -201,8 +206,24 @@ const structuredData = {
           motion, so there is a whole research literature — and trained models, and datasets —
           aimed at reading motion-blurred plates. Recovering a plate blurred at capture is a
           different problem from reversing a blur you applied on purpose, but it does mean the
-          expertise and the tooling for "read this smeared plate" already exist.
+          expertise and the tooling for "read this smeared plate" already exist. Three
+          representative examples:
         </p>
+        <ul style="list-style:none;margin:18px 0 0;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;">
+          <li style="color:var(--text-3);font-size:13.5px;line-height:1.6;margin:0 0 9px;">
+            Svoboda, Hradiš, Maršík &amp; Zemčík (2016).
+            <a href="https://arxiv.org/abs/1602.07873" rel="noopener" target="_blank" style="color:var(--accent-text)">CNN for License Plate Motion Deblurring</a>
+          </li>
+          <li style="color:var(--text-3);font-size:13.5px;line-height:1.6;margin:0 0 9px;">
+            Rao &amp; Muthu (2018).
+            <a href="https://arxiv.org/abs/1802.06214" rel="noopener" target="_blank" style="color:var(--accent-text)">A New De-blurring Technique for License Plate Images with Robust Length Estimation</a>
+          </li>
+          <li style="color:var(--text-3);font-size:13.5px;line-height:1.6;margin:0;">
+            Gong et al. (2024).
+            <a href="https://arxiv.org/abs/2404.13677" rel="noopener" target="_blank" style="color:var(--accent-text)">A Dataset and Model for Realistic License Plate Deblurring</a>
+            — introduces the LPBlur dataset and the LPDGAN model.
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -362,6 +383,14 @@ const structuredData = {
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
           <p class="faq-a">Cover it with a solid block of colour, baked into the pixels of the exported image, and cover generously — the whole plate plus a margin, so no partial characters survive at the edges. A solid fill replaces the original pixels outright, so there's nothing left to reconstruct and nothing to peel off.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Why do people blur license plates?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">A number plate is a unique identifier tied to a registered keeper, so a photo showing one can connect a car — and often an address — to a named person. Cars turn up in the background of marketplace listings, dashcam clips, property photos and holiday snaps, usually without the photographer thinking about it. In the UK and EU a plate counts as personal data whenever it can identify someone, which is why dealers, letting agents and street-mapping services blur them by default. The motive is ordinary: publish the photo without publishing the person.</p>
         </details>
 
         <details class="faq-item">
