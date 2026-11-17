@@ -164,6 +164,10 @@ for (const file of readdirSync(ROOT + "src/pages")) {
   if (slug === "index") {
     middle = brandMiddle("Redact PDFs and photos for good");
     sub = "Runs in your browser — your files never leave your device";
+  } else if (slug === "unredact-pdf") {
+    // Explainer, not a tool: the H1 is too long for a card and the tool tagline doesn't apply.
+    middle = titleMiddle("Can redacted PDF text be recovered?");
+    sub = "Why black bars leak — and how to redact so nothing comes back";
   } else if (slug === "about" || slug === "privacy-policy") {
     middle = brandMiddle("Private, in-browser file tools");
   } else {

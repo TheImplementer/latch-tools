@@ -1,0 +1,538 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Informational page (not a tool) — same shape as /unblur-license-plate/:
+// TechArticle + FAQ, no SoftwareApplication and no HowTo. It answers the
+// "unredact pdf" query honestly — a failed redaction gives its text up, a real
+// one doesn't — and funnels to /redact-pdf/. Explainer only: never ship
+// anything here that recovers other people's redactions.
+const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>';
+
+const faqs = [
+  {
+    q: "Can a redacted PDF be unredacted?",
+    a: "Only if the redaction failed. When the black bar was drawn on top of the text, the text is still in the file and comes back out with copy and paste, a search, or a text extractor. When the text was actually removed — by a real redaction tool, or by rebuilding the page as an image — there is nothing underneath to recover, and no software can put it back.",
+  },
+  {
+    q: "Why can I copy text from under a black bar?",
+    a: "Because the bar and the text are separate things. A PDF page is a list of drawing instructions, and a black rectangle is just one more instruction painted on top. Selecting and copying reads the text instructions, not what the page looks like, so it picks the words up straight through the bar.",
+  },
+  {
+    q: "Does flattening a PDF remove the text under a redaction box?",
+    a: "Not by itself. Flattening merges annotations and form fields into the page, so a drawn box stops being a movable object — but the text instructions underneath it are still there and still copyable. The exception is flattening by rasterising, which rebuilds each page as an image; that does remove the text, along with all the other text on the page.",
+  },
+  {
+    q: "Does printing to PDF remove hidden text?",
+    a: "Usually not. Print-to-PDF generally keeps text as text, so a box drawn over words prints as a box drawn over words that are still in the new file. Check the output the same way you would any other: try to select and copy the area under the bar.",
+  },
+  {
+    q: "Is Adobe Acrobat's redaction safe?",
+    a: "Acrobat Pro's Redact tool does remove the marked text when you apply it, which a drawn rectangle does not — and it offers a separate step to remove hidden information such as metadata. The free Acrobat Reader has no redaction tool, only shapes. Be aware that a 2023 study found Acrobat, like most redaction tools it tested, still kept exact character-positioning data around redactions that could be used to narrow down short redacted words such as names.",
+  },
+  {
+    q: "Can AI recover redacted text?",
+    a: "It can guess, not recover. A language model can suggest words that fit the surrounding sentence and the width of the bar, and for something short and predictable like a name or a date that guess can be uncomfortably close. That is why a good redaction covers the whole field or line, not just the word, when the length of the hidden text would give it away.",
+  },
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Can redacted PDF text be recovered?", "item": "https://latchtools.com/unredact-pdf/" }
+      ]
+    },
+    {
+      "@type": "TechArticle",
+      "headline": "How to unredact a PDF — and why yours might not be redacted",
+      "description": "Why the text under a black bar in a PDF often comes straight back out, the ways PDF redactions fail, documented cases, and how to redact so nothing can be recovered.",
+      "about": { "@type": "Thing", "name": "PDF redaction" },
+      "url": "https://latchtools.com/unredact-pdf/",
+      "citation": [
+        { "@type": "ScholarlyArticle", "name": "Story Beyond the Eye: Glyph Positions Break PDF Text Redaction", "author": "Maxwell Bland, Anushya Iyer, Kirill Levchenko", "datePublished": "2023", "url": "https://petsymposium.org/popets/2023/popets-2023-0069.php" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((f) => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
+    }
+  ]
+};
+---
+<Layout
+  title="Can Redacted PDF Text Be Recovered? · Latch Tools"
+  description="How to unredact a PDF: when blacked-out text comes straight back with copy and paste, when it's really gone, and how to check your own redactions."
+  ogImage="/og/unredact-pdf.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <main>
+    <!-- HERO -->
+    <section class="section" style="padding-bottom: 0">
+      <div class="wrap" style="max-width: 780px">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Unredact a PDF</span>
+        </nav>
+        <h1 style="font-family: var(--font-display); font-weight: 600; letter-spacing: -.035em; line-height: 1.06; font-size: clamp(32px, 5.2vw, 50px); margin: 18px 0 0; text-wrap: balance;">
+          How to <span style="color: var(--accent)">unredact</span> a PDF — and why yours might not be redacted
+        </h1>
+        <p style="font-size: clamp(16px, 2.2vw, 18px); color: var(--text-2); max-width: 40em; margin: 20px 0 0; line-height: 1.7; text-wrap: pretty;">
+          A surprising number of "redacted" PDFs give their secrets up to anyone who selects the
+          black bar and presses copy. Others are genuinely sealed. The difference isn't how the
+          page looks — it's whether the text was removed or just painted over. Here's how to tell,
+          why it keeps happening to courts and governments, and how to redact so nothing comes back.
+        </p>
+      </div>
+    </section>
+
+    <!-- SHORT ANSWER -->
+    <section class="section" style="padding-top: 34px; padding-bottom: 0">
+      <div class="wrap" style="max-width: 780px">
+        <div class="answer">
+          <h2 style="font-family:var(--font-display);font-weight:600;font-size:19px;letter-spacing:-.02em;margin:0 0 14px;">The short answer depends on how it was redacted</h2>
+          <dl class="answer-list">
+            <dt>The bars were drawn on top of the text?</dt>
+            <dd>Then it was never redacted. The words are still in the file, and any PDF viewer will hand them over.</dd>
+            <dt>The text was actually removed?</dt>
+            <dd>Then nothing brings it back. No tool reverses a real redaction — though the width of a bar can still hint at a short word.</dd>
+            <dt>Worried about a PDF you redacted yourself?</dt>
+            <dd><a href="/redact-pdf/#check" style="color:var(--accent)">Run the five checks</a> on the copy you sent. If it fails, <a href="/redact-pdf/" style="color:var(--accent)">redact it properly</a> and send that instead.</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO -->
+    <section class="section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">See it for yourself</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 18px;">
+          The extract below is "redacted" the way most failed PDFs are: black bars painted over
+          text that's still there. Drag across it to select, or press the button to see what a
+          copy and paste would give you. Everything in it is made up.
+        </p>
+        <figure class="demo">
+          <div class="demo-doc" id="demo-doc">
+            <p class="demo-head">Statement of account</p>
+            <p>Account holder: <span class="bar">Jane Example</span></p>
+            <p>Sort code: <span class="bar">12-34-56</span> &nbsp;Account no.: <span class="bar">87654321</span></p>
+            <p>Transfer reference: <span class="bar">Deposit, 14 Sample Street</span></p>
+          </div>
+          <figcaption class="demo-bar">
+            <button type="button" class="btn btn-ghost" id="demo-btn" aria-expanded="false" aria-controls="demo-out">Show what copy and paste returns</button>
+          </figcaption>
+          <pre class="demo-out" id="demo-out" hidden></pre>
+        </figure>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 18px 0 0;">
+          This is a web page, not a PDF, but the mechanism is identical: the bar changes how the
+          words look, not whether they exist. A screen reader would read them aloud, too.
+        </p>
+      </div>
+    </section>
+
+    <!-- WHY -->
+    <section class="band section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">Why a black box in a PDF can hide nothing</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          A PDF page isn't a picture. It's a list of instructions for drawing one: <em>put this
+          text here, in this font</em>; <em>draw this line</em>; <em>fill this rectangle
+          black</em>. A viewer carries them out in order, so a rectangle drawn after a line of
+          text paints over it on screen. But the text instruction is still in the list.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
+          Anything that reads the instructions rather than the finished picture goes straight past
+          the bar: selecting and copying, searching, a screen reader, a text extractor, or opening
+          the file in an editor and deleting the rectangle. Whether the box was added as a comment
+          annotation or drawn into the page itself makes no difference to the text underneath —
+          it survives either way.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAILURE MODES -->
+    <section class="section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">Five ways a PDF redaction fails</h2>
+        <ol class="fail-list">
+          <li>
+            <strong>A shape drawn over live text.</strong> The classic. A filled rectangle from a
+            free reader's drawing tools, a comment box, or a "highlight" set to black. The text is
+            intact beneath it.
+          </li>
+          <li>
+            <strong>Text blacked out in Word, then exported.</strong> Black highlighting or black
+            text on a black background changes the look, not the content. The export carries the
+            words into the PDF, fully selectable.
+          </li>
+          <li>
+            <strong>A box over a scanned page.</strong> A scan is a picture, but it rarely comes
+            alone: scanners and Acrobat usually add an invisible OCR text layer so the page is
+            searchable. Cover the picture and the OCR text is still there — and the full,
+            uncovered scan image is often still in the file too.
+          </li>
+          <li>
+            <strong>The page is clean but the file isn't.</strong> A PDF can carry a title and
+            author in its properties, comments, attachments, bookmarks, form-field values, and
+            earlier versions of a page left behind by incremental saves. None of these show on
+            the page; all of them have leaked from documents that looked fine.
+          </li>
+          <li>
+            <strong>The text is gone, but its shape isn't.</strong> Even a real redaction leaves
+            the bar's width, and the exact positions of the characters around it. In 2023,
+            researchers at the University of Illinois showed that those positions can be measured
+            precisely enough to work out redacted names — and found the leak in 11 popular
+            redaction tools, Acrobat among them.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- CASES -->
+    <section class="band section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">It keeps happening</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 18px;">
+          This isn't a theoretical risk. It has caught out the people with the most reason to get
+          it right, often enough that "the redactions didn't work" is a recurring headline.
+        </p>
+        <ul class="case-list">
+          <li>
+            <span class="case-year">2005</span>
+            <div>
+              <strong>US military report on the death of Nicola Calipari.</strong> The Pentagon
+              published a redacted report on the shooting of the Italian intelligence officer in
+              Baghdad. Pasting the PDF into a word processor revealed it in full.
+              <a href="https://www.theregister.com/2005/05/03/military_report_secrets" rel="noopener" target="_blank">The Register</a>
+            </div>
+          </li>
+          <li>
+            <span class="case-year">2009</span>
+            <div>
+              <strong>The TSA's airport screening manual.</strong> A version of the screening
+              procedures was posted on a federal contracting website with its most sensitive
+              passages blacked out — in a way that readers easily got past. Copies with the
+              redactions exposed spread across the web.
+              <a href="https://abcnews.com/Blotter/massive-tsa-security-breach-agency-secrets/story?id=9280503" rel="noopener" target="_blank">ABC News</a>
+            </div>
+          </li>
+          <li>
+            <span class="case-year">2019</span>
+            <div>
+              <strong>Paul Manafort's court filing.</strong> A filing by his defence lawyers
+              blacked out passages describing the special counsel's allegations. The text under
+              the bars could be copied and pasted straight out.
+              <a href="https://abovethelaw.com/2019/01/paul-manaforts-lawyers-learn-that-obvious-thing-you-learned-as-a-summer-associate/" rel="noopener" target="_blank">Above the Law</a>
+            </div>
+          </li>
+          <li>
+            <span class="case-year">2023</span>
+            <div>
+              <strong>Hundreds of properly removed redactions, narrowed back down.</strong>
+              Bland, Iyer and Levchenko used character positions to recover first and last names
+              from real redacted documents, including inspector-general reports and FOIA
+              responses — redactions where the text itself had been removed.
+              <a href="https://petsymposium.org/popets/2023/popets-2023-0069.php" rel="noopener" target="_blank">Proceedings on Privacy Enhancing Technologies</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SO CAN YOU -->
+    <section class="section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">So, can you unredact a PDF?</h2>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          You can only "unredact" a redaction that didn't happen. If the words are still in the
+          file, the PDF will give them up — that's the whole failure. If they were removed, they're
+          gone: there's no hidden copy, no undo history inside a properly redacted file, and no
+          tool that can conjure the original back.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
+          Sites and apps that promise to unredact any PDF are doing one of two things: reading text
+          that was never removed, or guessing. A guess from the surrounding context and the width
+          of the bar can be plausible, especially for a short name, but it's a guess — not
+          evidence, and not the original.
+        </p>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
+          We don't make a tool for recovering other people's redactions, and won't. This page is
+          for the other side of the problem: making sure yours hold.
+        </p>
+      </div>
+    </section>
+
+    <!-- HOW TO DO IT RIGHT -->
+    <section class="band section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 16px">How to redact a PDF so it can't be undone</h2>
+        <ol style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 20px; padding-left: 1.2em;">
+          <li style="margin-bottom: 8px"><strong>Remove, don't cover.</strong> Use a tool that deletes the text under the bar, not one that paints on top of it.</li>
+          <li style="margin-bottom: 8px"><strong>Cover the whole field.</strong> If the length of a name or number would give it away, black out the full line or box, not just the word.</li>
+          <li style="margin-bottom: 8px"><strong>Strip what isn't on the page.</strong> Properties, comments, attachments and old versions need to go too.</li>
+          <li><strong>Check the file you send.</strong> Select across a bar, search for a word you removed, and look at the document properties — on the exported copy, not the one you edited.</li>
+        </ol>
+        <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 24px;">
+          <a href="/redact-pdf/" style="color:var(--accent)">Redact PDF</a> does all of that in one
+          step by rebuilding the document rather than editing it: every page is rendered to an
+          image, the bars are burned into the pixels, and a new PDF is assembled from those images.
+          No text layer is carried across — not under the bars and not anywhere else — so there are
+          no character positions to measure and no hidden extras to forget. The code that does it
+          is <a href="https://github.com/TheImplementer/latch-tools/blob/main/src/lib/pdfRaster.ts" rel="noopener" target="_blank" style="color:var(--accent)">open source</a>,
+          so you don't have to take that on trust.
+        </p>
+        <a href="/redact-pdf/" class="btn btn-primary btn-lg">
+          Redact a PDF properly
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <p style="color:var(--text-3);font-size:14px;line-height:1.6;margin:16px 0 0;">
+          It runs in your browser, so the unredacted original never leaves your device.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+      <div class="wrap" style="max-width: 780px">
+        <h2 class="sec-title" style="margin-bottom: 20px">Frequently asked</h2>
+        {faqs.map((f) => (
+          <details class="faq-item">
+            <summary class="faq-q">{f.q}<Fragment set:html={PM} /></summary>
+            <p class="faq-a">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- RELATED TOOLS -->
+    <section class="section" style="padding-top:0">
+      <div class="wrap" style="max-width:980px">
+        <div class="sec-head">
+          <div>
+            <h2 class="sec-title" style="font-size:22px">Redact it properly</h2>
+          </div>
+        </div>
+        <div class="tool-grid" style="grid-template-columns:repeat(4,1fr)">
+          <a href="/redact-pdf/" class="tool-card">
+            <div class="tool-ic" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><rect x="8.5" y="11" width="7" height="2.6" rx=".8" fill="currentColor" stroke="none"/><path d="M8.5 16.5h5"/></svg>
+            </div>
+            <div class="tool-name">Redact a PDF</div>
+            <div class="tool-desc">Bars burned into every page, with no text left underneath.</div>
+            <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+          </a>
+          <a href="/flatten-pdf/" class="tool-card">
+            <div class="tool-ic" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8-4 8 4-8 4z"/><path d="M4 12l8 4 8-4"/><path d="M4 16l8 4 8-4"/></svg>
+            </div>
+            <div class="tool-name">Flatten a PDF</div>
+            <div class="tool-desc">Lock form fields and comments into the page so they can't be edited.</div>
+            <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+          </a>
+          <a href="/redact-image/" class="tool-card">
+            <div class="tool-ic" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.2"/><rect x="6.5" y="9" width="11" height="3.2" rx="1" fill="currentColor" stroke="none"/><path d="M6.5 15.5h7"/></svg>
+            </div>
+            <div class="tool-name">Redact an image</div>
+            <div class="tool-desc">The same burned-in bars for screenshots and photos.</div>
+            <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+          </a>
+          <a href="/unblur-license-plate/" class="tool-card">
+            <div class="tool-ic" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="1.8"/><path d="M6 11.5h1.5M9.5 11.5H11M13.5 11.5H15M17 11.5h1"/><path d="M6 13.5h12" opacity=".45"/></svg>
+            </div>
+            <div class="tool-name">Can blur be undone?</div>
+            <div class="tool-desc">The same question for blurred and pixelated photos.</div>
+            <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  // The demo: show exactly what a copy of the "redacted" extract would paste.
+  // Each line's innerText is the same plain text the clipboard gets (joined
+  // per line, since innerText of the whole block pads paragraphs with blanks).
+  const btn = document.getElementById("demo-btn");
+  const doc = document.getElementById("demo-doc");
+  const out = document.getElementById("demo-out");
+  if (btn && doc && out) {
+    btn.addEventListener("click", () => {
+      const show = out.hidden;
+      const lines = [...doc.querySelectorAll("p")].map((p) => (p as HTMLElement).innerText.trim());
+      out.textContent = show ? lines.join("\n") : "";
+      out.hidden = !show;
+      btn.setAttribute("aria-expanded", String(show));
+      btn.textContent = show ? "Hide it again" : "Show what copy and paste returns";
+    });
+  }
+</script>
+
+<style>
+  .answer {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    background: var(--surface-2);
+    padding: 22px 24px;
+  }
+  .answer-list {
+    margin: 0;
+  }
+  .answer-list dt {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 15.5px;
+    line-height: 1.5;
+  }
+  .answer-list dd {
+    margin: 4px 0 0;
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+  .answer-list dd:not(:last-child) {
+    margin-bottom: 14px;
+  }
+
+  /* Demo: a paper-white "document" in both themes, so the bars read as ink. */
+  .demo {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .demo-doc {
+    padding: 24px 26px;
+    background: #fdfdfb;
+    color: #1d211e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.9;
+    border-bottom: 1px solid var(--border);
+  }
+  .demo-doc p {
+    margin: 0;
+  }
+  .demo-head {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #5e6962;
+    margin-bottom: 8px !important;
+  }
+  .bar {
+    background: #111;
+    color: #111;
+    padding: 1px 2px;
+    border-radius: 1px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .bar::selection {
+    background: #c9a227;
+    color: #111;
+  }
+  .demo-bar {
+    padding: 14px 18px;
+  }
+  .demo-out {
+    margin: 0;
+    padding: 16px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-soft);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .fail-list {
+    margin: 0;
+    padding-left: 1.3em;
+    color: var(--text-2);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .fail-list li + li {
+    margin-top: 14px;
+  }
+  .fail-list strong {
+    color: var(--text);
+  }
+
+  .case-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .case-list li {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+  .case-list li:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+  .case-list strong {
+    color: var(--text);
+  }
+  .case-list a {
+    color: var(--accent-text);
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .case-year {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-text);
+    padding-top: 2px;
+  }
+  @media (max-width: 520px) {
+    .case-list li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .tool-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+  @media (max-width: 520px) {
+    .tool-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
