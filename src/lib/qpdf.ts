@@ -77,22 +77,28 @@ let seq = 0;
 
 /**
  * Run qpdf on `input` with `args`, where "$IN" and "$OUT" stand for the input
- * and output files. Exit code 3 means "succeeded with warnings", which for a
- * real-world PDF is routine.
+ * and output files, and "$REF" for `ref` when one is given. Exit code 3 means
+ * "succeeded with warnings", which for a real-world PDF is routine.
  */
-async function run(input: Uint8Array, args: string[]): Promise<Uint8Array> {
+async function run(
+  input: Uint8Array,
+  args: string[],
+  ref?: Uint8Array,
+): Promise<Uint8Array> {
   const { qpdf, log } = await load();
   const n = ++seq;
   const inPath = `/in-${n}.pdf`;
   const outPath = `/out-${n}.pdf`;
+  const refPath = `/ref-${n}.pdf`;
   log.length = 0;
   qpdf.FS.writeFile(inPath, input);
+  if (ref) qpdf.FS.writeFile(refPath, ref);
+  const sub = (a: string) =>
+    a.replace("$IN", inPath).replace("$OUT", outPath).replace("$REF", refPath);
   try {
     let code: number;
     try {
-      code = qpdf.callMain(
-        args.map((a) => (a === "$IN" ? inPath : a === "$OUT" ? outPath : a)),
-      );
+      code = qpdf.callMain(args.map(sub));
     } catch (e) {
       throw new QpdfError("failed", `qpdf threw: ${String(e)}`);
     }
@@ -105,7 +111,7 @@ async function run(input: Uint8Array, args: string[]): Promise<Uint8Array> {
     }
     return qpdf.FS.readFile(outPath);
   } finally {
-    for (const p of [inPath, outPath]) {
+    for (const p of [inPath, outPath, refPath]) {
       try {
         qpdf.FS.unlink(p);
       } catch {
@@ -148,4 +154,28 @@ export function encryptPdf(
     "--",
     "$OUT",
   ]);
+}
+
+/**
+ * Encrypt `bytes` exactly as `original` is encrypted: same method, same user
+ * and owner passwords, same permissions. `password` is what opens `original`
+ * ("" if it opens without one). Used to hand back a cleaned file locked the
+ * way it arrived, restrictions included, without ever knowing the owner
+ * password.
+ */
+export function encryptLike(
+  bytes: Uint8Array,
+  original: Uint8Array,
+  password: string,
+): Promise<Uint8Array> {
+  return run(
+    bytes,
+    [
+      "$IN",
+      "--copy-encryption=$REF",
+      `--encryption-file-password=${password}`,
+      "$OUT",
+    ],
+    original,
+  );
 }

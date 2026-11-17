@@ -1,0 +1,239 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+import PdfToolWidget from '../components/PdfToolWidget.astro';
+import MetadataOptions from '../components/MetadataOptions.astro';
+
+// One source for the visible steps and the HowTo schema, and one for the
+// visible FAQ and the FAQPage schema, so the two can't drift apart.
+const steps = [
+  {
+    name: 'Open the PDF',
+    text: 'Drag the PDF onto the tool or click Browse. If it has a password, you will be asked for it.',
+  },
+  {
+    name: 'Review what it found',
+    text: 'The tool lists what the file says about itself: the author, the app that made it, dates, an edit history, earlier saved versions, comment authors, camera details and GPS in photos, attached files and scripts. Untick anything you want to keep.',
+  },
+  {
+    name: 'Remove and download',
+    text: 'Press Remove & download. The tool writes a fresh copy without the ticked items, then checks that copy again and only hands it over if they are gone. The pages look exactly as before.',
+  },
+  {
+    name: 'Check it yourself',
+    text: 'Open the clean copy here again: it should report nothing left to remove. Or look at File > Properties in Acrobat Reader, or Tools > Show Inspector in Preview on a Mac.',
+  },
+];
+
+type Seg = string | { href: string; text: string };
+const faqs: { q: string; a: Seg[] }[] = [
+  {
+    q: 'Is my PDF uploaded anywhere?',
+    a: [
+      "No. The file is opened, inspected and rewritten in your browser, and there's no server to send it to. Once the page has loaded you can go offline and the tool still works.",
+    ],
+  },
+  {
+    q: 'Will removing metadata change how my PDF looks?',
+    a: [
+      "No. The pages, text, images, links and form fields are left as they are, and the text stays selectable. Only the information about the document goes. Two things can change behaviour if you remove them: scripts, which some forms use to calculate totals or format dates, and attached files. Both are listed before you remove anything, and you can untick them.",
+    ],
+  },
+  {
+    q: 'Why is changing the properties in my PDF editor not enough?',
+    a: [
+      "Most editors save by appending the changes to the end of the file rather than rewriting it, so the old values are still inside, just no longer shown. ExifTool's own documentation says its PDF edits work this way and calls them reversible. This tool writes a completely new file, which keeps only the current version of each part of the document.",
+    ],
+  },
+  {
+    q: 'Can I remove metadata from a password-protected PDF?',
+    a: [
+      "Yes, if you know the password. You'll be asked for it when the file opens. The clean copy is locked again with the same password and the same restrictions on printing and editing, so it's protected exactly as the original was. A PDF that opens without a password but restricts editing is cleaned and keeps its restrictions too.",
+    ],
+  },
+  {
+    q: 'Does it remove the location from photos inside the PDF?',
+    a: [
+      "Yes. A JPEG photo placed in a PDF is usually stored byte for byte, with the camera's EXIF data still attached, which can include where it was taken. The tool removes those details from every such photo and leaves the picture itself untouched. To clean a photo file directly, use ",
+      { href: '/remove-exif/', text: 'the photo metadata remover' },
+      ".",
+    ],
+  },
+  {
+    q: 'What about PDF/A files and digital signatures?',
+    a: [
+      "PDF/A, the archival format, requires document properties, so a PDF/A file without them no longer passes a PDF/A check. The tool warns you when a file claims to be PDF/A, and you can keep the properties. A certificate-based digital signature covers the exact bytes of the file, so any rewritten copy, including this one, shows it as no longer valid. The tool warns about that too.",
+    ],
+  },
+  {
+    q: 'Is removing metadata the same as redacting?',
+    a: [
+      "No. Metadata is information about the document. Redaction removes something written on the page itself, like a name or an account number. If something on the page must go, ",
+      { href: '/redact-pdf/', text: 'redact the PDF' },
+      " first, then clean the redacted copy here. Our redaction tool rebuilds the file from page images, which already drops most metadata.",
+    ],
+  },
+];
+const plain = (a: Seg[]) => a.map((s) => (typeof s === 'string' ? s : s.text)).join('');
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Remove PDF metadata", "item": "https://latchtools.com/remove-metadata-from-pdf/" }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to remove metadata from a PDF",
+      "description": "Open a PDF, review the metadata found in it, and download a clean copy with the pages unchanged.",
+      "step": steps.map((s) => ({ "@type": "HowToStep", "name": s.name, "text": s.text }))
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Remove PDF metadata",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Remove metadata from a PDF in your browser: author, software, dates, XMP edit history, earlier saved versions, comment authors, photo EXIF and GPS, attachments and scripts. The pages are unchanged and the file is never uploaded.",
+      "url": "https://latchtools.com/remove-metadata-from-pdf/"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((f) => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": plain(f.a) }
+      }))
+    }
+  ]
+};
+const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>';
+const link = 'color:var(--accent-text);font-weight:600';
+---
+<Layout
+  title="Remove Metadata from PDF — Author, History & GPS · Latch Tools"
+  description="Remove metadata from a PDF in your browser: author, software, edit history, earlier saved versions and photo GPS. See what's there before you remove it."
+  ogImage="/og/remove-metadata-from-pdf.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Remove PDF metadata</span>
+        </nav>
+        <h1>Remove metadata from a PDF</h1>
+        <p>A PDF carries more than its pages: who wrote it, on what software, when, often a list of every save, and sometimes earlier versions of the document itself. Open one here to see what it holds, then download a copy without it. The pages stay exactly as they are.</p>
+        <TrustPill />
+      </div>
+
+      <PdfToolWidget heading="Clean this PDF" tool="metadata" applyLabel="Remove &amp; download" pillTo="CLEAN" dropHint="Accepts PDF · up to 100 MB">
+        <MetadataOptions slot="options" />
+      </PdfToolWidget>
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to remove metadata from a PDF</h2>
+          <p class="sec-desc">Four steps in the tool above. No install or account.</p>
+        </div>
+      </div>
+      <div class="howto">
+        {steps.map((s, i) => (
+          <div class="howto-step">
+            <div class="n">{i + 1}</div>
+            <h4>{s.name}</h4>
+            <p>{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S INSIDE -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">What a PDF can say about you</h2>
+      <p>None of this shows on the page. All of it is in the file, and anyone who opens the document properties or reads the raw file can see it.</p>
+
+      <h3 style="font-size:17px;margin-top:22px">Document properties</h3>
+      <p>The author, title, subject and keywords, the app that made the file and the one that converted it to PDF, and when it was created and last changed. A PDF exported from a word processor usually takes the author from that program's user name, which is often your full name or your work account. Many files also carry an XMP packet, a second copy of the same details in XML. It can include an edit history that records each save, with the software and the time.</p>
+
+      <h3 style="font-size:17px;margin-top:22px">Earlier versions</h3>
+      <p>This is the one most tools miss. When an editor saves a change to a PDF, it usually appends the change to the end of the file instead of rewriting it, because that's faster. The old version of whatever changed stays in the file underneath: the previous title, a comment you deleted, a page you replaced, even properties you cleared. A viewer shows only the latest version, but the earlier ones are still in the bytes. The tool tells you when a file has been saved this way, and the clean copy has one version only.</p>
+
+      <h3 style="font-size:17px;margin-top:22px">Comment authors</h3>
+      <p>Comments, highlights and sticky notes usually record the name of whoever added them and when. The tool removes the names and times and keeps the comments.</p>
+
+      <h3 style="font-size:17px;margin-top:22px">Photos</h3>
+      <p>A JPEG photo placed in a PDF is usually stored as it was, with the camera's EXIF data inside: the camera model, settings, the time, and often the GPS location where it was taken. The tool strips those details from each photo without re-encoding it, so the picture is unchanged.</p>
+
+      <h3 style="font-size:17px;margin-top:22px">Attached files, scripts and app data</h3>
+      <p>A PDF can carry other files inside it, such as the spreadsheet behind a chart. It can hold scripts that run when it's opened. Design apps can leave behind their own private copy of the editing data, and some PDFs store small page thumbnails that can show an older version of a page. The tool lists each of these by name or count before removing them.</p>
+    </div>
+  </section>
+
+  <!-- WHY EDITING PROPERTIES ISN'T ENOUGH -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">Why clearing the properties isn't enough</h2>
+      <p>The obvious way to remove a PDF's metadata is to open its properties, delete the author and save. Because of how most editors save, that usually hides the old values without removing them: the new, empty properties are appended, and the old ones stay earlier in the file. Command-line tools can do the same. ExifTool's documentation says its PDF edits are added as an update and are reversible, and that the old information is never actually deleted from the file.</p>
+      <p>The fix is to write the whole file again from scratch, keeping only what is still in use. That's what this tool does. Then it reads its own output back, the same way it read your file, and refuses to hand it over if anything you asked it to remove is still there.</p>
+    </div>
+  </section>
+
+  <!-- CHECK -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">How to check a PDF's metadata yourself</h2>
+      <ul>
+        <li><strong>Acrobat Reader:</strong> File &gt; Properties, then the Description tab, shows the title, author, subject, keywords, creating app and dates.</li>
+        <li><strong>Preview on a Mac:</strong> Tools &gt; Show Inspector shows the same document details.</li>
+        <li><strong>This tool:</strong> open the PDF above and look at the list, without downloading anything. Open your clean copy afterwards, and the list should be empty apart from items you chose to keep.</li>
+      </ul>
+      <p>The first two show the document properties only. Neither shows earlier versions, comment authors or photo GPS, which is why a file can look clean in its properties and still not be.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {faqs.map((f, i) => (
+          <details class="faq-item" open={i === 0}>
+            <summary class="faq-q">{f.q}<Fragment set:html={PM} /></summary>
+            <p class="faq-a">{f.a.map((s) => (typeof s === 'string' ? s : <a href={s.href} style={link}>{s.text}</a>))}</p>
+          </details>
+        ))}
+      </div>
+
+      <p class="muted" style="font-size:14px;margin-top:30px">
+        Related: <a href="/redact-pdf/" style={link}>Redact a PDF</a> · <a href="/remove-exif/" style={link}>Remove photo metadata</a> · <a href="/unredact-pdf/" style={link}>Why redactions fail</a>
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

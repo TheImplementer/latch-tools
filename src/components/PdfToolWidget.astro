@@ -22,7 +22,7 @@
 // markup and its styles, and this file does not reach into the slot at all.
 export interface Props {
   heading: string; // widget-header title
-  tool: 'flatten'; // which controller boots this instance
+  tool: 'flatten' | 'metadata'; // which controller boots this instance
   applyLabel: string; // primary button
   pillTo: string; // right-hand side of the format pill
   dropHint: string; // small print under the browse button
@@ -248,6 +248,8 @@ const { heading, tool, applyLabel, pillTo, dropHint } = Astro.props;
     document.querySelectorAll<HTMLElement>('.pdf-tool-widget').forEach(async (el) => {
       if (el.dataset.tool === 'flatten') {
         (await import('../lib/flattenPdf')).initFlattenPdfWidget(el);
+      } else if (el.dataset.tool === 'metadata') {
+        (await import('../lib/removeMetadata')).initRemoveMetadataWidget(el);
       }
       // Listeners are attached now (see RedactWidget for why tests wait on it).
       el.dataset.ready = 'true';

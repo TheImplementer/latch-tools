@@ -807,3 +807,283 @@ export async function isEncryptedFile(bytes: Uint8Array): Promise<boolean> {
   await opened.task.destroy();
   return !!info?.EncryptFilterName;
 }
+
+// ---- A PDF that leaks everything ------------------------------------------
+//
+// For /remove-metadata-from-pdf/. Every category the tool claims to remove is
+// planted here with a recognisable string, so a test can assert the string is
+// in the input and absent from the output. Raw-byte searches are only honest on
+// an expanded file (streams uncompressed, no object streams), so assertions go
+// through expandPdf().
+
+export const LEAK = {
+  oldTitle: "OLD-TITLE-SECRET",
+  title: "Final quarterly plan",
+  author: "Jane Example",
+  creator: "Word for Testing 16",
+  xmpAuthor: "XMP-AUTHOR-NAME",
+  historyAgent: "HISTORY-AGENT-TOOL",
+  commentAuthor: "COMMENT-AUTHOR-NAME",
+  deletedComment: "DELETED-COMMENT-TEXT",
+  camera: "TestCam X100",
+  attachment: "salaries.xlsx",
+  attachmentBody: "ATTACHED-FILE-BODY",
+  script: "SCRIPT-BODY-MARKER",
+  pieceInfo: "PIECEINFO-PRIVATE-DATA",
+  body: "VISIBLE-BODY-TEXT",
+} as const;
+
+/** An EXIF APP1 segment with Make, Model and a GPS IFD. Little-endian TIFF. */
+function exifSegment(make: string, model: string): Uint8Array {
+  const str = (s: string) => latin1(s + "\0");
+  const mk = str(make);
+  const md = str(model);
+  // Layout: header(8) IFD0(2 + 3*12 + 4 = 42) → 50; strings; GPS IFD.
+  const ifd0 = 8;
+  const makeOff = ifd0 + 42;
+  const modelOff = makeOff + mk.length;
+  const gpsOff = modelOff + md.length;
+  const tiff = new Uint8Array(gpsOff + 2 + 12 + 4);
+  const dv = new DataView(tiff.buffer);
+  tiff.set([0x49, 0x49, 0x2a, 0x00]);
+  dv.setUint32(4, ifd0, true);
+  dv.setUint16(ifd0, 3, true);
+  const entry = (
+    i: number,
+    tag: number,
+    type: number,
+    n: number,
+    v: number,
+  ) => {
+    const p = ifd0 + 2 + i * 12;
+    dv.setUint16(p, tag, true);
+    dv.setUint16(p + 2, type, true);
+    dv.setUint32(p + 4, n, true);
+    dv.setUint32(p + 8, v, true);
+  };
+  entry(0, 0x010f, 2, mk.length, makeOff);
+  entry(1, 0x0110, 2, md.length, modelOff);
+  entry(2, 0x8825, 4, 1, gpsOff);
+  tiff.set(mk, makeOff);
+  tiff.set(md, modelOff);
+  // GPS IFD: one entry, GPSLatitudeRef = "N" (inline).
+  dv.setUint16(gpsOff, 1, true);
+  dv.setUint16(gpsOff + 2, 1, true);
+  dv.setUint16(gpsOff + 4, 2, true);
+  dv.setUint32(gpsOff + 6, 2, true);
+  tiff.set(latin1("N\0"), gpsOff + 10);
+  const body = new Uint8Array(6 + tiff.length);
+  body.set(latin1("Exif\0\0"));
+  body.set(tiff, 6);
+  const seg = new Uint8Array(4 + body.length);
+  seg.set([
+    0xff,
+    0xe1,
+    ((body.length + 2) >> 8) & 0xff,
+    (body.length + 2) & 0xff,
+  ]);
+  seg.set(body, 4);
+  return seg;
+}
+
+/** A small real JPEG (via sharp) carrying camera EXIF with a GPS block. */
+export async function makeGpsJpeg(): Promise<Uint8Array> {
+  const require = createRequire(import.meta.url);
+  const sharp = require("sharp") as (o: object) => {
+    jpeg(): { toBuffer(): Promise<Buffer> };
+  };
+  const base = new Uint8Array(
+    await sharp({
+      create: { width: 64, height: 48, channels: 3, background: "#2a7" },
+    })
+      .jpeg()
+      .toBuffer(),
+  );
+  const seg = exifSegment("TestCam", LEAK.camera);
+  const out = new Uint8Array(base.length + seg.length);
+  out.set(base.subarray(0, 2));
+  out.set(seg, 2);
+  out.set(base.subarray(2), 2 + seg.length);
+  return out;
+}
+
+const XMP = `<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about=""
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+    xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+    xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#">
+   <dc:creator><rdf:Seq><rdf:li>${LEAK.xmpAuthor}</rdf:li></rdf:Seq></dc:creator>
+   <xmp:CreatorTool>${LEAK.creator}</xmp:CreatorTool>
+   <xmpMM:History><rdf:Seq>
+    <rdf:li rdf:parseType="Resource"><stEvt:action>created</stEvt:action><stEvt:softwareAgent>${LEAK.historyAgent}</stEvt:softwareAgent></rdf:li>
+    <rdf:li rdf:parseType="Resource"><stEvt:action>saved</stEvt:action></rdf:li>
+    <rdf:li rdf:parseType="Resource"><stEvt:action>converted</stEvt:action></rdf:li>
+   </rdf:Seq></xmpMM:History>
+  </rdf:Description>
+ </rdf:RDF>
+</x:xmpmeta>
+<?xpacket end="w"?>`;
+
+/**
+ * One page of visible text, plus every kind of hidden data the tool removes,
+ * and then an incremental update on top (the way most editors save) that
+ * changes the title and deletes a comment, leaving the old title and the
+ * deleted comment still inside the file.
+ */
+export async function makeLeakyPdf(): Promise<Uint8Array> {
+  const { PDFDocument, PDFName, PDFString, PDFHexString, StandardFonts } =
+    await import("pdf-lib");
+  const doc = await PDFDocument.create({ updateMetadata: false });
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const page = doc.addPage([PAGE_W, PAGE_H]);
+  page.drawText(LEAK.body, { x: 72, y: PAGE_H - 100, size: 18, font });
+
+  doc.setAuthor(LEAK.author);
+  // A literal string rather than setTitle()'s hex encoding, so the test can
+  // find it in the raw bytes of the input.
+  (
+    doc.context.lookup(
+      doc.context.trailerInfo.Info as import("pdf-lib").PDFRef,
+    ) as import("pdf-lib").PDFDict
+  ).set(PDFName.of("Title"), PDFString.of(LEAK.oldTitle));
+  doc.setCreator(LEAK.creator);
+  doc.setProducer("Fixture PDF Library 1.0");
+  doc.setCreationDate(new Date("2024-03-05T10:00:00Z"));
+  doc.setModificationDate(new Date("2024-03-06T11:00:00Z"));
+
+  const ctx = doc.context;
+  const xmp = ctx.stream(XMP, {
+    Type: "Metadata",
+    Subtype: "XML",
+  });
+  doc.catalog.set(PDFName.of("Metadata"), ctx.register(xmp));
+
+  const jpg = await doc.embedJpg(await makeGpsJpeg());
+  page.drawImage(jpg, { x: 72, y: 300, width: 128, height: 96 });
+
+  // Two comments: one stays, one is deleted by the incremental update below.
+  const comment = (text: string) =>
+    ctx.register(
+      ctx.obj({
+        Type: "Annot",
+        Subtype: "Text",
+        Rect: [400, 700, 420, 720],
+        Contents: PDFString.of(text),
+        T: PDFString.of(LEAK.commentAuthor),
+        M: PDFString.of("D:20240306110000Z"),
+      }),
+    );
+  const kept = comment("Please check the totals");
+  const deleted = comment(LEAK.deletedComment);
+  page.node.set(PDFName.of("Annots"), ctx.obj([kept, deleted]));
+
+  await doc.attach(latin1(LEAK.attachmentBody), LEAK.attachment, {
+    mimeType: "application/vnd.ms-excel",
+  });
+  doc.addJavaScript("init", `/* ${LEAK.script} */ console.println(1);`);
+  doc.catalog.set(
+    PDFName.of("OpenAction"),
+    ctx.obj({ S: "JavaScript", JS: PDFString.of(`/* ${LEAK.script} */`) }),
+  );
+
+  page.node.set(
+    PDFName.of("PieceInfo"),
+    ctx.obj({
+      Illustrator: { Private: PDFString.of(LEAK.pieceInfo) },
+    }),
+  );
+  page.node.set(
+    PDFName.of("Thumb"),
+    ctx.register(ctx.stream(new Uint8Array(12), { Width: 2, Height: 2 })),
+  );
+  ctx.trailerInfo.ID = ctx.obj([
+    PDFHexString.of("00112233445566778899aabbccddeeff"),
+    PDFHexString.of("00112233445566778899aabbccddeeff"),
+  ]);
+
+  // Classic xref table and no object streams, so the update can be appended by
+  // hand and the planted strings are findable in the raw bytes of the input.
+  const base = await doc.save({
+    useObjectStreams: false,
+    updateFieldAppearances: false,
+  });
+
+  // ---- Incremental update: new title, one comment removed. ----
+  const infoRef = ctx.trailerInfo.Info as import("pdf-lib").PDFRef;
+  const rootRef = ctx.trailerInfo.Root as import("pdf-lib").PDFRef;
+  page.node.set(PDFName.of("Annots"), ctx.obj([kept]));
+  const pageRef = page.ref;
+  const text = new TextDecoder("latin1").decode(base);
+  const prev = Number(/startxref\s+(\d+)\s+%%EOF\s*$/.exec(text)![1]);
+  const size = ctx.largestObjectNumber + 1;
+  const objs: [number, string][] = [
+    [
+      infoRef.objectNumber,
+      `<< /Title (${LEAK.title}) /Author (${LEAK.author}) /Creator (${LEAK.creator}) >>`,
+    ],
+    [pageRef.objectNumber, page.node.toString()],
+  ];
+  let tail = "\n";
+  const offsets: [number, number][] = [];
+  for (const [num, body] of objs) {
+    offsets.push([num, base.length + tail.length]);
+    tail += `${num} 0 obj\n${body}\nendobj\n`;
+  }
+  const xrefAt = base.length + tail.length;
+  tail += "xref\n";
+  for (const [num, off] of offsets.sort((a, b) => a[0] - b[0])) {
+    tail += `${num} 1\n${String(off).padStart(10, "0")} 00000 n \n`;
+  }
+  tail +=
+    `trailer\n<< /Size ${size} /Root ${rootRef.toString()} /Info ${infoRef.toString()} ` +
+    `/Prev ${prev} /ID [<00112233445566778899aabbccddeeff><00112233445566778899aabbccddeeff>] >>\n` +
+    `startxref\n${xrefAt}\n%%EOF\n`;
+  const out = new Uint8Array(base.length + tail.length);
+  out.set(base);
+  out.set(latin1(tail), base.length);
+  return out;
+}
+
+/**
+ * The same PDF with every stream uncompressed and no object streams, via
+ * qpdf's QDF mode, so a raw-byte search means what it says. Pass the password
+ * for an encrypted file.
+ */
+export async function expandPdf(
+  bytes: Uint8Array,
+  password = "",
+): Promise<string> {
+  const { code, out } = await qpdf(
+    [
+      `--password=${password}`,
+      "--qdf",
+      "--object-streams=disable",
+      "--decrypt",
+      "$IN",
+      "$OUT",
+    ],
+    bytes,
+  );
+  if ((code !== 0 && code !== 3) || !out)
+    throw new Error(`qpdf --qdf exit ${code}`);
+  return new TextDecoder("latin1").decode(out);
+}
+
+/** Raw search of a file as stored (no expansion). */
+export function rawContains(bytes: Uint8Array, s: string): boolean {
+  return new TextDecoder("latin1").decode(bytes).includes(s);
+}
+
+/** pdf.js's view of what a file allows: null for "everything". */
+export async function permissionsOf(
+  bytes: Uint8Array,
+  password = "",
+): Promise<number[] | null> {
+  const { task, doc } = await openInNode(bytes, password || undefined);
+  const p = await doc.getPermissions();
+  await task.destroy();
+  return p ? [...p].sort((a, b) => a - b) : null;
+}

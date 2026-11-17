@@ -1,0 +1,183 @@
+---
+// The middle of /remove-metadata-from-pdf/'s widget: what we found in the file,
+// one row per kind, each with a checkbox. Rows stay hidden until the
+// controller (src/lib/removeMetadata.ts) finds something of that kind.
+//
+// Slotted into PdfToolWidget's "options" slot; owns its markup and styles for
+// the reason FlattenOptions.astro gives. The property list inside the first
+// row is built at runtime, so its rules use :global under a scoped parent.
+//
+// Two rows have no checkbox: earlier versions and the document ID. Writing a
+// clean copy rewrites the file, which drops old versions whether or not anyone
+// asks, so offering a choice would be offering something that can't happen.
+const rows: { cat: string; title: string }[] = [
+  { cat: 'props', title: 'Document properties' },
+  { cat: 'comments', title: 'Comment authors' },
+  { cat: 'photos', title: 'Photo details' },
+  { cat: 'attachments', title: 'Attached files' },
+  { cat: 'scripts', title: 'Scripts' },
+  { cat: 'appData', title: 'Hidden app data' },
+];
+---
+
+<fieldset class="mf">
+  <legend class="mf-legend">Found in this PDF</legend>
+
+  {rows.map((r) => (
+    <label class="mf-row" data-row={r.cat} hidden>
+      <input class="mf-check" type="checkbox" data-cat={r.cat} checked />
+      <span class="mf-body">
+        <span class="mf-title">{r.title}</span>
+        <span class="mf-detail" data-detail={r.cat}></span>
+      </span>
+    </label>
+  ))}
+
+  <div class="mf-row mf-fixed" data-row="history" hidden>
+    <span class="mf-dot" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></span>
+    <span class="mf-body">
+      <span class="mf-title">Earlier versions <span class="mf-tag">always removed</span></span>
+      <span class="mf-detail" data-detail="history"></span>
+    </span>
+  </div>
+
+  <div class="mf-row mf-fixed" data-row="id" hidden>
+    <span class="mf-dot" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></span>
+    <span class="mf-body">
+      <span class="mf-title">Document ID <span class="mf-tag">replaced</span></span>
+      <span class="mf-detail">A fixed ID that can link copies of the same document to each other. The clean copy gets a random one.</span>
+    </span>
+  </div>
+
+  <p class="mf-warn" data-el="mf-warn" hidden></p>
+</fieldset>
+
+<style>
+  .mf {
+    margin: 16px 0 0;
+    padding: 0;
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mf-legend {
+    padding: 0;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+
+  .mf-row {
+    display: flex;
+    gap: 11px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  /* An explicit display would otherwise beat the UA [hidden] rule. */
+  .mf-row[hidden] {
+    display: none;
+  }
+  .mf-row:hover:not(.mf-fixed) {
+    border-color: var(--border-strong);
+  }
+  .mf-row:has(.mf-check:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .mf-row:has(.mf-check:focus-visible) {
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .mf-fixed {
+    cursor: default;
+    background: var(--surface-2);
+  }
+
+  .mf-check {
+    flex: 0 0 auto;
+    margin: 2px 0 0;
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    cursor: inherit;
+  }
+  .mf-dot {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    background: var(--accent);
+    color: var(--button-text);
+  }
+
+  .mf-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .mf-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--text);
+  }
+  .mf-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: var(--r-pill);
+    background: var(--surface-3);
+    color: var(--text-2);
+  }
+  .mf-detail {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-2);
+    overflow-wrap: anywhere;
+  }
+  /* The property list, built by the controller. */
+  .mf-detail :global(.mf-kv) {
+    display: block;
+  }
+  .mf-detail :global(.mf-k) {
+    font-weight: 600;
+    color: var(--text);
+    margin-right: 6px;
+  }
+
+  .mf-warn {
+    margin: 6px 4px 0;
+    padding: 10px 12px;
+    border-radius: var(--r-sm);
+    background: var(--danger-soft);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .mf-warn[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mf-row {
+      transition: none;
+    }
+  }
+</style>
