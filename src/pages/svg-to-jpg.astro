@@ -29,8 +29,7 @@ const structuredData = {
       "step": [
         { "@type": "HowToStep", "name": "Add your SVG files", "text": "Drag SVG files onto the drop zone, or click Browse to pick them from your device." },
         { "@type": "HowToStep", "name": "Choose the output size and look", "text": "Pick an output resolution (1×, 2×, 4×, or a custom width), a JPG quality level, and a background colour to fill the transparent canvas." },
-        { "@type": "HowToStep", "name": "Files convert locally", "text": "Latch renders each SVG and re-encodes it as a JPG using your browser — instantly and offline." },
-        { "@type": "HowToStep", "name": "Download your JPGs", "text": "Save them one at a time, or grab everything at once in a single zip." }
+        { "@type": "HowToStep", "name": "Download your JPGs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
     {
@@ -199,7 +198,7 @@ const structuredData = {
             </div>
             <div class="proc-pct">
               <span id="proc-pct">0%</span>
-              <span>Working locally — nothing uploaded</span>
+              <span>Converting…</span>
             </div>
           </div>
           <div class="actions">
@@ -268,14 +267,13 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:26px">How to convert SVG to JPG</h2>
-          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
         </div>
       </div>
-      <div class="howto">
+      <div class="howto" style="grid-template-columns:repeat(3,1fr)">
         <div class="howto-step">
           <div class="n">1</div>
           <h4>Add your SVG files</h4>
-          <p>Drag SVG files onto the box above, or click Browse to pick them from your device.</p>
+          <p>Drop SVG files on the box above, or click Browse.</p>
         </div>
         <div class="howto-step">
           <div class="n">2</div>
@@ -284,13 +282,8 @@ const structuredData = {
         </div>
         <div class="howto-step">
           <div class="n">3</div>
-          <h4>We convert locally</h4>
-          <p>Latch renders each SVG and re-encodes it as a JPG using the browser's Canvas API — instantly and offline.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">4</div>
           <h4>Download your JPGs</h4>
-          <p>Save them one at a time, or grab everything at once in a single zip. That's it.</p>
+          <p>Download each one on its own, or all of them in a single zip.</p>
         </div>
       </div>
     </div>
@@ -407,7 +400,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="5" width="2" height="14" rx="1" fill="currentColor" stroke="none" opacity=".22"/><path d="M3 12h5m0 0L5.5 9.5M8 12l-2.5 2.5"/><path d="M21 12h-5m0 0l2.5-2.5M16 12l2.5 2.5"/></svg>
           </div>
           <div class="tool-name">PNG to JPG</div>
-          <div class="tool-desc">Convert PNG images to JPG with adjustable quality, right in your browser.</div>
+          <div class="tool-desc">Convert PNG images to JPG, with adjustable quality.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/avif-to-jpg/" class="tool-card">

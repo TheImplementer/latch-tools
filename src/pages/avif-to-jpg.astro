@@ -29,8 +29,7 @@ const structuredData = {
       "step": [
         { "@type": "HowToStep", "name": "Add your AVIF files", "text": "Drag images onto the drop zone, or click Browse to pick them from your device." },
         { "@type": "HowToStep", "name": "Set the quality and background", "text": "Choose a JPG quality level (default 92%) and a background colour to fill any transparent areas." },
-        { "@type": "HowToStep", "name": "Files convert locally", "text": "Latch decodes each AVIF and re-encodes it as a JPG using your browser — instantly and offline." },
-        { "@type": "HowToStep", "name": "Download your JPGs", "text": "Save them one at a time, or grab everything at once in a single zip." }
+        { "@type": "HowToStep", "name": "Download your JPGs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
     {
@@ -49,7 +48,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Are my images uploaded anywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Conversion happens entirely in your browser using the Canvas API. Nothing is sent to a server — the tool works offline too." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Conversion happens entirely in your browser using the Canvas API. Nothing is sent to a server, and the tool keeps working offline once the page has loaded." }
         },
         {
           "@type": "Question",
@@ -59,7 +58,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Can I convert multiple AVIF files to JPG at once?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drop up to 10 AVIF files at once and they'll all convert in one go. When done, download them individually or as a single zip file." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drop up to 10 AVIF files at once and they'll all convert in one go. Then download them one by one, or all together as a zip." }
         }
       ]
     }
@@ -87,7 +86,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">AVIF to JPG</span>
         </nav>
         <h1>AVIF to JPG converter</h1>
-        <p>Downloaded an AVIF and need a JPG anything can open? Convert it right here in your browser — adjustable quality.</p>
+        <p>Downloaded an AVIF and need a JPG that anything can open? Convert it here and choose the quality.</p>
         <TrustPill />
       </div>
 
@@ -177,7 +176,7 @@ const structuredData = {
             </div>
             <div class="proc-pct">
               <span id="proc-pct">0%</span>
-              <span>Working locally — nothing uploaded</span>
+              <span>Converting…</span>
             </div>
           </div>
           <div class="actions">
@@ -246,14 +245,13 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:26px">How to convert AVIF to JPG</h2>
-          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
         </div>
       </div>
-      <div class="howto">
+      <div class="howto" style="grid-template-columns:repeat(3,1fr)">
         <div class="howto-step">
           <div class="n">1</div>
           <h4>Add your AVIF files</h4>
-          <p>Drag images onto the box above, or click Browse to pick them from your device.</p>
+          <p>Drop images on the box above, or click Browse.</p>
         </div>
         <div class="howto-step">
           <div class="n">2</div>
@@ -262,13 +260,8 @@ const structuredData = {
         </div>
         <div class="howto-step">
           <div class="n">3</div>
-          <h4>We convert locally</h4>
-          <p>Latch decodes each AVIF and re-encodes it as a JPG using the browser's Canvas API — instantly and offline.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">4</div>
           <h4>Download your JPGs</h4>
-          <p>Save them one at a time, or grab everything at once in a single zip. That's it.</p>
+          <p>Download each one on its own, or all of them in a single zip.</p>
         </div>
       </div>
     </div>
@@ -327,7 +320,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No. Conversion happens entirely in your browser using the Canvas API. Nothing is sent to a server — the tool works offline too.</p>
+          <p class="faq-a">No. Conversion happens entirely in your browser using the Canvas API. Nothing is sent to a server, and the tool keeps working offline once the page has loaded.</p>
         </details>
 
         <details class="faq-item">
@@ -347,7 +340,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes. Drop up to 10 AVIF files at once and they'll all convert in one go. When done, download them individually or as a single zip file.</p>
+          <p class="faq-a">Yes. Drop up to 10 AVIF files at once and they'll all convert in one go. Then download them one by one, or all together as a zip.</p>
         </details>
       </div>
     </div>

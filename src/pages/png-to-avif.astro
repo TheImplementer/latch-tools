@@ -28,9 +28,8 @@ const structuredData = {
       "name": "How to convert PNG to AVIF",
       "step": [
         { "@type": "HowToStep", "name": "Add your PNG files", "text": "Drag images onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Set the quality", "text": "Choose an AVIF quality level — higher keeps more detail, lower makes smaller files. The default suits most images." },
-        { "@type": "HowToStep", "name": "Files convert locally", "text": "Latch encodes each PNG to AVIF with the AV1 codec in your browser — instantly and offline." },
-        { "@type": "HowToStep", "name": "Download your AVIFs", "text": "Save them one at a time, or grab everything at once in a single zip." }
+        { "@type": "HowToStep", "name": "Set the quality", "text": "Choose an AVIF quality level. Higher keeps more detail, and lower makes smaller files. The default suits most images." },
+        { "@type": "HowToStep", "name": "Download your AVIFs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
     {
@@ -59,7 +58,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Are my images uploaded anywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Every PNG is encoded to AVIF by your own browser. Nothing is sent to a server — in fact, the tool keeps working even with your Wi-Fi switched off." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Every PNG is encoded to AVIF by your own browser. Nothing is sent to a server, and the tool keeps working offline once the page has loaded." }
         }
       ]
     }
@@ -87,7 +86,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">PNG to AVIF</span>
         </nav>
         <h1>PNG to AVIF converter</h1>
-        <p>Shrink your PNGs without the quality hit. Convert PNG to modern AVIF right here in your browser — much smaller files, transparency preserved.</p>
+        <p>Shrink your PNGs without visible quality loss. AVIF files are much smaller and keep transparency.</p>
         <TrustPill />
       </div>
 
@@ -170,7 +169,7 @@ const structuredData = {
             </div>
             <div class="proc-pct">
               <span id="proc-pct">0%</span>
-              <span>Working locally — nothing uploaded</span>
+              <span>Converting…</span>
             </div>
           </div>
           <div class="actions">
@@ -239,29 +238,23 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:26px">How to convert PNG to AVIF</h2>
-          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
         </div>
       </div>
-      <div class="howto">
+      <div class="howto" style="grid-template-columns:repeat(3,1fr)">
         <div class="howto-step">
           <div class="n">1</div>
           <h4>Add your PNG files</h4>
-          <p>Drag images onto the box above, or click Browse to pick them from your device.</p>
+          <p>Drop images on the box above, or click Browse.</p>
         </div>
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Set the quality</h4>
-          <p>Pick an AVIF quality level — higher keeps more detail, lower makes smaller files. The default suits most images.</p>
+          <p>Pick an AVIF quality level. Higher keeps more detail, and lower makes smaller files. The default suits most images.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
-          <h4>We convert locally</h4>
-          <p>Latch encodes each PNG to AVIF with the AV1 codec, right in your browser — instantly and offline.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">4</div>
           <h4>Download your AVIFs</h4>
-          <p>Save them one at a time, or grab everything at once in a single zip. That's it.</p>
+          <p>Download each one on its own, or all of them in a single zip.</p>
         </div>
       </div>
     </div>
@@ -343,7 +336,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No. Every PNG is encoded to AVIF by your own browser. Nothing is sent to a server — in fact, the tool keeps working even with your Wi-Fi switched off.</p>
+          <p class="faq-a">No. Every PNG is encoded to AVIF by your own browser. Nothing is sent to a server, and the tool keeps working offline once the page has loaded.</p>
         </details>
       </div>
     </div>

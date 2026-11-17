@@ -1754,6 +1754,14 @@ details[open] .faq-q .pm {
   font-size: 14px;
   line-height: 1.55;
 }
+.footer-brand p a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.footer-brand p a:hover {
+  color: var(--text);
+}
 .footer-column h5 {
   margin: 2px 0 10px;
   color: var(--text);

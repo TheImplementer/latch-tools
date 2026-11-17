@@ -28,9 +28,8 @@ const structuredData = {
       "name": "How to convert PNG to WebP",
       "step": [
         { "@type": "HowToStep", "name": "Add your PNG files", "text": "Drag PNG images onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Set the quality", "text": "Pick a WebP quality level — 80 is a great default that stays sharp while making far smaller files." },
-        { "@type": "HowToStep", "name": "Files convert locally", "text": "Latch decodes each PNG and re-encodes it as a WebP using your browser — instantly and offline." },
-        { "@type": "HowToStep", "name": "Download your WebPs", "text": "Save them one at a time, or grab everything at once in a single zip." }
+        { "@type": "HowToStep", "name": "Set the quality", "text": "Pick a WebP quality level. 80 is a good default: it stays sharp while making far smaller files." },
+        { "@type": "HowToStep", "name": "Download your WebPs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
     {
@@ -39,7 +38,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Are my images uploaded anywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Your browser handles the entire conversion locally. Nothing is sent to a server — the tool even works with Wi-Fi switched off." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Your browser handles the entire conversion locally. Nothing is sent to a server, and the tool keeps working offline once the page has loaded." }
         },
         {
           "@type": "Question",
@@ -59,12 +58,12 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Is there a limit on size or number of files?",
-          "acceptedAnswer": { "@type": "Answer", "text": "You can convert up to 10 images at once, up to 50 MB each. The real limit is your device's available memory, not an arbitrary cap." }
+          "acceptedAnswer": { "@type": "Answer", "text": "You can convert up to 10 images at once, up to 50 MB each." }
         },
         {
           "@type": "Question",
           "name": "How do I convert a PNG file to WebP?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Drag your PNG files onto the drop zone or click Browse, set your quality, then press Convert to WebP. Latch turns each PNG into a WebP right in your browser and lets you download them individually or as a single zip — convert one file or batch several at once." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Drag your PNG files onto the drop zone or click Browse, set your quality, then press Convert to WebP. Latch turns each PNG into a WebP and lets you download them individually or as a single zip — convert one file or batch several at once." }
         }
       ]
     }
@@ -92,7 +91,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">PNG to WebP</span>
         </nav>
         <h1>PNG to WebP converter</h1>
-        <p>Turn PNG images into compact WebP files — right here in your browser. Transparency preserved.</p>
+        <p>Turn PNG images into smaller WebP files. Transparent areas stay transparent.</p>
         <TrustPill />
       </div>
 
@@ -174,7 +173,7 @@ const structuredData = {
             </div>
             <div class="proc-pct">
               <span id="proc-pct">0%</span>
-              <span>Working locally — nothing uploaded</span>
+              <span>Converting…</span>
             </div>
           </div>
           <div class="actions">
@@ -243,29 +242,23 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:26px">How to convert PNG to WebP</h2>
-          <p class="sec-desc">Four steps, a few seconds, zero uploads.</p>
         </div>
       </div>
-      <div class="howto">
+      <div class="howto" style="grid-template-columns:repeat(3,1fr)">
         <div class="howto-step">
           <div class="n">1</div>
           <h4>Add your PNG files</h4>
-          <p>Drag images onto the box above, or click Browse to pick them from your device. Up to 10 at once.</p>
+          <p>Drop images on the box above, or click Browse. Up to 10 at once.</p>
         </div>
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Set the quality</h4>
-          <p>Pick a WebP quality level — 80 is a great default that stays sharp while making far smaller files.</p>
+          <p>Pick a WebP quality level. 80 is a good default: it stays sharp while making far smaller files.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
-          <h4>We convert locally</h4>
-          <p>Latch decodes each PNG and re-encodes it as a WebP using your browser — instantly and offline.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">4</div>
           <h4>Download your WebPs</h4>
-          <p>Save them one at a time, or grab everything at once in a single zip. That's it.</p>
+          <p>Download each one on its own, or all of them in a single zip.</p>
         </div>
       </div>
     </div>
@@ -307,7 +300,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No. Your browser handles the entire conversion locally. Nothing is sent to a server — the tool even works with Wi-Fi switched off.</p>
+          <p class="faq-a">No. Your browser handles the entire conversion locally. Nothing is sent to a server, and the tool keeps working offline once the page has loaded.</p>
         </details>
 
         <details class="faq-item">
@@ -347,7 +340,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">You can convert up to 10 images at once, up to 50 MB each. The real limit is your device's available memory, not an arbitrary cap we've set.</p>
+          <p class="faq-a">You can convert up to 10 images at once, up to 50 MB each.</p>
         </details>
 
         <details class="faq-item">
@@ -357,7 +350,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Drag your PNG files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. Latch turns each PNG into a WebP right in your browser and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
+          <p class="faq-a">Drag your PNG files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. Latch turns each PNG into a WebP and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
         </details>
       </div>
     </div>
