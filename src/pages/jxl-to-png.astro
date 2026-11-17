@@ -99,7 +99,6 @@ const structuredData = {
         <h1>JXL to PNG converter</h1>
         <p>Got a .jxl file that nothing will open? Convert JPEG XL images to lossless PNG — right here in your browser. Transparency preserved.</p>
         <TrustPill />
-        <p class="quick-details">.jxl · up to 10 at once · 50 MB each</p>
       </div>
 
       <!-- WIDGET -->
@@ -140,10 +139,6 @@ const structuredData = {
 
         <!-- STATE: selected -->
         <div id="state-selected" class="widget-state" hidden>
-          <div class="batch-heading">
-            <h2 id="batch-title">Images ready</h2>
-            <span id="batch-count"></span>
-          </div>
           <div class="filelist file-list" id="filelist" aria-live="polite" aria-label="Selected images"></div>
           <p class="batch-summary" id="batch-summary"></p>
           <div class="actions">
@@ -185,10 +180,9 @@ const structuredData = {
             </span>
             <div>
               <div class="rt" id="done-title">All done</div>
-              <div class="rs">Converted losslessly · stayed on your device the whole time</div>
+              <div class="rs" id="done-sub">Converted losslessly</div>
             </div>
           </div>
-          <div class="result-summary" id="result-summary"></div>
           <div class="filelist" id="results-list" aria-live="polite" aria-label="Converted files"></div>
           <div class="actions">
             <button class="btn btn-secondary" type="button" id="convert-another-btn">
@@ -426,6 +420,7 @@ const structuredData = {
 </style>
 
 <script>
+  import { attachThumb } from '../lib/thumbs';
   // -----------------------------------------------------------------------
   // JXL to PNG — client-side widget controller
   // Decodes JPEG XL via the @jsquash/jxl WASM decoder (lazy-loaded on first
@@ -472,8 +467,6 @@ const structuredData = {
   const removeAndContinueBtn = $('remove-continue-btn');
   const tryAnotherBtn = $('try-another-btn');
   const widgetTitle = $('widget-title');
-  const batchTitle = $('batch-title');
-  const batchCount = $('batch-count');
   const batchSummary = $('batch-summary');
   const convertLabel = $('convert-label');
 
@@ -565,8 +558,6 @@ const structuredData = {
   function updateBatchMeta() {
     const n = files.length;
     const total = files.reduce((s, e) => s + e.file.size, 0);
-    batchTitle.textContent = n === 1 ? 'Image ready' : 'Images ready';
-    batchCount.textContent = `${n} of ${MAX_FILES}`;
     batchSummary.textContent = n === 1
       ? `${formatBytes(total)} · downloads as a PNG`
       : `${formatBytes(total)} total · downloads as a single ZIP`;
@@ -588,6 +579,7 @@ const structuredData = {
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
         </button>
       `;
+      attachThumb(row.querySelector('.file-thumb'), entry.file);
       row.querySelector('button')!.addEventListener('click', () => removeFile(i));
       fileList.appendChild(row);
     });
@@ -677,19 +669,7 @@ const structuredData = {
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;
-    $('result-summary').innerHTML = `
-      <div class="result-card">
-        <div class="result-label">Original</div>
-        <strong>${count} JXL image${count !== 1 ? 's' : ''}</strong>
-        <span>${formatBytes(totalOriginal)}</span>
-      </div>
-      <div class="saving">${savedPct > 0 ? savedPct + '% smaller' : 'Converted'}<small>${savedPct > 0 ? formatBytes(totalOriginal - totalOutput) + ' saved' : formatBytes(totalOutput) + ' total'}</small></div>
-      <div class="result-card output">
-        <div class="result-label">PNG result${count !== 1 ? 's' : ''}</div>
-        <strong>${count} PNG file${count !== 1 ? 's' : ''}</strong>
-        <span>${formatBytes(totalOutput)}</span>
-      </div>
-    `;
+    $('done-sub').textContent = `Converted losslessly · ${formatBytes(totalOriginal)} → ${formatBytes(totalOutput)}${savedPct > 0 ? ` (${savedPct}% smaller)` : ''}`;
 
     resultsList.innerHTML = '';
     results.forEach((r) => {
@@ -701,15 +681,16 @@ const structuredData = {
           <div class="file-name">${escHtml(r.name)}</div>
           <div class="file-sub">${formatBytes(r.blob.size)}</div>
         </div>
-        <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+        ${count > 1 ? `<button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
           Save
-        </button>
+        </button>` : ''}
       `;
-      row.querySelector('button')!.addEventListener('click', () => downloadOne(r));
+      attachThumb(row.querySelector('.file-thumb'), r.blob);
+      row.querySelector('button')?.addEventListener('click', () => downloadOne(r));
       resultsList.appendChild(row);
     });
-    widgetTitle.textContent = `${count} image${count !== 1 ? 's' : ''} converted`;
+    widgetTitle.textContent = 'Ready to download';
     $('download-all-label').textContent = count > 1 ? `Download ${count} PNGs · ZIP` : 'Download PNG';
     showState('done');
   }

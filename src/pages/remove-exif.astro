@@ -109,7 +109,6 @@ const structuredData = {
         <h1>Remove EXIF metadata from photos</h1>
         <p>Strip GPS location, camera details, and all hidden data from your photos — right in your browser. The pixel content stays identical.</p>
         <TrustPill />
-        <p class="quick-details">JPEG, PNG, WebP · up to 10 at once · 50 MB each</p>
       </div>
 
       <!-- WIDGET -->
@@ -194,7 +193,7 @@ const structuredData = {
             </span>
             <div>
               <div class="rt" id="done-title">All done</div>
-              <div class="rs">Metadata stripped · stayed on your device the whole time</div>
+              <div class="rs">Metadata stripped</div>
             </div>
           </div>
           <div class="filelist" id="results-list" aria-live="polite" aria-label="Cleaned files"></div>
@@ -543,6 +542,7 @@ const structuredData = {
 </style>
 
 <script>
+  import { attachThumb } from '../lib/thumbs';
   // -----------------------------------------------------------------------
   // Remove EXIF — client-side widget controller
   // Reads metadata with exifr (lazy-loaded), strips via Canvas re-encode.
@@ -686,6 +686,7 @@ const structuredData = {
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
         </button>
       `;
+      attachThumb(row.querySelector('.file-thumb'), entry.file);
       row.querySelector('button')!.addEventListener('click', () => removeFile(i));
       fileList.appendChild(row);
     });
@@ -875,17 +876,18 @@ const structuredData = {
             <div class="file-name">${escHtml(r.name)}</div>
             <div class="file-sub">${formatBytes(r.blob.size)}</div>
           </div>
-          <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+          ${count > 1 ? `<button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
             Save
-          </button>
+          </button>` : ''}
         </div>
         ${buildMetaPanel(r.meta)}
       `;
-      row.querySelector<HTMLButtonElement>('.filerow button')!.addEventListener('click', () => downloadOne(r));
+      attachThumb(row.querySelector('.file-thumb'), r.blob);
+      row.querySelector<HTMLButtonElement>('.filerow button')?.addEventListener('click', () => downloadOne(r));
       resultsList.appendChild(row);
     });
-    widgetTitle.textContent = `${count} photo${count !== 1 ? 's' : ''} cleaned`;
+    widgetTitle.textContent = 'Ready to download';
     $('download-all-label').textContent = count > 1 ? `Download all (${count})` : 'Download';
     showState('done');
   }

@@ -89,7 +89,6 @@ const structuredData = {
         <h1>Resize image for passport, visa, and social profiles</h1>
         <p>Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, LinkedIn, or any custom size — all in your browser.</p>
         <TrustPill />
-        <p class="quick-details">JPEG, PNG, WebP · up to 10 at once · 50 MB each</p>
       </div>
 
       <!-- WIDGET -->
@@ -198,7 +197,7 @@ const structuredData = {
             </span>
             <div>
               <div class="rt" id="done-title">All done</div>
-              <div class="rs" id="done-sub">Resized · stayed on your device the whole time</div>
+              <div class="rs" id="done-sub">Resized</div>
             </div>
           </div>
           <div class="filelist" id="results-list" aria-live="polite" aria-label="Resized files"></div>
@@ -514,6 +513,7 @@ const structuredData = {
 </style>
 
 <script>
+  import { attachThumb } from '../lib/thumbs';
   // -----------------------------------------------------------------------
   // Resize Image — client-side widget controller
   // Presets: UK Passport, US Passport, Schengen Visa, LinkedIn, Custom.
@@ -768,6 +768,7 @@ const structuredData = {
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l8 8M13 5l-8 8"/></svg>
         </button>
       `;
+      attachThumb(row.querySelector('.file-thumb'), entry.file);
       row.querySelector('button')!.addEventListener('click', () => removeFile(i));
       fileList.appendChild(row);
     });
@@ -887,7 +888,7 @@ const structuredData = {
   function showDone(targetW: number, targetH: number) {
     const count = results.length;
     doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} resized`;
-    doneSub.textContent = `Resized to ${targetW}×${targetH} px · stayed on your device the whole time`;
+    doneSub.textContent = `Resized to ${targetW}×${targetH} px`;
     resultsList.innerHTML = '';
     revokePreviewUrls();
     document.getElementById('result-preview')?.remove();
@@ -917,15 +918,16 @@ const structuredData = {
           <div class="file-name">${escHtml(r.name)}</div>
           <div class="file-sub">${formatBytes(r.blob.size)} · ${r.w}×${r.h} px</div>
         </div>
-        <button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
+        ${count > 1 ? `<button class="btn btn-secondary" type="button" style="height:40px;padding:0 16px" data-name="${escHtml(r.name)}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
           Save
-        </button>
+        </button>` : ''}
       `;
-      row.querySelector('button')!.addEventListener('click', () => downloadOne(r));
+      attachThumb(row.querySelector('.file-thumb'), r.blob);
+      row.querySelector('button')?.addEventListener('click', () => downloadOne(r));
       resultsList.appendChild(row);
     });
-    widgetTitle.textContent = `${count} image${count !== 1 ? 's' : ''} resized`;
+    widgetTitle.textContent = 'Ready to download';
     $('download-all-label').textContent = count > 1 ? `Download all (${count})` : 'Download';
     showState('done');
   }
