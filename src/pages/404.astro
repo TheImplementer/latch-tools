@@ -1,0 +1,55 @@
+---
+// Built to dist/404.html. Cloudflare Pages serves it, with a 404 status, for
+// any path that doesn't exist. Without it Pages falls back to the home page
+// with a 200, which is how a missing /_astro/ asset got public/_headers'
+// one-year immutable header and was cached at the edge as HTML: requested
+// during a deploy's switchover, a new stylesheet came back as the home page,
+// and every page rendered unstyled. It also made every mistyped URL a "soft
+// 404" for search engines.
+//
+// No scripts and no styles of its own, so adding it changes no shared asset
+// hashes.
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const link = 'color:var(--accent-text);font-weight:600';
+const tools = [
+  { href: '/redact-pdf/', name: 'Redact a PDF' },
+  { href: '/sign-pdf/', name: 'Sign a PDF' },
+  { href: '/remove-metadata-from-pdf/', name: 'Remove PDF metadata' },
+  { href: '/redact-image/', name: 'Redact an image' },
+  { href: '/blur-face/', name: 'Blur a face' },
+];
+---
+<Layout
+  title="Page not found · Latch Tools"
+  description="This page doesn't exist. Find the tool you were looking for."
+  noindex
+>
+  <Header />
+
+  <section class="section">
+    <div class="wrap" style="max-width:640px;text-align:center">
+      <p class="muted" style="font-family:var(--font-mono);font-size:13px;letter-spacing:.04em">404</p>
+      <h1 style="margin-top:8px">Page not found</h1>
+      <p class="muted" style="font-size:16px;line-height:1.6;margin-top:14px">
+        There's nothing at this address. It may have moved, or the link may have a typo in it.
+      </p>
+      <p style="margin-top:26px">
+        <a class="btn btn-primary" href="/">See all tools</a>
+      </p>
+      <p class="muted" style="font-size:14px;margin-top:30px;line-height:1.9">
+        Or go straight to one:
+        {tools.map((t, i) => (
+          <>
+            {i > 0 && ' · '}
+            <a href={t.href} style={link}>{t.name}</a>
+          </>
+        ))}
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

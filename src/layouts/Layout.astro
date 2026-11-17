@@ -7,8 +7,9 @@ export interface Props {
   canonicalUrl?: string;
   ogImage?: string; // optional until a branded 1200×630 share graphic exists
   lang?: string; // BCP-47 tag for <html lang> and og:locale; defaults to English
+  noindex?: boolean; // error pages: no canonical, and not for search results
 }
-const { title, description, canonicalUrl, ogImage, lang = 'en' } = Astro.props;
+const { title, description, canonicalUrl, ogImage, lang = 'en', noindex = false } = Astro.props;
 const canonical = canonicalUrl ?? Astro.url.href;
 const twitterCard = ogImage ? 'summary_large_image' : 'summary';
 const ogLocale = lang === 'es' ? 'es_ES' : 'en_US';
@@ -21,7 +22,7 @@ const ogLocale = lang === 'es' ? 'es_ES' : 'en_US';
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="canonical" href={canonical} />
+  {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
   <!-- Open Graph / social sharing -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Latch Tools" />
