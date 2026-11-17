@@ -16,6 +16,17 @@ const structuredData = {
       ]
     },
     {
+      "@type": "HowTo",
+      "name": "How to redact a PDF",
+      "description": "Black out text in a PDF so it is removed rather than covered: every page is rebuilt with the bars burned into its pixels, so no text remains to copy or extract.",
+      "step": [
+        { "@type": "HowToStep", "name": "Open your PDF", "text": "Drag your PDF onto the editor, or click Browse to pick it from your device. It is opened in your browser — nothing is uploaded." },
+        { "@type": "HowToStep", "name": "Draw over what to hide", "text": "Drag a box over each name, number or clause you want gone. You can move, resize or delete any box before you export." },
+        { "@type": "HowToStep", "name": "Check every page", "text": "Use the page strip to review each page. If the same detail sits in the same place throughout, draw it once and use Copy boxes to all pages." },
+        { "@type": "HowToStep", "name": "Redact and download", "text": "Press Redact and download. Every page is rebuilt with the bars baked into the pixels, so the text underneath is gone rather than covered." }
+      ]
+    },
+    {
       "@type": "SoftwareApplication",
       "name": "Redact PDF",
       "applicationCategory": "BusinessApplication",
@@ -23,16 +34,6 @@ const structuredData = {
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "description": "Black out text in a PDF so it cannot be copied back out. Every page is rebuilt with the bars baked into the pixels, in your browser — the document is never uploaded.",
       "url": "https://latchtools.com/redact-pdf/"
-    },
-    {
-      "@type": "HowTo",
-      "name": "How to redact a PDF",
-      "step": [
-        { "@type": "HowToStep", "name": "Open your PDF", "text": "Drag your PDF onto the editor, or click Browse to pick it from your device. It is opened in your browser — nothing is uploaded." },
-        { "@type": "HowToStep", "name": "Draw over what to hide", "text": "Drag a box over each name, number or clause you want gone. You can move, resize or delete any box before you export." },
-        { "@type": "HowToStep", "name": "Check every page", "text": "Use the page strip to review each page. If the same detail sits in the same place throughout, draw it once and use Copy boxes to all pages." },
-        { "@type": "HowToStep", "name": "Redact and download", "text": "Press Redact and download. Every page is rebuilt with the bars baked into the pixels, so the text underneath is gone rather than covered." }
-      ]
     },
     {
       "@type": "FAQPage",
@@ -46,6 +47,16 @@ const structuredData = {
           "@type": "Question",
           "name": "Is my PDF uploaded anywhere?",
           "acceptedAnswer": { "@type": "Answer", "text": "No. The document is opened, rendered and rebuilt entirely in your browser. There is no upload endpoint to send it to. Once the page has loaded you can disconnect from the network and the tool still works." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I redact a PDF for free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. This tool is free, with no account, no watermark on the output and no daily limit. A single PDF can be up to 150 pages and 100 MB." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I redact a PDF on a Mac, iPhone or iPad?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. It runs in the browser, so it works the same in Safari on a Mac, iPhone or iPad as in Chrome, Edge or Firefox on Windows. There is nothing to install. On a phone, drag with one finger to draw a box." }
         },
         {
           "@type": "Question",
@@ -84,7 +95,7 @@ const structuredData = {
 ---
 <Layout
   title="Redact PDF — Black Out Text Safely, Free · Latch Tools"
-  description="Black out text in a PDF so it can't be copied back out. The bars are baked into the pixels, in your browser — your document is never uploaded."
+  description="How to redact a PDF so the text is really gone: draw over it and every page is rebuilt with the bars burned in. Free, no upload, no account."
   ogImage="/og/redact-pdf.png"
 >
   <Fragment slot="head">
@@ -101,8 +112,8 @@ const structuredData = {
           <span aria-hidden="true">/</span>
           <span style="color:var(--text-2)" aria-current="page">Redact PDF</span>
         </nav>
-        <h1>Redact a PDF</h1>
-        <p>Black out names, numbers and whole clauses — and actually remove them. Each page is rebuilt with the bars burned into the pixels, so there is no text hiding underneath to be copied back out. It all happens in your browser.</p>
+        <h1>How to redact a PDF</h1>
+        <p>Draw a box over each name, number or clause, then download. Every page is rebuilt with the bars burned into its pixels, so the text underneath is removed, not just covered — there's nothing left to copy back out.</p>
         <TrustPill />
       </div>
 
@@ -115,8 +126,8 @@ const structuredData = {
     <div class="wrap" style="max-width:980px">
       <div class="sec-head">
         <div>
-          <h2 class="sec-title" style="font-size:26px">How to redact a PDF</h2>
-          <p class="sec-desc">Four steps, and nothing leaves your device.</p>
+          <h2 class="sec-title" style="font-size:26px">How to black out text in a PDF</h2>
+          <p class="sec-desc">Four steps in the editor above.</p>
         </div>
       </div>
       <div class="howto">
@@ -158,12 +169,19 @@ const structuredData = {
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
         This is the single most common way redactions fail, and it fails quietly: on screen the document looks perfectly redacted, so nobody notices until someone thinks to check. It has caught out courts, government departments and law firms often enough that "redacted PDF leaks its own text" is a recognised genre of story. The bar was never the problem — what was underneath it was.
       </p>
+      <h3 style="font-size:17px;margin-top:26px">The two traps people fall into most</h3>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
+        <strong style="color:var(--text)">A rectangle drawn in a free PDF reader.</strong> Free readers let you draw a filled shape, but a shape is an annotation sitting on top of the page — the text is untouched beneath it. In Adobe's lineup, real redaction is part of Acrobat Pro; the free Reader can't do it.
+      </p>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        <strong style="color:var(--text)">Black highlighting in Word before exporting.</strong> Shading text black, or setting black text on a black background, changes how it looks, not what it is. Export that to PDF and the words go with it, perfectly selectable. If you still have the source document, delete the sensitive text there — or redact the exported PDF here.
+      </p>
       <h3 style="font-size:17px;margin-top:26px">What this tool does instead</h3>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
         Every page is rendered to a canvas, the black bars are composited into those pixels, and a new PDF is assembled from the finished images. The text layer isn't hidden or covered — it is simply never carried across into the file you download. There is no instruction left that would draw those words, and no object to peel a rectangle away from, because the page is no longer built out of text at all.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        Rebuilding rather than editing has a useful side effect: the hidden parts of the original don't come along either. Document metadata, annotations and comments, attachments, and form-field values are all things a PDF can carry without showing you, and all things that have leaked from documents that looked clean. The copy you download has none of them.
+        Rebuilding rather than editing has a useful side effect: the hidden parts of the original don't come along either. Document metadata, annotations and comments, attachments, form-field values and earlier saved versions of a page are all things a PDF can carry without showing you, and all things that have leaked from documents that looked clean. The copy you download has none of them.
       </p>
       <h3 style="font-size:17px;margin-top:26px">The trade-off, stated plainly</h3>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
@@ -175,6 +193,27 @@ const structuredData = {
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
         One thing the tool can't do for you is decide what to cover. Check every page before you export, including headers, footers, page margins and anything that repeats — and remember that a document can identify someone through context as easily as through a name.
       </p>
+    </div>
+  </section>
+
+  <!-- CHECK -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">How to check a PDF is really redacted</h2>
+        </div>
+      </div>
+      <p class="muted" style="font-size:15.5px;line-height:1.65">
+        Whoever made the file — this tool, Acrobat, or a colleague — these checks take a couple of minutes and catch the failures above. Run them on the exact copy you're about to send, not the one you were editing.
+      </p>
+      <ol class="check-list">
+        <li><strong>Copy across a bar.</strong> Drag-select over a blacked-out area, copy, and paste into a plain text editor. If words appear, the bar is a cover, not a redaction.</li>
+        <li><strong>Search for what you removed.</strong> Search the document (Ctrl+F, or ⌘F on a Mac) for a name or number you blacked out. Any match means the text is still in the file.</li>
+        <li><strong>Read the document properties.</strong> File → Properties shows the title, author, subject and keywords. These often hold a client's name or the original filename.</li>
+        <li><strong>Open the side panels.</strong> Look through the comments, attachments and bookmarks panels. Each can hold text that never appears on a page.</li>
+        <li><strong>Extract all the text.</strong> If you're comfortable in a terminal, <code>pdftotext redacted.pdf -</code> from the free Poppler tools prints every piece of text in the file. On a file redacted here it comes back empty, because no text is left.</li>
+      </ol>
     </div>
   </section>
 
@@ -194,6 +233,14 @@ const structuredData = {
         <details class="faq-item">
           <summary class="faq-q">Is my PDF uploaded anywhere?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
           <p class="faq-a">No. The document is opened, rendered and rebuilt entirely in your browser. There's no upload endpoint to send it to. Once the page has loaded you can disconnect from the network and the tool still works.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Can I redact a PDF for free?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Yes. This tool is free, with no account, no watermark on the output and no daily limit. A single PDF can be up to 150 pages and 100 MB.</p>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">Can I redact a PDF on a Mac, iPhone or iPad?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">Yes. It runs in the browser, so it works the same in Safari on a Mac, iPhone or iPad as in Chrome, Edge or Firefox on Windows. There's nothing to install. On a phone, drag with one finger to draw a box.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Why can't I select the text in the redacted file?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
@@ -233,3 +280,28 @@ const structuredData = {
 
   <Footer />
 </Layout>
+
+<style>
+  .check-list {
+    margin: 18px 0 0;
+    padding-left: 1.3em;
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+  .check-list li + li {
+    margin-top: 10px;
+  }
+  .check-list strong {
+    color: var(--text);
+  }
+  .check-list code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    overflow-wrap: anywhere;
+  }
+</style>
