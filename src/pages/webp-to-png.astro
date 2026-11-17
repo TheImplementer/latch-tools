@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert WebP images to PNG format directly in your browser. Transparency is preserved. No uploads required — files never leave your device.",
+      "description": "Convert WebP images to PNG format directly in your browser. Transparency is preserved, and no uploads are required because files never leave your device.",
       "url": "https://latchtools.com/webp-to-png/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert WebP to PNG",
       "step": [
         { "@type": "HowToStep", "name": "Add your WebP files", "text": "Drag WebP images onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Transparency is preserved", "text": "Any transparent areas in your WebP files are kept perfectly intact in the output PNG." },
+        { "@type": "HowToStep", "name": "Transparency is preserved", "text": "Any transparent areas in your WebP files are kept intact in the output PNG." },
         { "@type": "HowToStep", "name": "Download your PNGs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
@@ -43,7 +43,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Does converting WebP to PNG lose quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. PNG is a lossless format. The output PNG is a pixel-perfect copy of your WebP image — nothing is discarded." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. PNG is a lossless format, so the output is a pixel-perfect copy of your WebP image and nothing is discarded during conversion." }
         },
         {
           "@type": "Question",
@@ -58,12 +58,12 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Why would I convert WebP to PNG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "PNG has near-universal compatibility — it works in every design tool, photo editor, and document app. WebP is great for the web but some older software doesn't support it yet." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Every design tool, photo editor, and document app can open a PNG. WebP does well on the web, but some software still doesn't support it, so PNG is the safer choice when compatibility matters." }
         },
         {
           "@type": "Question",
           "name": "How do I convert a WebP file to PNG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Drag your WebP files onto the drop zone or click Browse, then press Convert to PNG. Latch turns each WebP into a PNG and lets you download them individually or as a single zip — convert one file or batch several at once." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Drag your WebP files onto the drop zone or click Browse, then hit Convert to PNG. Each file becomes a PNG you can download by itself, or you can grab the whole batch as one zip. It works the same for one file or several." }
         }
       ]
     }
@@ -72,7 +72,7 @@ const structuredData = {
 ---
 <Layout
   title="WebP to PNG Converter — Free, Preserves Transparency · Latch Tools"
-  description="Convert WebP images to PNG format in your browser. Transparency is preserved. No uploads, no sign-up — files never leave your device."
+  description="Convert WebP images to PNG format in your browser. Transparency is preserved. No uploads, no sign-up. Files never leave your device."
   ogImage="/og/webp-to-png.png"
 >
   <Fragment slot="head">
@@ -241,7 +241,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Transparency is kept</h4>
-          <p>Any transparent or semi-transparent areas carry across perfectly. PNG supports full alpha, so nothing is lost.</p>
+          <p>Transparent and semi-transparent areas carry across unchanged. PNG supports full alpha, so nothing is lost.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -261,13 +261,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        WebP is Google's modern image format — it makes very small files, which is why so many sites now serve images as <code>.webp</code>. The catch: download one and plenty of desktop apps, editors, and older tools still won't open it. Converting to PNG gives you a file that works everywhere.
+        Google designed WebP to keep image files small, and a lot of websites now serve their pictures as <code>.webp</code> for that reason. Once you've saved one, though, many desktop apps, editors, and older tools won't open it. A PNG copy works everywhere.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        PNG is lossless and near-universally supported, so it's the natural target when you need to edit an image, drop it into a document, or hand it to software that doesn't speak WebP. The conversion is pixel-for-pixel — nothing is recompressed — and any transparency in the WebP carries straight through to the PNG's alpha channel.
+        PNG is lossless and near-universally supported, so it's the natural target when you need to edit an image, drop it into a document, or hand it to software that doesn't speak WebP. The conversion copies the image pixel for pixel without recompressing anything, and any transparency in the WebP carries straight through to the PNG's alpha channel.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        To turn a WebP into a PNG, drop your files above and hit Convert — everything runs in your browser, so the images never leave your device. Working with other next-gen formats? <a href="/avif-to-png/" style="color:var(--accent)">AVIF to PNG</a> and <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a> do the same lossless conversion. Need a smaller, shareable file instead? <a href="/png-to-jpg/" style="color:var(--accent)">PNG to JPG</a> takes it the rest of the way.
+        To turn a WebP into a PNG, drop your files above and hit Convert. AVIF and JPEG XL files get the same lossless treatment from <a href="/avif-to-png/" style="color:var(--accent)">AVIF to PNG</a> and <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a>. If what you want in the end is a smaller file for sharing, <a href="/png-to-jpg/" style="color:var(--accent)">PNG to JPG</a> takes it the rest of the way.
       </p>
     </div>
   </section>
@@ -298,7 +298,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No. PNG is a lossless format. The output is a pixel-perfect copy of your WebP image — nothing is discarded during conversion.</p>
+          <p class="faq-a">No. PNG is a lossless format, so the output is a pixel-perfect copy of your WebP image and nothing is discarded during conversion.</p>
         </details>
 
         <details class="faq-item">
@@ -318,7 +318,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">PNG works everywhere — every design tool, photo editor, and document app. WebP is excellent on the web but some software doesn't support it yet, so PNG is the safer choice when compatibility matters.</p>
+          <p class="faq-a">Every design tool, photo editor, and document app can open a PNG. WebP does well on the web, but some software still doesn't support it, so PNG is the safer choice when compatibility matters.</p>
         </details>
 
         <details class="faq-item">
@@ -338,7 +338,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Drag your WebP files onto the drop zone (or click Browse), then hit Convert to PNG. Latch turns each WebP into a PNG and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
+          <p class="faq-a">Drag your WebP files onto the drop zone (or click Browse), then hit Convert to PNG. Each file becomes a PNG you can download by itself, or you can grab the whole batch as one zip. It works the same for one file or several.</p>
         </details>
       </div>
     </div>
@@ -358,7 +358,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">AVIF to PNG</div>
-          <div class="tool-desc">Another modern format to lossless PNG, with transparency preserved.</div>
+          <div class="tool-desc">Turn AVIF images into lossless PNGs, keeping any transparency.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/jxl-to-png/" class="tool-card">
@@ -366,7 +366,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">JXL to PNG</div>
-          <div class="tool-desc">Convert next-gen JPEG XL images to lossless PNG, fully in-browser.</div>
+          <div class="tool-desc">Decode JPEG XL (.jxl) images to lossless PNG.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/webp-to-avif/" class="tool-card">
@@ -374,7 +374,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">WebP to AVIF</div>
-          <div class="tool-desc">Going the other way? Convert WebP to an even smaller AVIF.</div>
+          <div class="tool-desc">Go the other way and convert WebP to an even smaller AVIF.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/svg-to-png/" class="tool-card">
@@ -639,7 +639,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done: ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

@@ -26,17 +26,17 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "How do I open a .jxl file?",
-          "acceptedAnswer": { "@type": "Answer", "text": "On a recent Apple device, Safari and the built-in Preview/Quick Look can open .jxl files directly. On Windows, Android, or in Chrome, Edge and Firefox, they usually won't open at all — the simplest fix is to convert the file to a format everything supports, such as JPG or PNG." }
+          "acceptedAnswer": { "@type": "Answer", "text": "On a recent Apple device, Safari and the built-in Preview/Quick Look open .jxl files directly. On Windows, Android, or in Chrome, Edge and Firefox they usually won't open at all. The simplest fix is to convert it to JPG or to PNG." }
         },
         {
           "@type": "Question",
           "name": "Is JPEG XL better than AVIF or WebP?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Technically JPEG XL matches or beats both on compression and adds features like lossless JPEG recompression and very high bit depth. In practice AVIF and WebP win today because they're supported in every major browser, while JPEG XL is not. For anything you need to share now, AVIF or WebP are the safer choice." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Technically JPEG XL matches or beats both on compression and adds features like lossless JPEG recompression and very high bit depth. In practice AVIF and WebP win today because they work in every major browser and JPEG XL doesn't. For anything you need to share now, AVIF or WebP are the safer choice." }
         },
         {
           "@type": "Question",
           "name": "Do Chrome and Firefox support JPEG XL?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Not by default yet. Chrome removed JPEG XL in version 110 (early 2023), then added a new decoder back in Chrome 145 (February 2026) — but it's behind a flag and off by default, and Google may enable it by default later in 2026. Firefox 152 (June 2026) also shipped support, but disabled out of the box. So in a normal Chrome, Edge or Firefox install a .jxl file still won't display, and converting it to JPG or PNG remains the reliable fix." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Not by default yet. Chrome removed JPEG XL in version 110 (early 2023), then added a new decoder back in Chrome 145 (February 2026). It's behind a flag and off by default, and Google may enable it by default later in 2026. Firefox 152 (June 2026) also shipped support, but disabled out of the box. So in a normal Chrome, Edge or Firefox install a .jxl still won't display, and converting it to JPG or PNG remains the reliable fix." }
         },
         {
           "@type": "Question",
@@ -46,12 +46,12 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Will JPEG XL replace JPEG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "That was the goal, and it may still happen over time — JPEG XL is royalty-free and technically strong. But adoption depends on browsers and operating systems shipping support. Until Chrome and Firefox enable it by default, JPEG remains the universal default." }
+          "acceptedAnswer": { "@type": "Answer", "text": "That was the goal, and it still might happen over time, since JPEG XL is royalty-free and technically strong. Adoption depends on browsers and operating systems shipping support, though. Until Chrome and Firefox enable it by default, JPEG remains the universal default." }
         },
         {
           "@type": "Question",
           "name": "How do I create a .jxl file?",
-          "acceptedAnswer": { "@type": "Answer", "text": "You can encode an existing image to JPEG XL in your browser: PNG to JXL keeps transparency, and JPG to JXL re-encodes photos smaller. Because .jxl only opens in Safari and recent Apple devices today, it's best for storage or archiving rather than sharing." }
+          "acceptedAnswer": { "@type": "Answer", "text": "You can encode an existing image to JPEG XL in your browser. PNG to JXL keeps transparency, and JPG to JXL re-encodes photos smaller. Because .jxl only opens in Safari and recent Apple devices today, it's best for storage or archiving rather than sharing." }
         }
       ]
     }
@@ -60,7 +60,7 @@ const structuredData = {
 ---
 <Layout
   title="What Is JPEG XL (JXL)? Support & How to Open .jxl Files · Latch Tools"
-  description="JPEG XL (.jxl) explained — what it is, why it won't open in most browsers, and how to convert a .jxl file to JPG or PNG so you can view it anywhere."
+  description="JPEG XL (.jxl) explained: what it is, why it won't open in most browsers, and how to convert a .jxl file to JPG or PNG so you can view it anywhere."
   ogImage="/og/jpeg-xl.png"
 >
   <Fragment slot="head">
@@ -82,11 +82,11 @@ const structuredData = {
           What is <span style="color: var(--accent)">JPEG XL</span> (JXL)?
         </h1>
         <p style="font-size: clamp(16px, 2.2vw, 18px); color: var(--text-2); max-width: 40em; margin: 20px 0 0; line-height: 1.7; text-wrap: pretty;">
-          JPEG XL (file extension <code>.jxl</code>) is a modern image format built to
-          succeed the original JPEG — smaller files, higher quality, and features JPEG never
-          had. It's powerful, but barely supported, which is why a <code>.jxl</code> you
-          downloaded may refuse to open. Here's what the format is, why it won't open, and how
-          to convert it so you can actually use it.
+          JPEG XL (file extension <code>.jxl</code>) is an image format built to succeed the
+          original JPEG. It makes smaller files at higher quality and has features JPEG never
+          had. Very little software supports it yet, though, which is why a <code>.jxl</code> you
+          downloaded may refuse to open. This page covers what the format is, why it won't open,
+          and how to convert it into something you can use.
         </p>
       </div>
     </section>
@@ -135,10 +135,10 @@ const structuredData = {
           same visual quality, and supports both a true lossless mode and an efficient lossy one.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
-          Beyond size, it adds what JPEG lacked — full alpha transparency, animation, progressive
+          Beyond size, it adds things JPEG lacked: full alpha transparency, animation, progressive
           loading, very high bit depth and wide colour gamut, and the ability to losslessly
           recompress an existing JPEG about 20% smaller with no quality change. On paper it's an
-          excellent replacement. The catch is support.
+          excellent replacement. Support is what holds it back.
         </p>
       </div>
     </section>
@@ -152,15 +152,15 @@ const structuredData = {
           like this:
         </p>
         <ul style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px; padding-left: 1.1em;">
-          <li><strong>Safari (macOS &amp; iOS 17+):</strong> supported — Apple added JPEG XL in 2023, so it opens in Safari, Preview and Quick Look.</li>
-          <li><strong>Chrome &amp; Edge:</strong> off by default — Chrome removed JPEG XL in version 110 (early 2023), then added a new decoder back in Chrome 145 (February 2026), but it stays behind a flag and is disabled by default. Google may switch it on by default later in 2026.</li>
-          <li><strong>Firefox:</strong> off by default — Firefox 152 (June 2026) shipped JPEG XL support, but behind a setting that's turned off out of the box.</li>
+          <li><strong>Safari (macOS &amp; iOS 17+):</strong> supported. Apple added JPEG XL in 2023, so it opens in Safari, Preview and Quick Look.</li>
+          <li><strong>Chrome &amp; Edge:</strong> off by default. Chrome removed JPEG XL in version 110 (early 2023), then added a new decoder back in Chrome 145 (February 2026), but it stays behind a flag and is disabled by default. Google may switch it on by default later in 2026.</li>
+          <li><strong>Firefox:</strong> off by default. Firefox 152 (June 2026) shipped JPEG XL support, but behind a setting that's turned off out of the box.</li>
           <li><strong>Windows, Android &amp; most editors:</strong> no native support without a plugin.</li>
         </ul>
-        <p style="color:var(--text-3);font-family:var(--font-mono);font-size:13px;margin:0 0 16px;">Browser support — last checked August 2026</p>
+        <p style="color:var(--text-3);font-family:var(--font-mono);font-size:13px;margin:0 0 16px;">Browser support, last checked August 2026</p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
           So unless you're on a recent Apple device, a <code>.jxl</code> file usually won't open
-          at all. The reliable fix is to convert it to a format everything supports —
+          at all. The reliable fix is to convert it to a format everything supports. Use
           <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a> for a lossless copy
           with transparency, or <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a>
           for a small file that opens anywhere.
@@ -173,7 +173,7 @@ const structuredData = {
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 16px">JPEG XL vs AVIF, WebP, PNG and JPG</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 20px;">
-          How JPEG XL stacks up against the formats you'll actually convert it to:
+          How JPEG XL compares with the formats you're most likely to convert it to:
         </p>
         <div class="table-scroll">
           <table class="cmp">
@@ -198,8 +198,8 @@ const structuredData = {
         <h2 class="sec-title" style="margin-bottom: 16px">How to open or convert a <code>.jxl</code> file</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           Since most apps can't open JPEG XL, the practical answer is to convert it to something
-          universal. Both tools below run entirely in your browser — your file is decoded locally
-          and never uploaded to a server:
+          that opens everywhere. Both tools below decode the file in your browser, and it is never
+          uploaded to a server.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           <strong>Need it to open anywhere, or to keep the file small?</strong> Use the
@@ -208,7 +208,7 @@ const structuredData = {
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 24px;">
           <strong>Need transparency, or a lossless copy for editing?</strong> Use
-          <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a> instead — PNG is
+          <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a> instead. PNG is
           lossless and preserves the alpha channel exactly.
         </p>
         <a href="/jxl-to-png/" class="btn btn-primary btn-lg">
@@ -223,10 +223,9 @@ const structuredData = {
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 16px">How to create a <code>.jxl</code> file</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          Want to go the other way and encode <em>to</em> JPEG XL — say, to archive a photo library
-          at a smaller size? These converters also run entirely in your browser, so your images are
-          never uploaded. Just remember a <code>.jxl</code> file only opens in Safari and recent
-          Apple devices today, so it's best for storage rather than sharing.
+          You can also go the other way and encode <em>to</em> JPEG XL, for example to archive a
+          photo library at a smaller size. Keep in mind that a <code>.jxl</code> file only opens in
+          Safari and recent Apple devices today, so it's best for storage rather than sharing.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           <strong>Starting from a photo?</strong> Use the
@@ -235,7 +234,7 @@ const structuredData = {
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 24px;">
           <strong>Need transparency kept?</strong> Use
-          <a href="/png-to-jxl/" style="color:var(--accent)">PNG to JXL</a> — it preserves the alpha
+          <a href="/png-to-jxl/" style="color:var(--accent)">PNG to JXL</a>, which preserves the alpha
           channel while shrinking the file.
         </p>
       </div>
@@ -251,7 +250,7 @@ const structuredData = {
             How do I open a .jxl file?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">On a recent Apple device, Safari and the built-in Preview/Quick Look open .jxl files directly. On Windows, Android, or in Chrome, Edge and Firefox they usually won't open at all — the simplest fix is to <a href="/jxl-to-jpg/" style="color:var(--accent)">convert it to JPG</a> or <a href="/jxl-to-png/" style="color:var(--accent)">to PNG</a>.</p>
+          <p class="faq-a">On a recent Apple device, Safari and the built-in Preview/Quick Look open .jxl files directly. On Windows, Android, or in Chrome, Edge and Firefox they usually won't open at all. The simplest fix is to <a href="/jxl-to-jpg/" style="color:var(--accent)">convert it to JPG</a> or <a href="/jxl-to-png/" style="color:var(--accent)">to PNG</a>.</p>
         </details>
 
         <details class="faq-item">
@@ -267,7 +266,7 @@ const structuredData = {
             Do Chrome and Firefox support JPEG XL?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">Not by default yet. Chrome removed JPEG XL in version 110 (early 2023), then added a new decoder back in Chrome 145 (February 2026) — but it's behind a flag and off by default, and Google may enable it by default later in 2026. Firefox 152 (June 2026) also shipped support, but disabled out of the box. So in a normal Chrome, Edge or Firefox install a .jxl still won't display — <a href="/jxl-to-jpg/" style="color:var(--accent)">converting it to JPG</a> or <a href="/jxl-to-png/" style="color:var(--accent)">PNG</a> remains the reliable fix.</p>
+          <p class="faq-a">Not by default yet. Chrome removed JPEG XL in version 110 (early 2023), then added a new decoder back in Chrome 145 (February 2026). It's behind a flag and off by default, and Google may enable it by default later in 2026. Firefox 152 (June 2026) also shipped support, but disabled out of the box. So in a normal Chrome, Edge or Firefox install a .jxl still won't display, and <a href="/jxl-to-jpg/" style="color:var(--accent)">converting it to JPG</a> or <a href="/jxl-to-png/" style="color:var(--accent)">PNG</a> remains the reliable fix.</p>
         </details>
 
         <details class="faq-item">
@@ -283,7 +282,7 @@ const structuredData = {
             Will JPEG XL replace JPEG?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">That was the goal, and it still might over time — JPEG XL is royalty-free and technically strong. But adoption depends on browsers and operating systems shipping support. Until Chrome and Firefox enable it by default, JPEG remains the universal default.</p>
+          <p class="faq-a">That was the goal, and it still might happen over time, since JPEG XL is royalty-free and technically strong. Adoption depends on browsers and operating systems shipping support, though. Until Chrome and Firefox enable it by default, JPEG remains the universal default.</p>
         </details>
 
         <details class="faq-item">
@@ -291,7 +290,7 @@ const structuredData = {
             How do I create a .jxl file?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">Encode an existing image to JPEG XL right in your browser — <a href="/png-to-jxl/" style="color:var(--accent)">PNG to JXL</a> keeps transparency, and <a href="/jpg-to-jxl/" style="color:var(--accent)">JPG to JXL</a> re-encodes photos smaller. Because <code>.jxl</code> only opens in Safari and recent Apple devices today, it's best for storage or archiving rather than sharing.</p>
+          <p class="faq-a">You can encode an existing image to JPEG XL in your browser. <a href="/png-to-jxl/" style="color:var(--accent)">PNG to JXL</a> keeps transparency, and <a href="/jpg-to-jxl/" style="color:var(--accent)">JPG to JXL</a> re-encodes photos smaller. Because <code>.jxl</code> only opens in Safari and recent Apple devices today, it's best for storage or archiving rather than sharing.</p>
         </details>
       </div>
     </section>
@@ -310,7 +309,7 @@ const structuredData = {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
             </div>
             <div class="tool-name">JXL to PNG</div>
-            <div class="tool-desc">Open a .jxl anywhere — convert it to a universal, lossless PNG.</div>
+            <div class="tool-desc">Convert a .jxl to a lossless PNG that opens anywhere.</div>
             <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
           </a>
           <a href="/jxl-to-jpg/" class="tool-card">
@@ -318,7 +317,7 @@ const structuredData = {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
             </div>
             <div class="tool-name">JXL to JPG</div>
-            <div class="tool-desc">Turn a .jxl into a smaller, universally supported JPG.</div>
+            <div class="tool-desc">Turn a .jxl into a smaller JPG that every app supports.</div>
             <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
           </a>
           <a href="/png-to-jxl/" class="tool-card">
@@ -326,7 +325,7 @@ const structuredData = {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
             </div>
             <div class="tool-name">PNG to JXL</div>
-            <div class="tool-desc">Encode a PNG to JPEG XL — transparency preserved.</div>
+            <div class="tool-desc">Encode a PNG to JPEG XL and keep its transparency.</div>
             <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
           </a>
           <a href="/jpg-to-jxl/" class="tool-card">

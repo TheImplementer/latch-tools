@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert Apple HEIC photos to lossless PNG format directly in your browser. Transparency preserved. No uploads required — files never leave your device.",
+      "description": "Convert Apple HEIC photos to lossless PNG format in your browser, keeping any transparency. Nothing is uploaded.",
       "url": "https://latchtools.com/heic-to-png/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert HEIC to PNG",
       "step": [
         { "@type": "HowToStep", "name": "Add your HEIC files", "text": "Drag photos onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Lossless PNG output", "text": "PNG is a lossless format — every pixel is preserved exactly. Transparency is carried through if it was present in the original." },
+        { "@type": "HowToStep", "name": "Lossless PNG output", "text": "PNG stores every pixel exactly, so nothing is lost in quality. Any transparency in the original is kept." },
         { "@type": "HowToStep", "name": "Download your PNGs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
@@ -38,12 +38,12 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Does HEIC to PNG preserve transparency?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. PNG supports an alpha channel (transparency), and this tool carries it through from the HEIC source if the original contains transparent areas. HEIC itself can store transparency, and the PNG output will faithfully reproduce it." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. HEIC can store transparency and PNG has an alpha channel, so the tool carries it over from the HEIC source. Any transparent areas in the original stay transparent in the PNG." }
         },
         {
           "@type": "Question",
           "name": "Is PNG or JPG better for iPhone photos?",
-          "acceptedAnswer": { "@type": "Answer", "text": "It depends on the use case. PNG is lossless — every pixel is stored exactly as captured, making it ideal for screenshots, graphics, or any image you'll edit further. JPG uses lossy compression and produces smaller files, making it better for sharing or web publishing where file size matters more than absolute pixel accuracy." }
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on what you'll do with them. PNG is lossless and stores every pixel exactly as captured, which suits screenshots, graphics and images you'll keep editing. JPG compresses lossily and makes smaller files, so it's the better pick for sharing or publishing on the web, where file size counts for more than pixel-perfect accuracy." }
         },
         {
           "@type": "Question",
@@ -53,7 +53,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Does converting HEIC to PNG lose quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. PNG is a lossless format. The conversion preserves every pixel exactly — there is no quality degradation. PNG files will typically be larger than the original HEIC, because HEIC uses more aggressive compression." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. PNG is lossless, so every pixel comes through unchanged and the quality does not drop. The PNG will typically be larger than the original HEIC, because HEIC compresses more aggressively." }
         },
         {
           "@type": "Question",
@@ -67,7 +67,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert HEIC to PNG — Free, Private, No Upload · Latch Tools"
-  description="Convert iPhone HEIC photos to lossless PNG with full transparency support. Runs entirely in your browser — your files never leave your device."
+  description="Convert iPhone HEIC photos to lossless PNG with full transparency support. Runs entirely in your browser, so your files never leave your device."
   ogImage="/og/heic-to-png.png"
 >
   <Fragment slot="head">
@@ -222,7 +222,7 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:26px">How to convert HEIC to PNG</h2>
-          <p class="sec-desc">Four steps, about ten seconds, zero uploads.</p>
+          <p class="sec-desc">Allow about ten seconds for the whole thing.</p>
         </div>
       </div>
       <div class="howto" style="grid-template-columns:repeat(3,1fr)">
@@ -234,7 +234,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Lossless PNG output</h4>
-          <p>PNG stores every pixel exactly — no quality compromise. Transparency is preserved if present in the original.</p>
+          <p>PNG stores every pixel exactly, so nothing is lost in quality. Any transparency in the original is kept.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -254,13 +254,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        PNG is a lossless format — every pixel is stored exactly as captured, with no compression artefacts. That makes it the right choice whenever image quality matters more than file size: editing workflows, screenshots, graphics with text, or images you plan to crop and re-save multiple times.
+        PNG is lossless. Every pixel is stored exactly as captured and there are no compression artefacts, so it suits any job where image quality matters more than file size. Editing workflows, screenshots and graphics with text all fall into that group, as do images you plan to crop and re-save several times.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        PNG also supports full transparency (alpha channel), which JPG cannot. If your HEIC photos contain transparent areas — common in app screenshots or certain edited photos — only PNG will preserve them faithfully.
+        PNG also supports full transparency (an alpha channel), which JPG does not. Transparent areas turn up in app screenshots and some edited photos. If your HEIC files have them, choose PNG to keep them.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        The trade-off is file size: PNG files are larger than JPG. For photos you're publishing online or sharing where file size matters, <a href="/heic-to-jpg/" style="color:var(--accent)">HEIC to JPG</a> will produce a more compact result with no visible quality difference at typical viewing sizes.
+        PNG files are larger than JPGs, though. If you're posting photos online or sending them somewhere size matters, <a href="/heic-to-jpg/" style="color:var(--accent)">HEIC to JPG</a> gives a more compact result with no visible quality difference at typical viewing sizes.
       </p>
     </div>
   </section>
@@ -281,7 +281,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes. PNG supports an alpha channel and this tool carries it through from the HEIC source. If the original contains transparent areas, the PNG output will faithfully reproduce them.</p>
+          <p class="faq-a">Yes. HEIC can store transparency and PNG has an alpha channel, so the tool carries it over from the HEIC source. Any transparent areas in the original stay transparent in the PNG.</p>
         </details>
 
         <details class="faq-item">
@@ -291,7 +291,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">It depends. PNG is lossless — ideal for screenshots, graphics, or images you'll edit further. JPG uses lossy compression and produces smaller files, better for sharing or web publishing where file size matters more than pixel-perfect accuracy.</p>
+          <p class="faq-a">It depends on what you'll do with them. PNG is lossless and stores every pixel exactly as captured, which suits screenshots, graphics and images you'll keep editing. JPG compresses lossily and makes smaller files, so it's the better pick for sharing or publishing on the web, where file size counts for more than pixel-perfect accuracy.</p>
         </details>
 
         <details class="faq-item">
@@ -311,7 +311,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No. PNG is a lossless format — every pixel is preserved exactly. The PNG files will typically be larger than the original HEIC because HEIC uses more aggressive compression, but there is no quality degradation.</p>
+          <p class="faq-a">No. PNG is lossless, so every pixel comes through unchanged and the quality does not drop. The PNG will typically be larger than the original HEIC, because HEIC compresses more aggressively.</p>
         </details>
 
         <details class="faq-item">
@@ -341,7 +341,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">HEIC to JPG</div>
-          <div class="tool-desc">Prefer a smaller file? Convert to JPG instead — still no upload required.</div>
+          <div class="tool-desc">Convert to JPG when a smaller file matters more than lossless quality.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/remove-exif/" class="tool-card">
@@ -357,7 +357,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
           </div>
           <div class="tool-name">WebP to PNG</div>
-          <div class="tool-desc">Convert WebP images to lossless PNG, fully in-browser.</div>
+          <div class="tool-desc">Turn WebP images into lossless PNGs.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
@@ -632,7 +632,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} photo${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done, ${count} photo${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

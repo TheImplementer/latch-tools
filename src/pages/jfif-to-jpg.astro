@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert JFIF files to standard JPG directly in your browser. JFIF is just a JPEG with a different extension. No uploads required — files never leave your device.",
+      "description": "Convert JFIF files to standard JPG in your browser. JFIF is just a JPEG with a different extension. Files are not uploaded.",
       "url": "https://latchtools.com/jfif-to-jpg/"
     },
     {
@@ -38,22 +38,22 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "What is a JFIF file?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. A .jfif file is simply a JPEG saved with a different file extension — the image data inside is identical to a .jpg. This tool re-encodes it to the standard .jpg that every app expects." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. A .jfif file is a JPEG saved under a different file extension, and the image data inside is identical to a .jpg. This tool re-encodes it as the standard .jpg that every app expects." }
         },
         {
           "@type": "Question",
           "name": "Is JFIF the same as JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Essentially, yes. JFIF and JPG describe the same compressed image data — the only practical difference is the file extension. Some software and websites save images as .jfif, which can confuse apps that only recognise .jpg. Converting fixes the extension so the file opens everywhere." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Essentially, yes. JFIF and JPG describe the same compressed image data, and in practice only the file extension differs. Some software and websites save images as .jfif, which can confuse apps that only recognise .jpg. Converting fixes the extension so the file opens everywhere." }
         },
         {
           "@type": "Question",
           "name": "Why did I get a JFIF file instead of a JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Certain browsers and email clients save downloaded JPEG images with a .jfif extension instead of .jpg — a long-standing Windows quirk. The image is fine; only the extension is unusual. Converting here gives you a normal .jpg." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Certain browsers and email clients save downloaded JPEG images with a .jfif extension instead of .jpg. It's a long-standing Windows quirk. The image itself is fine and only the extension is unusual. Converting here gives you a normal .jpg." }
         },
         {
           "@type": "Question",
           "name": "What quality setting should I use?",
-          "acceptedAnswer": { "@type": "Answer", "text": "92% is a great default — visually almost identical to the original with a manageable file size. Because the source is already JPEG, very high settings avoid adding further compression; lower settings shrink the file at some cost to sharpness." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Start with 92%. It looks almost identical to the original and keeps the file size manageable. Because the source is already a JPEG, very high settings avoid adding further compression, while lower settings shrink the file at some cost to sharpness." }
         },
         {
           "@type": "Question",
@@ -67,7 +67,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert JFIF to JPG — Free, Private, No Upload · Latch Tools"
-  description="Convert JFIF files to standard JPG in your browser. JFIF is just a JPEG with a different extension — fix it instantly. Files never leave your device."
+  description="Convert JFIF files to standard JPG in your browser. JFIF is just a JPEG with a different extension. Fix it instantly. Files never leave your device."
   ogImage="/og/jfif-to-jpg.png"
 >
   <Fragment slot="head">
@@ -86,7 +86,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">JFIF to JPG</span>
         </nav>
         <h1>JFIF to JPG converter</h1>
-        <p>Got a <code>.jfif</code> file that won't open? It's an ordinary JPEG with an unusual extension. Convert it to a standard <code>.jpg</code> here.</p>
+        <p>Some apps refuse to open <code>.jfif</code> files, even though each one is an ordinary JPEG with an unusual extension. Convert yours to a standard <code>.jpg</code> here.</p>
         <TrustPill />
       </div>
 
@@ -269,13 +269,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Here's the thing most people don't realise: a <code>.jfif</code> file <em>is</em> a JPEG. JFIF (JPEG File Interchange Format) is the standard container that JPEG image data sits in — the bytes inside a <code>.jfif</code> are identical to those in a <code>.jpg</code>. The only difference is the three or four letters after the dot.
+        Most people don't realise that a <code>.jfif</code> file <em>is</em> a JPEG. JFIF (JPEG File Interchange Format) is the standard container that JPEG image data sits in, and the bytes inside a <code>.jfif</code> are identical to those in a <code>.jpg</code>. Only the three or four letters after the dot differ.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        So why does it cause trouble? Some browsers and email clients — most famously older versions of Windows and Edge — save downloaded JPEGs with a <code>.jfif</code> extension. Apps that only recognise <code>.jpg</code> then refuse to open the file, even though the image is perfectly valid.
+        The trouble starts with the software that saved it. Some browsers and email clients (most famously older versions of Windows and Edge) give downloaded JPEGs a <code>.jfif</code> extension. Apps that only recognise <code>.jpg</code> then refuse to open the file, even though the image is valid.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        This tool decodes the JFIF and re-encodes it as a standard <code>.jpg</code> — fixing the extension so the file opens in any app, on any device. Everything happens in your browser; the image never leaves your device.
+        This tool decodes the JFIF and re-encodes it as a standard <code>.jpg</code>, giving it an extension that any app on any device will open. Your browser does the work, and the image is not uploaded.
       </p>
     </div>
   </section>
@@ -296,7 +296,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. A <code>.jfif</code> file is simply a JPEG saved with a different file extension — the image data inside is identical to a <code>.jpg</code>. This tool re-encodes it to the standard <code>.jpg</code> that every app expects.</p>
+          <p class="faq-a">JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. A <code>.jfif</code> file is a JPEG saved under a different file extension, and the image data inside is identical to a <code>.jpg</code>. This tool re-encodes it as the standard <code>.jpg</code> that every app expects.</p>
         </details>
 
         <details class="faq-item">
@@ -306,7 +306,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Essentially, yes. JFIF and JPG describe the same compressed image data — the only practical difference is the file extension. Some software saves images as <code>.jfif</code>, which can confuse apps that only recognise <code>.jpg</code>. Converting fixes the extension so the file opens everywhere.</p>
+          <p class="faq-a">Essentially, yes. JFIF and JPG describe the same compressed image data, and in practice only the file extension differs. Some software saves images as <code>.jfif</code>, which can confuse apps that only recognise <code>.jpg</code>. Converting fixes the extension so the file opens everywhere.</p>
         </details>
 
         <details class="faq-item">
@@ -316,7 +316,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Certain browsers and email clients save downloaded JPEG images with a <code>.jfif</code> extension instead of <code>.jpg</code> — a long-standing Windows quirk. The image is fine; only the extension is unusual. Converting here gives you a normal <code>.jpg</code>.</p>
+          <p class="faq-a">Certain browsers and email clients save downloaded JPEG images with a <code>.jfif</code> extension instead of <code>.jpg</code>. It's a long-standing Windows quirk. The image itself is fine and only the extension is unusual. Converting here gives you a normal <code>.jpg</code>.</p>
         </details>
 
         <details class="faq-item">
@@ -326,7 +326,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">92% is a great default — visually almost identical to the original with a manageable file size. Because the source is already JPEG, higher settings avoid adding further compression; lower settings shrink the file at some cost to sharpness.</p>
+          <p class="faq-a">Start with 92%. It looks almost identical to the original and keeps the file size manageable. Because the source is already a JPEG, higher settings avoid adding further compression, while lower settings shrink the file at some cost to sharpness.</p>
         </details>
 
         <details class="faq-item">
@@ -364,7 +364,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">HEIC to JPG</div>
-          <div class="tool-desc">Turn iPhone HEIC photos into universal JPGs anything can open.</div>
+          <div class="tool-desc">Turn iPhone HEIC photos into JPGs that any app can open.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/jfif-to-png/" class="tool-card">
@@ -372,7 +372,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">JFIF to PNG</div>
-          <div class="tool-desc">Need transparency or a lossless copy? Convert JFIF to PNG instead.</div>
+          <div class="tool-desc">For transparency or a lossless copy, convert JFIF to PNG.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
@@ -637,7 +637,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `Done. ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

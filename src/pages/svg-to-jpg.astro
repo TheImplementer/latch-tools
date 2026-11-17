@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Rasterise SVG vector graphics to JPG at any resolution, directly in your browser. Choose the output size, quality, and background colour. No uploads required — files never leave your device.",
+      "description": "Rasterise SVG vector graphics to JPG at any resolution, directly in your browser. Choose the output size, quality, and background colour. There's nothing to upload, so files never leave your device.",
       "url": "https://latchtools.com/svg-to-jpg/"
     },
     {
@@ -38,32 +38,32 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "What is an SVG file, and why convert it to JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "SVG (Scalable Vector Graphics) is an XML-based vector format — it describes shapes and paths rather than a grid of pixels, so it stays sharp at any size. It's used for logos, icons, and illustrations. Many apps and upload forms only accept raster formats, so converting to JPG gives you a fixed-resolution image that opens virtually anywhere." }
+          "acceptedAnswer": { "@type": "Answer", "text": "SVG (Scalable Vector Graphics) is an XML-based vector format. It describes shapes and paths rather than a grid of pixels, so it stays sharp at any size. You'll mostly see it used for logos, icons, and illustrations. Many apps and upload forms only accept raster formats, so converting to JPG gives you a fixed-resolution image that opens virtually anywhere." }
         },
         {
           "@type": "Question",
           "name": "Should I convert SVG to JPG or PNG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JPG produces smaller files and is ideal for sharing or publishing, but it is lossy and cannot store transparency — transparent areas are flattened onto the background colour you pick. PNG is lossless and keeps transparency, which is better for logos and graphics. If you need a transparent result, convert SVG to PNG instead." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JPG makes smaller files that suit sharing or publishing, but it is lossy and can't store transparency, so transparent areas get flattened onto the background colour you pick. PNG is lossless and keeps transparency, which suits logos and graphics better. If you need a transparent result, convert SVG to PNG instead." }
         },
         {
           "@type": "Question",
           "name": "What output size or resolution should I choose?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Because SVG is vector, it has no inherent pixel size — you choose it. 1× uses the size declared in the SVG; 2× and 4× multiply it for crisp results on high-resolution screens or in print; or set a custom width and the height follows the aspect ratio automatically. Larger sizes look sharper but produce bigger files." }
+          "acceptedAnswer": { "@type": "Answer", "text": "An SVG is a vector image with no inherent pixel size, so the size is up to you. 1× uses the size declared in the SVG. 2× and 4× multiply it for crisp results on high-resolution screens or in print. You can also set a custom width, and the height follows the aspect ratio automatically. Larger sizes look sharper but produce bigger files." }
         },
         {
           "@type": "Question",
           "name": "What quality setting should I use?",
-          "acceptedAnswer": { "@type": "Answer", "text": "92% is a good default — visually almost lossless with a manageable file size. Use 95–100% for print, or 70–80% for small web images where size matters more than sharpness. Note that flat-colour graphics like logos can show JPG compression artefacts around hard edges; PNG avoids that entirely." }
+          "acceptedAnswer": { "@type": "Answer", "text": "The slider starts at 92%, which looks almost lossless and keeps the file a manageable size. Go up to 95–100% for print, or down to 70–80% for small web images where size matters more than sharpness. Flat-colour graphics such as logos can pick up JPG compression artefacts around hard edges, which PNG avoids entirely." }
         },
         {
           "@type": "Question",
           "name": "Why does my JPG have a solid background colour?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JPG has no transparency (alpha) channel, so the otherwise-transparent SVG canvas must be filled with a solid colour — white by default, or any colour you pick. If you need to keep transparency, convert SVG to PNG instead." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JPG has no transparency (alpha) channel, so the parts of the SVG canvas that would otherwise be transparent have to be filled with a solid colour. It's white unless you pick another one. If you need to keep transparency, convert SVG to PNG instead." }
         },
         {
           "@type": "Question",
           "name": "Can I convert multiple SVGs at once, and are they uploaded?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes — drop up to 10 SVG files and they convert in one go, downloadable individually or as a single zip. Nothing is uploaded: every file is rendered and encoded by your own browser, so the tool keeps working even offline." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drop in up to 10 SVG files and they convert in one go, ready to download individually or as a single zip. None of them are uploaded. Your own browser renders and encodes every file, so the tool keeps working even offline." }
         }
       ]
     }
@@ -72,7 +72,7 @@ const structuredData = {
 ---
 <Layout
   title="SVG to JPG Converter — Vector to JPG, Free · Latch Tools"
-  description="Convert SVG vector graphics to JPG in your browser — choose the output resolution, quality and background colour. Files never leave your device."
+  description="Convert SVG vector graphics to JPG in your browser. Choose the output resolution, quality and background colour. Files never leave your device."
   ogImage="/og/svg-to-jpg.png"
 >
   <Fragment slot="head">
@@ -91,7 +91,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">SVG to JPG</span>
         </nav>
         <h1>SVG to JPG converter</h1>
-        <p>Turn a scalable SVG into a flat JPG anything can open — at the exact resolution you choose. Pick a background colour for the transparent canvas.</p>
+        <p>Turn a scalable SVG into a flat JPG that anything can open, at the exact resolution you choose. Pick a background colour for the transparent canvas.</p>
         <TrustPill />
       </div>
 
@@ -298,10 +298,10 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        SVG is a vector format — it stores shapes and paths, not pixels, so it scales to any size without blurring. That's perfect on the web, but plenty of apps, upload forms, and devices only accept raster images. Rasterising to JPG gives you a fixed-resolution file that opens virtually anywhere, at a size you control.
+        SVG is a vector format. It stores shapes and paths instead of pixels, so it scales to any size without blurring. That works well on the web, but plenty of apps, upload forms, and devices only accept raster images. Rasterising to JPG gives you a fixed-resolution file that opens virtually anywhere, at a size you control.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        JPG trades a little quality and all transparency for small, universally-compatible files. If your graphic has transparent areas you want to keep, or you need a lossless copy with crisp edges, <a href="/svg-to-png/" style="color:var(--accent)">SVG to PNG</a> is the better choice.
+        JPG gives up a little quality and all transparency in return for small, universally compatible files. If your graphic has transparent areas you want to keep, or you need a lossless copy with crisp edges, <a href="/svg-to-png/" style="color:var(--accent)">SVG to PNG</a> is the better choice.
       </p>
     </div>
   </section>
@@ -322,7 +322,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">SVG (Scalable Vector Graphics) is an XML-based vector format — it describes shapes and paths rather than a grid of pixels, so it stays sharp at any size. It's used for logos, icons, and illustrations. Many apps and upload forms only accept raster formats, so converting to JPG gives you a fixed-resolution image that opens virtually anywhere.</p>
+          <p class="faq-a">SVG (Scalable Vector Graphics) is an XML-based vector format. It describes shapes and paths rather than a grid of pixels, so it stays sharp at any size. You'll mostly see it used for logos, icons, and illustrations. Many apps and upload forms only accept raster formats, so converting to JPG gives you a fixed-resolution image that opens virtually anywhere.</p>
         </details>
 
         <details class="faq-item">
@@ -332,7 +332,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JPG produces smaller files and is ideal for sharing or publishing, but it is lossy and cannot store transparency — transparent areas are flattened onto the background colour you pick. <a href="/svg-to-png/" style="color:var(--accent)">SVG to PNG</a> is lossless and keeps transparency, which is better for logos and graphics. Choose JPG when file size matters more than a transparent background.</p>
+          <p class="faq-a">JPG makes smaller files that suit sharing or publishing, but it is lossy and can't store transparency, so transparent areas get flattened onto the background colour you pick. <a href="/svg-to-png/" style="color:var(--accent)">SVG to PNG</a> is lossless and keeps transparency, which suits logos and graphics better. Choose JPG when file size matters more than a transparent background.</p>
         </details>
 
         <details class="faq-item">
@@ -342,7 +342,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Because SVG is vector, it has no inherent pixel size — you choose it. 1× uses the size declared in the SVG; 2× and 4× multiply it for crisp results on high-resolution screens or in print; or set a custom width and the height follows the aspect ratio automatically. Larger sizes look sharper but produce bigger files.</p>
+          <p class="faq-a">An SVG is a vector image with no inherent pixel size, so the size is up to you. 1× uses the size declared in the SVG. 2× and 4× multiply it for crisp results on high-resolution screens or in print. You can also set a custom width, and the height follows the aspect ratio automatically. Larger sizes look sharper but produce bigger files.</p>
         </details>
 
         <details class="faq-item">
@@ -352,7 +352,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">92% is a great default — visually almost lossless with a manageable file size. Use 95–100% for print, or 70–80% for small web images. Note that flat-colour graphics like logos can show JPG artefacts around hard edges; <a href="/svg-to-png/" style="color:var(--accent)">SVG to PNG</a> avoids that entirely.</p>
+          <p class="faq-a">The slider starts at 92%, which looks almost lossless and keeps the file a manageable size. Go up to 95–100% for print, or down to 70–80% for small web images. Flat-colour graphics such as logos can pick up JPG artefacts around hard edges, which <a href="/svg-to-png/" style="color:var(--accent)">SVG to PNG</a> avoids entirely.</p>
         </details>
 
         <details class="faq-item">
@@ -362,7 +362,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JPG has no transparency channel, so the otherwise-transparent SVG canvas must be filled with a solid colour — white by default, or any colour you pick. If you need to keep transparency, <a href="/svg-to-png/" style="color:var(--accent)">convert SVG to PNG</a> instead.</p>
+          <p class="faq-a">JPG has no transparency channel, so the parts of the SVG canvas that would otherwise be transparent have to be filled with a solid colour. It's white unless you pick another one. If you need to keep transparency, <a href="/svg-to-png/" style="color:var(--accent)">convert SVG to PNG</a> instead.</p>
         </details>
 
         <details class="faq-item">
@@ -372,7 +372,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes — drop up to 10 SVG files and they convert in one go, downloadable individually or as a single zip. Nothing is uploaded: every file is rendered and encoded by your own browser, so the tool keeps working even offline.</p>
+          <p class="faq-a">Yes. Drop in up to 10 SVG files and they convert in one go, ready to download individually or as a single zip. None of them are uploaded. Your own browser renders and encodes every file, so the tool keeps working even offline.</p>
         </details>
       </div>
     </div>
@@ -392,7 +392,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">SVG to PNG</div>
-          <div class="tool-desc">Need transparency or a lossless copy? Rasterise to PNG instead.</div>
+          <div class="tool-desc">Rasterise to PNG instead when you need transparency or a lossless copy.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/png-to-jpg/" class="tool-card">
@@ -408,7 +408,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">AVIF to JPG</div>
-          <div class="tool-desc">Convert modern AVIF images to universal JPGs anything can open.</div>
+          <div class="tool-desc">Convert AVIF images to JPGs that anything can open.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
@@ -862,7 +862,7 @@ const structuredData = {
         if (!cancelled) {
           showError(
             `Couldn't convert ${entry.file.name}`,
-            `We couldn't render <code>${escHtml(entry.file.name)}</code> — it may be malformed or missing a width/height or viewBox.`,
+            `We couldn't render <code>${escHtml(entry.file.name)}</code>. It may be malformed or missing a width/height or viewBox.`,
             files.filter((_, j) => j !== i),
             'CONVERT_FAILED'
           );
@@ -924,7 +924,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done: ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Encode any image to a Base64 data URI directly in your browser — copy it as a data URI, raw string, CSS background or HTML img tag. No uploads required — files never leave your device.",
+      "description": "Encode any image to a Base64 data URI in your browser, then copy it as a data URI, raw string, CSS background or HTML img tag. Files never leave your device.",
       "url": "https://latchtools.com/image-to-base64/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert an image to Base64",
       "step": [
         { "@type": "HowToStep", "name": "Add your image", "text": "Drag an image onto the drop zone, or click Browse to pick one from your device." },
-        { "@type": "HowToStep", "name": "Encode locally", "text": "Latch reads the image in your browser and encodes it to a Base64 string — instantly and offline." },
+        { "@type": "HowToStep", "name": "Encode locally", "text": "Latch reads the image and encodes it to a Base64 string, which works even offline." },
         { "@type": "HowToStep", "name": "Pick a format", "text": "Choose a data URI, the raw Base64, a CSS background-image rule, or an HTML img tag." },
         { "@type": "HowToStep", "name": "Copy it", "text": "Hit Copy and paste the string straight into your stylesheet, markup or code." }
       ]
@@ -49,17 +49,17 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Why is the Base64 string bigger than my image?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Base64 represents 3 bytes of binary as 4 text characters, so the encoded string is about 33% larger than the original file. That's the trade-off for embedding an image inline. It's best for small images like icons; large photos are usually better left as separate files." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Base64 represents 3 bytes of binary as 4 text characters, so the encoded string is about 33% larger than the original file. You pay that extra size whenever you embed an image inline, so it suits small images like icons. Large photos are usually better left as separate files." }
         },
         {
           "@type": "Question",
           "name": "Which image formats can I encode?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Any image your browser can read — PNG, JPG, WebP, GIF, SVG, AVIF, BMP and more. The output keeps the original format's MIME type in the data URI, so an SVG stays image/svg+xml and a PNG stays image/png." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Any image your browser can read, including PNG, JPG, WebP, GIF, SVG, AVIF and BMP. The output keeps the original MIME type, so an SVG stays image/svg+xml and a PNG stays image/png." }
         },
         {
           "@type": "Question",
           "name": "How do I use the Base64 in CSS or HTML?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Switch the format toggle to CSS to get a background-image: url(...) rule, or to HTML to get a ready-made img tag. Both paste straight into your code and render the image with no extra network request." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Switch the format toggle to CSS for a background-image: url(...) rule, or to HTML for a ready-made img tag. Both paste straight into your code and render the image with no extra network request." }
         }
       ]
     }
@@ -68,7 +68,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert Image to Base64 — Free, Private, No Upload · Latch Tools"
-  description="Encode any image to a Base64 data URI in your browser — copy it as a data URI, raw string, CSS background or HTML tag. Nothing leaves your device."
+  description="Encode any image to a Base64 data URI in your browser, then copy it as a data URI, raw string, CSS background or HTML tag. Nothing leaves your device."
   ogImage="/og/image-to-base64.png"
 >
   <Fragment slot="head">
@@ -159,7 +159,7 @@ const structuredData = {
             </span>
             <div>
               <div class="rt" id="done-title">Base64 ready</div>
-              <div class="rs">Encoded on your device — nothing was uploaded</div>
+              <div class="rs">Encoded on your device</div>
             </div>
           </div>
           <div class="fmt-toggle" id="fmt-toggle" role="group" aria-label="Output format">
@@ -212,7 +212,7 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:26px">How to convert an image to Base64</h2>
-          <p class="sec-desc">Four steps, a couple of seconds, zero uploads.</p>
+          <p class="sec-desc">Four steps, and it takes a couple of seconds.</p>
         </div>
       </div>
       <div class="howto">
@@ -224,7 +224,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>We encode locally</h4>
-          <p>Latch reads the image in your browser and encodes it to a Base64 string — instantly and offline.</p>
+          <p>Latch reads the image and encodes it to a Base64 string, which works even offline.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -252,7 +252,7 @@ const structuredData = {
         A Base64 <em>data URI</em> encodes an image's bytes as plain text, so you can drop the picture straight into your HTML, CSS or JavaScript instead of linking to a separate file. It starts with something like <code>data:image/png;base64,</code> and is followed by the encoded data. Because the image travels inside your code, the browser doesn't make a separate network request for it.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        That's ideal for small assets — icons, tiny logos, an inline SVG — where saving a round-trip matters more than bytes. The catch is size: Base64 is about 33% larger than the original file, so large photos are usually better left as separate, cacheable files.
+        Inlining works best for small assets such as icons, tiny logos or an inline SVG, where saving a round-trip matters more than bytes. Size is the downside. Base64 is about 33% larger than the original file, so large photos are usually better left as separate, cacheable files.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
         Switch the format toggle to grab exactly what you need: a raw string, a ready-made <code>&lt;img&gt;</code> tag, or a CSS <code>background-image</code> rule. Need to go the other way? <a href="/base64-to-image/" style="color:var(--accent)">Base64 to Image</a> decodes a string back into a downloadable picture.
@@ -296,7 +296,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Base64 represents 3 bytes of binary as 4 text characters, so the encoded string is about 33% larger than the original file. That's the trade-off for embedding inline — best for small images like icons; large photos are usually better as separate files.</p>
+          <p class="faq-a">Base64 represents 3 bytes of binary as 4 text characters, so the encoded string is about 33% larger than the original file. You pay that extra size whenever you embed an image inline, so it suits small images like icons. Large photos are usually better left as separate files.</p>
         </details>
 
         <details class="faq-item">
@@ -306,7 +306,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Any image your browser can read — PNG, JPG, WebP, GIF, SVG, AVIF, BMP and more. The output keeps the original MIME type, so an SVG stays <code>image/svg+xml</code> and a PNG stays <code>image/png</code>.</p>
+          <p class="faq-a">Any image your browser can read, including PNG, JPG, WebP, GIF, SVG, AVIF and BMP. The output keeps the original MIME type, so an SVG stays <code>image/svg+xml</code> and a PNG stays <code>image/png</code>.</p>
         </details>
 
         <details class="faq-item">
@@ -344,7 +344,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 15l6-6M15 9v3M15 9h-3"/></svg>
           </div>
           <div class="tool-name">Resize image</div>
-          <div class="tool-desc">Shrink an image first — a smaller image makes a smaller Base64 string.</div>
+          <div class="tool-desc">Shrink an image first. A smaller image gives you a shorter Base64 string.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/png-to-webp/" class="tool-card">
@@ -486,7 +486,7 @@ const structuredData = {
       return;
     }
     if (f.size > MAX_SIZE_BYTES) {
-      showError('File too large', `Images must be under ${MAX_SIZE_MB} MB — Base64 is best for small assets.`);
+      showError('File too large', `Images must be under ${MAX_SIZE_MB} MB. Base64 works best for small assets.`);
       return;
     }
     file = f;

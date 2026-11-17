@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert PNG images to JPG (and JPG to PNG) directly in your browser. No uploads required — files never leave your device.",
+      "description": "Convert PNG images to JPG, or JPG to PNG, in the browser without uploading anything.",
       "url": "https://latchtools.com/png-to-jpg/"
     },
     {
@@ -43,22 +43,22 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "What happens to transparent areas when converting PNG to JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JPG doesn't support transparency. You can choose a background colour to fill those areas — white is the default, but you can pick any solid colour." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JPG has no transparency, so those areas need a background colour. White is the default, and you can pick any other solid colour." }
         },
         {
           "@type": "Question",
           "name": "Can I also convert JPG to PNG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Just drop JPG files and the tool automatically switches to JPG → PNG mode. PNG output is lossless, so no quality is lost." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drop JPG files and the tool automatically switches to JPG → PNG mode. PNG output is lossless, so no quality is lost." }
         },
         {
           "@type": "Question",
           "name": "What quality setting should I use?",
-          "acceptedAnswer": { "@type": "Answer", "text": "92% is a sweet spot — nearly identical to the original with a noticeably smaller file size. Go higher if the image will be printed; lower if you need a very small file for the web." }
+          "acceptedAnswer": { "@type": "Answer", "text": "92% looks nearly identical to the original and gives a noticeably smaller file. Go higher if the image will be printed, or lower if you need a very small file for the web." }
         },
         {
           "@type": "Question",
           "name": "Is there a file size or count limit?",
-          "acceptedAnswer": { "@type": "Answer", "text": "You can convert up to 10 images at once, up to 50 MB each. The real constraint is your device's available memory." }
+          "acceptedAnswer": { "@type": "Answer", "text": "You can convert up to 10 images at once, each up to 50 MB." }
         }
       ]
     }
@@ -251,7 +251,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">1</div>
           <h4>Add your PNG or JPG files</h4>
-          <p>Drag images onto the box above, or click Browse. Drop PNGs to go to JPG, or drop JPGs to go to PNG — the tool detects the direction automatically.</p>
+          <p>Drag images onto the box above, or click Browse. Drop PNGs to get JPGs, or JPGs to get PNGs. The tool detects the direction automatically from the files you add.</p>
         </div>
         <div class="howto-step">
           <div class="n">2</div>
@@ -293,7 +293,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JPG doesn't support transparency. You can choose a background colour to fill those areas — white is the default, but you can pick any solid colour using the colour picker.</p>
+          <p class="faq-a">JPG has no transparency, so those areas need a background colour. White is the default, and you can pick any other solid colour with the colour picker.</p>
         </details>
 
         <details class="faq-item">
@@ -303,7 +303,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes. Just drop JPG files and the tool automatically switches to JPG → PNG mode. PNG output is lossless, so no quality is lost in the conversion.</p>
+          <p class="faq-a">Yes. Drop JPG files and the tool automatically switches to JPG → PNG mode. PNG output is lossless, so no quality is lost in the conversion.</p>
         </details>
 
         <details class="faq-item">
@@ -313,7 +313,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">92% is a great default — visually identical to the original with a noticeably smaller file. Use 95–100% for images that will be printed; 70–80% for web thumbnails where file size matters more than sharpness.</p>
+          <p class="faq-a">At the default of 92%, the result looks the same as the original and the file is noticeably smaller. For print, use 95–100%. For web thumbnails, where file size matters more than sharpness, 70–80% is enough.</p>
         </details>
 
         <details class="faq-item">
@@ -323,7 +323,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">You can convert up to 10 images at once, up to 50 MB each. The real constraint is your device's available memory — most image batches are well within those limits.</p>
+          <p class="faq-a">You can convert up to 10 images at once, each up to 50 MB.</p>
         </details>
       </div>
     </div>
@@ -343,7 +343,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">PNG to AVIF</div>
-          <div class="tool-desc">Prefer next-gen compression? Shrink a PNG into a much smaller AVIF.</div>
+          <div class="tool-desc">Shrink a PNG into a much smaller AVIF file.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/png-to-webp/" class="tool-card">
@@ -359,7 +359,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">JFIF to JPG</div>
-          <div class="tool-desc">Got a .jfif file? It's just a JPEG — convert it to standard JPG.</div>
+          <div class="tool-desc">A .jfif is a JPEG under another name. Save it as a standard JPG.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/svg-to-jpg/" class="tool-card">
@@ -705,7 +705,7 @@ const structuredData = {
   function showDone() {
     const count = results.length;
     const outLabel = direction === 'png-to-jpg' ? 'JPG' : 'PNG';
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;    const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
+    doneTitleEl.textContent = `Finished: ${count} image${count !== 1 ? 's' : ''} converted`;    const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;
     doneSub.textContent = `Saved as ${outLabel} · ${formatBytes(totalOriginal)} → ${formatBytes(totalOutput)}${savedPct > 0 ? ` (${savedPct}% smaller)` : ''}`;

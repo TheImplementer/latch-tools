@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Decode a Base64 string or data URI back into an image directly in your browser — preview it and download as PNG, JPG, GIF, WebP or SVG. No uploads required — nothing leaves your device.",
+      "description": "Decode a Base64 string or data URI back into an image in your browser, preview it, and download it as PNG, JPG, GIF, WebP or SVG. Nothing leaves your device.",
       "url": "https://latchtools.com/base64-to-image/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert Base64 to an image",
       "step": [
         { "@type": "HowToStep", "name": "Paste your Base64", "text": "Paste a data URI or a raw Base64 string into the box." },
-        { "@type": "HowToStep", "name": "Decode locally", "text": "Latch decodes the string to an image in your browser — instantly and offline." },
+        { "@type": "HowToStep", "name": "Decode locally", "text": "Latch turns the string back into an image, and this works offline too." },
         { "@type": "HowToStep", "name": "Preview and download", "text": "Check the preview, then download the decoded image as a file." }
       ]
     },
@@ -53,12 +53,12 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Why won't my Base64 decode?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Usually the string is incomplete or has stray characters. Make sure you copied the whole value. Data URIs must include the base64, marker. Latch trims whitespace and fixes padding automatically, but truncated data can't be recovered." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Usually the string is incomplete or has stray characters. Make sure you copied the whole value, and that a data URI includes the base64, marker. Latch trims whitespace and fixes padding automatically, but truncated data can't be recovered." }
         },
         {
           "@type": "Question",
           "name": "What file do I get?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A real image file matching the detected type — image.png, image.jpg, image.svg and so on — saved straight to your device with one click." }
+          "acceptedAnswer": { "@type": "Answer", "text": "You get a real image file of the detected type (image.png, image.jpg, image.svg and so on), saved straight to your device with one click." }
         }
       ]
     }
@@ -67,7 +67,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert Base64 to Image — Free, Private, No Upload · Latch Tools"
-  description="Decode a Base64 string or data URI back into an image in your browser — preview and download as PNG, JPG, GIF, WebP or SVG. Nothing is uploaded."
+  description="Decode a Base64 string or data URI back into an image in your browser, then preview and download it as PNG, JPG, GIF, WebP or SVG. Nothing is uploaded."
   ogImage="/og/base64-to-image.png"
 >
   <Fragment slot="head">
@@ -106,7 +106,7 @@ const structuredData = {
         <!-- STATE: paste -->
         <div id="state-drop" class="widget-state">
           <label for="b64-input" class="b64-label">Paste a Base64 string or data URI</label>
-          <textarea class="b64-area" id="b64-input" spellcheck="false" aria-label="Base64 input" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg…&#10;&#10;— or just the raw Base64, with or without the data: prefix"></textarea>
+          <textarea class="b64-area" id="b64-input" spellcheck="false" aria-label="Base64 input" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg…&#10;&#10;or just the raw Base64, with or without the data: prefix"></textarea>
           <div class="actions">
             <button class="btn btn-primary grow" type="button" id="convert-btn">
               Convert to image
@@ -123,7 +123,7 @@ const structuredData = {
             </span>
             <div>
               <div class="rt" id="done-title">Image decoded</div>
-              <div class="rs">Decoded on your device — nothing was uploaded</div>
+              <div class="rs">Decoded on your device</div>
             </div>
           </div>
           <div id="preview-slot"></div>
@@ -168,7 +168,7 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:26px">How to convert Base64 to an image</h2>
-          <p class="sec-desc">Three steps, a couple of seconds, zero uploads.</p>
+          <p class="sec-desc">Three steps that take a couple of seconds.</p>
         </div>
       </div>
       <div class="howto">
@@ -180,7 +180,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>We decode locally</h4>
-          <p>Latch decodes the string to an image in your browser — instantly and offline.</p>
+          <p>Latch turns the string back into an image, and this works offline too.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -200,13 +200,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Base64 is a way of writing binary data — like an image — as plain text, so it can travel inside HTML, CSS, JSON or an API response. When you're handed one of these strings, you often need the actual picture back. This tool decodes it in your browser and hands you a real image file.
+        Base64 is a way of writing binary data, such as an image, as plain text so it can travel inside HTML, CSS, JSON or an API response. When you're handed one of these strings, you often need the actual picture back. This tool decodes it and gives you a real image file.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
         Paste either a full data URI (<code>data:image/png;base64,…</code>) or just the raw Base64. If the type isn't given, Latch reads the file's signature to work out whether it's a PNG, JPG, GIF, WebP, BMP, AVIF or SVG, and names the download accordingly. Whitespace and missing padding are fixed automatically.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        Everything runs locally — the string never leaves your device, which matters when you're decoding data from private code or an internal API. Need to go the other way? <a href="/image-to-base64/" style="color:var(--accent)">Image to Base64</a> encodes a picture into a string.
+        The string stays on your device, which matters if the data comes from private code or an internal API. Need to go the other way? <a href="/image-to-base64/" style="color:var(--accent)">Image to Base64</a> encodes a picture into a string.
       </p>
     </div>
   </section>
@@ -257,7 +257,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Usually the string is incomplete or has stray characters — make sure you copied the whole value, and that data URIs include the <code>base64,</code> marker. Latch trims whitespace and fixes padding automatically, but truncated data can't be recovered.</p>
+          <p class="faq-a">Usually the string is incomplete or has stray characters. Make sure you copied the whole value, and that a data URI includes the <code>base64,</code> marker. Latch trims whitespace and fixes padding automatically, but truncated data can't be recovered.</p>
         </details>
 
         <details class="faq-item">
@@ -267,7 +267,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">A real image file matching the detected type — <code>image.png</code>, <code>image.jpg</code>, <code>image.svg</code> and so on — saved straight to your device with one click.</p>
+          <p class="faq-a">You get a real image file of the detected type (<code>image.png</code>, <code>image.jpg</code>, <code>image.svg</code> and so on), saved straight to your device with one click.</p>
         </details>
       </div>
     </div>
@@ -303,7 +303,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 15l6-6M15 9v3M15 9h-3"/></svg>
           </div>
           <div class="tool-name">Resize image</div>
-          <div class="tool-desc">Change an image's dimensions in your browser — no upload required.</div>
+          <div class="tool-desc">Change an image's dimensions.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>

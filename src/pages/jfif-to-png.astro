@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert JFIF files to lossless PNG directly in your browser. JFIF is just a JPEG with a different extension. No uploads required — files never leave your device.",
+      "description": "Convert JFIF files to lossless PNG in your browser. JFIF is just a JPEG with a different extension, and the files stay on your device.",
       "url": "https://latchtools.com/jfif-to-png/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert JFIF to PNG",
       "step": [
         { "@type": "HowToStep", "name": "Add your JFIF files", "text": "Drag images onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Lossless PNG output", "text": "PNG is a lossless format — the decoded image is stored exactly, with no further compression added." },
+        { "@type": "HowToStep", "name": "Lossless PNG output", "text": "PNG is lossless, so it saves the decoded image exactly, without adding any compression on top of the original's." },
         { "@type": "HowToStep", "name": "Download your PNGs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
@@ -38,22 +38,22 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "What is a JFIF file?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. A .jfif file is simply a JPEG saved with a different file extension — the image data inside is identical to a .jpg. This tool decodes it and saves it as a PNG." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. Under the .jfif extension sits an ordinary JPEG, with image data identical to a .jpg. This tool decodes it and saves it as a PNG." }
         },
         {
           "@type": "Question",
           "name": "Is JFIF the same as JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Essentially, yes. JFIF and JPG describe the same compressed image data — the only practical difference is the file extension. Some software and websites save images as .jfif, which can confuse apps that only recognise more common formats." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Essentially, yes. Both names refer to the same compressed image data. What differs in practice is the file extension. Some software and websites save images as .jfif, which can confuse apps that only recognise more common formats." }
         },
         {
           "@type": "Question",
           "name": "Why convert JFIF to PNG instead of JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "PNG is a lossless, universally-supported format. Convert to PNG when an app or upload form specifically requires PNG, or when you want to edit the image without losing any more quality. Bear in mind the PNG will be larger than the JFIF — if you just want a normal, compact photo, converting JFIF to JPG is the simpler choice." }
+          "acceptedAnswer": { "@type": "Answer", "text": "PNG is lossless and universally supported. Convert to PNG when an app or upload form specifically requires PNG, or when you want to edit the image without losing any more quality. The PNG will be larger than the JFIF, though. For a normal, compact photo, converting JFIF to JPG is the simpler choice." }
         },
         {
           "@type": "Question",
           "name": "Does converting JFIF to PNG improve quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The JFIF is already JPEG-compressed and that compression is permanent — PNG cannot recover detail that was lost. What PNG does do is store the decoded image losslessly, so no further quality is lost from this point on, at the cost of a larger file." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The JFIF is already JPEG-compressed and that compression is permanent, so PNG cannot recover detail that was lost. What PNG does is store the decoded image losslessly. Nothing more is lost from this point on, at the cost of a larger file." }
         },
         {
           "@type": "Question",
@@ -72,7 +72,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert JFIF to PNG — Free, Private, No Upload · Latch Tools"
-  description="Convert JFIF files to lossless PNG in your browser. JFIF is just a JPEG with an odd extension — turn it into a universal PNG. Files never leave your device."
+  description="Convert JFIF files to lossless PNG in your browser. JFIF is just a JPEG with an odd extension. Turn it into a universal PNG. Files never leave your device."
   ogImage="/og/jfif-to-png.png"
 >
   <Fragment slot="head">
@@ -91,7 +91,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">JFIF to PNG</span>
         </nav>
         <h1>JFIF to PNG converter</h1>
-        <p>Need a <code>.jfif</code> file as a PNG? A JFIF is an ordinary JPEG with an unusual extension, so it converts cleanly to a lossless <code>.png</code>.</p>
+        <p>A <code>.jfif</code> file is an ordinary JPEG with an unusual extension, so it converts cleanly to a lossless <code>.png</code>.</p>
         <TrustPill />
       </div>
 
@@ -238,7 +238,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Lossless PNG output</h4>
-          <p>PNG stores the decoded image exactly — no further compression is added on top of the original.</p>
+          <p>PNG is lossless, so it saves the decoded image exactly, without adding any compression on top of the original's.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -261,10 +261,10 @@ const structuredData = {
         A <code>.jfif</code> file <em>is</em> a JPEG. JFIF (JPEG File Interchange Format) is the standard container that JPEG image data sits in, so the bytes inside are identical to a <code>.jpg</code>. Converting to PNG decodes that image and re-saves it in PNG's lossless format.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Why choose PNG? If an app or upload form specifically wants a PNG, or you're about to edit the image and don't want to lose any more quality, PNG is the right target — it stores every decoded pixel exactly. The trade-off is file size: a PNG of a photo is usually several times larger than the JFIF.
+        PNG makes sense when an app or upload form specifically wants one, or when you're about to edit the image and don't want to lose any more quality, because it stores every decoded pixel exactly. Expect a bigger file. A PNG of a photo is usually several times larger than the JFIF.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        One honest caveat: converting to PNG can't <em>restore</em> quality. The JFIF's JPEG compression already happened and is permanent — PNG simply prevents any further loss from here. If you just want a normal, compact photo that opens everywhere, <a href="/jfif-to-jpg/" style="color:var(--accent)">JFIF to JPG</a> is the simpler choice. Everything happens in your browser; the image never leaves your device.
+        Converting to PNG can't <em>restore</em> quality, though. The JFIF's JPEG compression has already happened and is permanent, and PNG only prevents further loss from here. For a normal, compact photo that opens everywhere, <a href="/jfif-to-jpg/" style="color:var(--accent)">JFIF to JPG</a> is the simpler choice.
       </p>
     </div>
   </section>
@@ -285,7 +285,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. A <code>.jfif</code> file is simply a JPEG saved with a different file extension — the image data inside is identical to a <code>.jpg</code>. This tool decodes it and saves it as a PNG.</p>
+          <p class="faq-a">JFIF (JPEG File Interchange Format) is the standard container for JPEG image data. Under the <code>.jfif</code> extension sits an ordinary JPEG, with image data identical to a <code>.jpg</code>. This tool decodes it and saves it as a PNG.</p>
         </details>
 
         <details class="faq-item">
@@ -295,7 +295,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Essentially, yes. JFIF and JPG describe the same compressed image data — the only practical difference is the file extension. Some software and websites save images as <code>.jfif</code>, which can confuse apps that only recognise more common formats.</p>
+          <p class="faq-a">Essentially, yes. Both names refer to the same compressed image data. What differs in practice is the file extension. Some software and websites save images as <code>.jfif</code>, which can confuse apps that only recognise more common formats.</p>
         </details>
 
         <details class="faq-item">
@@ -305,7 +305,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">PNG is a lossless, universally-supported format. Convert to PNG when an app or upload form specifically requires PNG, or when you want to edit the image without losing any more quality. Bear in mind the PNG will be larger than the JFIF — if you just want a normal, compact photo, <a href="/jfif-to-jpg/" style="color:var(--accent)">converting JFIF to JPG</a> is the simpler choice.</p>
+          <p class="faq-a">PNG is lossless and universally supported. Convert to PNG when an app or upload form specifically requires PNG, or when you want to edit the image without losing any more quality. The PNG will be larger than the JFIF, though. For a normal, compact photo, <a href="/jfif-to-jpg/" style="color:var(--accent)">converting JFIF to JPG</a> is the simpler choice.</p>
         </details>
 
         <details class="faq-item">
@@ -315,7 +315,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No. The JFIF is already JPEG-compressed and that compression is permanent — PNG cannot recover detail that was lost. What PNG does do is store the decoded image losslessly, so no further quality is lost from this point on, at the cost of a larger file.</p>
+          <p class="faq-a">No. The JFIF is already JPEG-compressed and that compression is permanent, so PNG cannot recover detail that was lost. What PNG does is store the decoded image losslessly. Nothing more is lost from this point on, at the cost of a larger file.</p>
         </details>
 
         <details class="faq-item">
@@ -355,7 +355,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">JFIF to JPG</div>
-          <div class="tool-desc">Just want a normal, compact photo? Convert to a standard JPG instead.</div>
+          <div class="tool-desc">Convert to a standard JPG for a normal, compact photo.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/webp-to-png/" class="tool-card">
@@ -363,7 +363,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
           </div>
           <div class="tool-name">WebP to PNG</div>
-          <div class="tool-desc">Convert WebP images to lossless PNG, fully in-browser.</div>
+          <div class="tool-desc">Save WebP images as lossless PNG files.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/heic-to-png/" class="tool-card">
@@ -628,7 +628,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All set. ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert PNG images to WebP directly in your browser, with adjustable quality. Transparency is preserved. No uploads required — files never leave your device.",
+      "description": "Convert PNG images to WebP directly in your browser, with adjustable quality. Transparency is preserved. Files never leave your device, since nothing is uploaded.",
       "url": "https://latchtools.com/png-to-webp/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert PNG to WebP",
       "step": [
         { "@type": "HowToStep", "name": "Add your PNG files", "text": "Drag PNG images onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Set the quality", "text": "Pick a WebP quality level. 80 is a good default: it stays sharp while making far smaller files." },
+        { "@type": "HowToStep", "name": "Set the quality", "text": "Pick a WebP quality level. The default of 80 stays sharp while making far smaller files." },
         { "@type": "HowToStep", "name": "Download your WebPs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
@@ -48,12 +48,12 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Is transparency preserved?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. WebP supports an alpha channel just like PNG, so any transparent areas in your PNG carry straight through to the WebP — no background colour is added." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. WebP supports an alpha channel just like PNG, so any transparent areas in your PNG carry straight through to the WebP. No background colour is added." }
         },
         {
           "@type": "Question",
           "name": "Does converting to WebP lose quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "WebP here uses lossy compression, so there's some loss — but at the default quality of 80 it's visually indistinguishable from the original while being far smaller. Raise the slider toward 95–100 if you want maximum fidelity." }
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool uses WebP's lossy mode, so some detail is lost. At the default quality of 80, though, the result is visually indistinguishable from the original and far smaller. Raise the slider toward 95–100 if you want maximum fidelity." }
         },
         {
           "@type": "Question",
@@ -63,7 +63,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "How do I convert a PNG file to WebP?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Drag your PNG files onto the drop zone or click Browse, set your quality, then press Convert to WebP. Latch turns each PNG into a WebP and lets you download them individually or as a single zip — convert one file or batch several at once." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Drag your PNG files onto the drop zone or click Browse, set your quality, then hit Convert to WebP. You can do one file or several at a time. Each PNG becomes its own WebP, and you can download them separately or bundled into a single zip." }
         }
       ]
     }
@@ -72,7 +72,7 @@ const structuredData = {
 ---
 <Layout
   title="PNG to WebP Converter — Free, Smaller Files · Latch Tools"
-  description="Convert PNG images to WebP in your browser, with adjustable quality. Transparency preserved. No uploads, no sign-up — files never leave your device."
+  description="Convert PNG images to WebP in your browser, with adjustable quality. Transparency preserved. No uploads or sign-up, and files never leave your device."
   ogImage="/og/png-to-webp.png"
 >
   <Fragment slot="head">
@@ -253,7 +253,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Set the quality</h4>
-          <p>Pick a WebP quality level. 80 is a good default: it stays sharp while making far smaller files.</p>
+          <p>Pick a WebP quality level. The default of 80 stays sharp while making far smaller files.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -273,13 +273,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        PNG is lossless and universally supported, but that makes for big files — especially for photos and detailed graphics. WebP is Google's modern format built for the web: it produces images that are typically 25–80% smaller at the same visual quality, so pages load faster and use less bandwidth.
+        PNG is lossless and universally supported, but lossless means big files, especially for photos and detailed graphics. Google built WebP for the web. It typically produces images 25–80% smaller at the same visual quality, so pages load faster and use less bandwidth.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Crucially, WebP supports an alpha channel just like PNG — so any transparency in your image carries straight across with no background colour added. Every modern browser displays WebP, which makes it the natural choice for images you're putting on a website.
+        WebP also has an alpha channel, as PNG does, so any transparency in your image carries straight across with no background colour added. Every modern browser displays WebP, which makes it the natural choice for images you're putting on a website.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        To turn a PNG into a WebP, drop your files above, set the quality, and hit Convert — everything runs in your browser, so the images never leave your device. Need to go the other way? <a href="/webp-to-png/" style="color:var(--accent)">WebP to PNG</a> converts them back to lossless PNG.
+        To turn a PNG into a WebP, drop your files above, set the quality, and hit Convert. For the reverse trip, <a href="/webp-to-png/" style="color:var(--accent)">WebP to PNG</a> turns WebP files back into lossless PNGs.
       </p>
     </div>
   </section>
@@ -320,7 +320,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes. WebP supports an alpha channel just like PNG, so any transparent areas in your PNG carry straight through to the WebP — no background colour is added.</p>
+          <p class="faq-a">Yes. WebP supports an alpha channel just like PNG, so any transparent areas in your PNG carry straight through to the WebP. No background colour is added.</p>
         </details>
 
         <details class="faq-item">
@@ -330,7 +330,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">WebP here uses lossy compression, so there's some loss — but at the default quality of 80 it's visually indistinguishable from the original while being far smaller. Raise the slider toward 95–100 if you want maximum fidelity.</p>
+          <p class="faq-a">This tool uses WebP's lossy mode, so some detail is lost. At the default quality of 80, though, the result is visually indistinguishable from the original and far smaller. Raise the slider toward 95–100 if you want maximum fidelity.</p>
         </details>
 
         <details class="faq-item">
@@ -350,7 +350,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Drag your PNG files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. Latch turns each PNG into a WebP and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
+          <p class="faq-a">Drag your PNG files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. You can do one file or several at a time. Each PNG becomes its own WebP, and you can download them separately or bundled into a single zip.</p>
         </details>
       </div>
     </div>
@@ -651,7 +651,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done: ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert AVIF images to WebP directly in your browser for wider compatibility, with adjustable quality. Transparency is preserved. No uploads required — files never leave your device.",
+      "description": "Convert AVIF images to WebP in your browser for wider compatibility, with adjustable quality and transparency kept. Files never leave your device.",
       "url": "https://latchtools.com/avif-to-webp/"
     },
     {
@@ -43,17 +43,17 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Why convert AVIF to WebP?",
-          "acceptedAnswer": { "@type": "Answer", "text": "AVIF is the most efficient image format, but it's also the newest — some browsers, CMS platforms and editing tools still can't open a .avif file. WebP is supported almost everywhere modern while staying far smaller than PNG or JPG, so converting gives you a compact file that works in many more places." }
+          "acceptedAnswer": { "@type": "Answer", "text": "AVIF is the most efficient image format, but it's also the newest, and some browsers, CMS platforms and editing tools still can't open a .avif file. WebP works in nearly all current software and is still far smaller than PNG or JPG, so converting gives you a compact file that opens in many more places." }
         },
         {
           "@type": "Question",
           "name": "Is transparency preserved?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Both AVIF and WebP support an alpha channel, so any transparent areas in your AVIF carry straight through to the WebP — no background colour is added." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Both AVIF and WebP support an alpha channel, so any transparent areas in your AVIF carry straight through to the WebP. No background colour is added." }
         },
         {
           "@type": "Question",
           "name": "Will the WebP be larger than the AVIF?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Often slightly, yes — AVIF compresses a little more efficiently than WebP. You convert for compatibility, not to save bytes: the WebP is still far smaller than the same image as PNG or JPG, and it opens in much more software than AVIF does. At the default quality of 80 the visual difference is negligible." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Often slightly larger, yes, because AVIF compresses a little more efficiently than WebP. This conversion is about compatibility rather than saving bytes. The WebP is still far smaller than the same image as PNG or JPG, and it opens in much more software than AVIF does. At the default quality of 80 the visual difference is negligible." }
         },
         {
           "@type": "Question",
@@ -63,7 +63,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "How do I convert an AVIF file to WebP?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Drag your AVIF files onto the drop zone or click Browse, set your quality, then press Convert to WebP. Latch turns each AVIF into a WebP and lets you download them individually or as a single zip — convert one file or batch several at once." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Drag your AVIF files onto the drop zone (or click Browse), set your quality, then press Convert to WebP. Latch turns each AVIF into a WebP, and you can download them one by one or as a single zip. It works the same for one file as for a batch of several." }
         }
       ]
     }
@@ -72,7 +72,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert AVIF to WebP — Free, Private, No Upload · Latch Tools"
-  description="Convert AVIF images to WebP in your browser for wider compatibility — transparency preserved and adjustable quality. Files never leave your device."
+  description="Convert AVIF images to WebP in your browser for wider compatibility, transparency preserved and adjustable quality. Files never leave your device."
   ogImage="/og/avif-to-webp.png"
 >
   <Fragment slot="head">
@@ -273,13 +273,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        AVIF (AV1 Image File Format) is the most efficient image format around — often even smaller than WebP — but it's also the newest, so plenty of browsers, CMS platforms and image editors still can't open a <code>.avif</code> file. WebP is the pragmatic middle ground: supported almost everywhere modern, yet still far smaller than PNG or JPG.
+        AVIF (AV1 Image File Format) is the most efficient image format around, often beating WebP on size. It's also the newest, so plenty of browsers, CMS platforms and image editors still can't open a <code>.avif</code> file. WebP sits in between. Almost every current browser and app supports it, and its files are still far smaller than PNG or JPG.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Both AVIF and WebP support an alpha channel, so any transparency in your image carries straight across with no background colour added. Converting AVIF to WebP is about reach, not raw size — the WebP may be marginally larger than the AVIF, but it opens in far more apps, editors and older browsers.
+        Both AVIF and WebP support an alpha channel, so any transparency in your image carries straight across with no background colour added. You convert AVIF to WebP for reach. The WebP may come out marginally larger than the AVIF, but far more apps, editors and older browsers can open it.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        To turn an AVIF into a WebP, drop your files above, set the quality, and hit Convert — everything runs in your browser, so the images never leave your device. Need to go the other way? <a href="/webp-to-avif/" style="color:var(--accent)">WebP to AVIF</a> squeezes them back down to the smaller AVIF format.
+        To turn an AVIF into a WebP, drop your files above, set the quality and press Convert. For the opposite direction, <a href="/webp-to-avif/" style="color:var(--accent)">WebP to AVIF</a> squeezes WebP files back down to the smaller AVIF format.
       </p>
     </div>
   </section>
@@ -310,7 +310,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">AVIF is the most efficient image format, but it's also the newest — some browsers, CMS platforms and editing tools still can't open a .avif file. WebP is supported almost everywhere modern while staying far smaller than PNG or JPG, so converting gives you a compact file that works in many more places.</p>
+          <p class="faq-a">AVIF is the most efficient image format, but it's also the newest, and some browsers, CMS platforms and editing tools still can't open a .avif file. WebP works in nearly all current software and is still far smaller than PNG or JPG, so converting gives you a compact file that opens in many more places.</p>
         </details>
 
         <details class="faq-item">
@@ -320,7 +320,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes. Both AVIF and WebP support an alpha channel, so any transparent areas in your AVIF carry straight through to the WebP — no background colour is added.</p>
+          <p class="faq-a">Yes. Both AVIF and WebP support an alpha channel, so any transparent areas in your AVIF carry straight through to the WebP. No background colour is added.</p>
         </details>
 
         <details class="faq-item">
@@ -330,7 +330,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Often slightly, yes — AVIF compresses a little more efficiently than WebP. You convert for compatibility, not to save bytes: the WebP is still far smaller than the same image as PNG or JPG, and it opens in much more software than AVIF does. At the default quality of 80 the visual difference is negligible.</p>
+          <p class="faq-a">Often slightly larger, yes, because AVIF compresses a little more efficiently than WebP. This conversion is about compatibility rather than saving bytes. The WebP is still far smaller than the same image as PNG or JPG, and it opens in much more software than AVIF does. At the default quality of 80 the visual difference is negligible.</p>
         </details>
 
         <details class="faq-item">
@@ -350,7 +350,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Drag your AVIF files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. Latch turns each AVIF into a WebP and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
+          <p class="faq-a">Drag your AVIF files onto the drop zone (or click Browse), set your quality, then press Convert to WebP. Latch turns each AVIF into a WebP, and you can download them one by one or as a single zip. It works the same for one file as for a batch of several.</p>
         </details>
       </div>
     </div>
@@ -370,7 +370,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">WebP to AVIF</div>
-          <div class="tool-desc">Going the other way? Squeeze your WebP into a smaller AVIF.</div>
+          <div class="tool-desc">Squeeze a WebP down into a smaller AVIF file.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/avif-to-png/" class="tool-card">
@@ -378,7 +378,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">AVIF to PNG</div>
-          <div class="tool-desc">Need a lossless or editable copy? Convert AVIF to PNG instead.</div>
+          <div class="tool-desc">For a lossless or editable copy, convert AVIF to PNG.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/png-to-webp/" class="tool-card">
@@ -651,7 +651,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done: ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert JPG images to JPEG XL (.jxl) directly in your browser with the modern JPEG XL codec. Smaller files at the same visual quality. No uploads required — files never leave your device.",
+      "description": "Convert JPG images to JPEG XL (.jxl) in your browser for smaller files at the same visual quality. Files never leave your device.",
       "url": "https://latchtools.com/jpg-to-jxl/"
     },
     {
@@ -43,12 +43,12 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Will a .jxl file open everywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or use a widely supported format instead." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. This is the format's biggest weakness right now. Today only Apple's Safari opens JPEG XL by default. Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or try JPG to AVIF instead." }
         },
         {
           "@type": "Question",
           "name": "Will converting JPG to JPEG XL reduce quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This tool re-encodes the decoded image, so like JPG it's lossy. At the default quality the difference is very hard to see. Raise the quality slider to preserve more detail. Note that detail already lost when the original JPG was saved cannot be recovered." }
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool re-encodes the decoded image, so like JPG it's lossy. At the default quality the difference is very hard to see, and the file is smaller. Raise the quality slider to preserve more detail. Detail already lost when the original JPG was saved can't be recovered." }
         },
         {
           "@type": "Question",
@@ -67,7 +67,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert JPG to JXL (JPEG XL) — Free, Private, No Upload · Latch Tools"
-  description="Convert JPG images to JPEG XL (.jxl) in your browser — smaller files at the same visual quality, using the modern JPEG XL codec. Files never leave your device."
+  description="Convert JPG images to JPEG XL (.jxl) in your browser for smaller files at the same visual quality. Files never leave your device."
   ogImage="/og/jpg-to-jxl.png"
 >
   <Fragment slot="head">
@@ -269,13 +269,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        JPG has been the default photo format for decades, but its compression is dated. <a href="/jpeg-xl/" style="color:var(--accent)">JPEG XL</a> is a modern format that stores the same photo smaller at the same visual quality, which makes it appealing for archiving or fitting more into limited storage.
+        JPG has been the default photo format for decades, but its compression is dated. <a href="/jpeg-xl/" style="color:var(--accent)">JPEG XL</a> is a newer format that stores the same photo smaller at the same visual quality, which makes it appealing for archiving or fitting more into limited storage.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Both formats are lossy, so this tool re-encodes the decoded image. At a sensible quality the result is visually indistinguishable from the JPG while being lighter. Bear in mind you can't recover detail the original JPG already discarded — JPEG XL simply stores what's there more efficiently.
+        Both formats are lossy, so this tool re-encodes the decoded image. At a sensible quality the result looks the same as the JPG and weighs less. Detail the original JPG already discarded can't be recovered, since JPEG XL only stores the remaining pixels more efficiently.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        The honest catch is compatibility: today only Apple's Safari opens <code>.jxl</code> files by default. Chrome, Edge and Firefox have added JPEG XL decoders but keep them off by default, so for most people a <code>.jxl</code> still won't open — see the full <a href="/jpeg-xl/" style="color:var(--accent)">browser support picture</a>. Keep the original JPG if you need universal reach, convert back any time with <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a>, or use <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> for similar savings in a format every current browser supports.
+        Compatibility is the problem. Today only Apple's Safari opens <code>.jxl</code> files by default. Chrome, Edge and Firefox have added JPEG XL decoders but keep them off by default, so for most people a <code>.jxl</code> still won't open (see the full <a href="/jpeg-xl/" style="color:var(--accent)">browser support picture</a>). Keep the original JPG if it has to open everywhere, convert back any time with <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a>, or use <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> for similar savings in a format every current browser supports.
       </p>
     </div>
   </section>
@@ -306,7 +306,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl (more on <a href="/jpeg-xl/" style="color:var(--accent)">browser support</a>). JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or try <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> instead.</p>
+          <p class="faq-a">No. This is the format's biggest weakness right now. Today only Apple's Safari opens JPEG XL by default. Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl (more on <a href="/jpeg-xl/" style="color:var(--accent)">browser support</a>). JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original JPG or try <a href="/jpg-to-avif/" style="color:var(--accent)">JPG to AVIF</a> instead.</p>
         </details>
 
         <details class="faq-item">
@@ -356,7 +356,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">PNG to JXL</div>
-          <div class="tool-desc">Encode PNGs to JPEG XL too — transparency preserved, in your browser.</div>
+          <div class="tool-desc">Encode PNGs to JPEG XL as well, keeping any transparency.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/jxl-to-jpg/" class="tool-card">
@@ -364,7 +364,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">JXL to JPG</div>
-          <div class="tool-desc">Going the other way? Turn a .jxl back into a universal JPG.</div>
+          <div class="tool-desc">Going the other way? Turn a .jxl back into a JPG that opens anywhere.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/jpeg-xl/" class="tool-card">
@@ -372,7 +372,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor" stroke="none"/></svg>
           </div>
           <div class="tool-name">What is JPEG XL?</div>
-          <div class="tool-desc">New to .jxl? Why it won't open in most browsers — and how to convert it.</div>
+          <div class="tool-desc">New to .jxl? Read why most browsers won't display it, and how to convert one.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
@@ -642,7 +642,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `Converted ${count} image${count !== 1 ? 's' : ''}`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

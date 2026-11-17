@@ -23,8 +23,8 @@ import TrustPill from '../components/TrustPill.astro';
         </h1>
         <p style="font-size: clamp(16px, 2.2vw, 18px); color: var(--text-2); max-width: 34em; margin: 20px 0 28px; text-wrap: pretty;">
           Latch is a set of fast, free file utilities that run entirely in your browser.
-          No file ever touches a server — every conversion, resize, and metadata strip
-          happens locally on your device using the same JavaScript engine that powers the web.
+          Every conversion, resize and metadata strip runs in your browser, so no file ever
+          touches a server.
         </p>
         <TrustPill />
       </div>
@@ -40,8 +40,8 @@ import TrustPill from '../components/TrustPill.astro';
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <span class="step-n">01</span>
-            <h3>Actually private</h3>
-            <p>A server that never receives your file can never leak it, sell it, or hand it to anyone. That's a stronger guarantee than any privacy policy can offer.</p>
+            <h3>Nothing to leak</h3>
+            <p>A server that never receives your file can't leak it, sell it, or hand it to anyone. No privacy policy can promise as much.</p>
           </div>
           <div class="step">
             <div class="step-ic" aria-hidden="true">
@@ -49,7 +49,7 @@ import TrustPill from '../components/TrustPill.astro';
             </div>
             <span class="step-n">02</span>
             <h3>Fast by default</h3>
-            <p>No upload, no queue, no download from a remote server. Processing starts the moment you drop a file and finishes locally — often in under a second.</p>
+            <p>With no upload and no queue, processing starts the moment you drop a file and often finishes in under a second. Nothing has to come back from a remote server.</p>
           </div>
           <div class="step">
             <div class="step-ic" aria-hidden="true">
@@ -57,7 +57,7 @@ import TrustPill from '../components/TrustPill.astro';
             </div>
             <span class="step-n">03</span>
             <h3>Works offline</h3>
-            <p>Once the page loads, Latch has everything it needs. Spotty connection, no connection — doesn't matter. Your files keep converting.</p>
+            <p>Once the page loads, Latch has everything it needs. Your files keep converting on a patchy connection, or with no connection at all.</p>
           </div>
         </div>
       </div>
@@ -68,15 +68,14 @@ import TrustPill from '../components/TrustPill.astro';
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 20px">Who's behind this?</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; max-width: 60ch; margin: 0 0 24px;">
-          Latch is an independent project, built out of genuine frustration with file converter
+          Latch is an independent project. It started out of frustration with file converter
           sites that ask you to upload photos, passports, and documents to servers you know
-          nothing about. The fix felt obvious: do the work in the browser, where your files
-          never have to leave.
+          nothing about. The fix seemed obvious: do the work in the browser instead.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; max-width: 60ch; margin: 0 0 32px;">
-          The tools available today all handle single-pass conversions — convert HEIC to JPG,
+          The tools available today all handle single-pass jobs. You can convert HEIC to JPG,
           swap between PNG and JPG, strip EXIF metadata, convert WebP, or resize for passport
-          photos and LinkedIn. More are on the way, all following the same zero-upload principle.
+          photos and LinkedIn. More are on the way, and they will work without uploads too.
         </p>
         <a href="/#tools" class="btn btn-primary btn-lg">
           Try the tools

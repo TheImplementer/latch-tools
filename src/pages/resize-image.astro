@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, LinkedIn, and more — all in your browser. No uploads.",
+      "description": "Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, LinkedIn and more, in your browser and without uploads.",
       "url": "https://latchtools.com/resize-image/"
     },
     {
@@ -68,7 +68,7 @@ const structuredData = {
 ---
 <Layout
   title="Resize Image for Passport, Visa & LinkedIn — Free · Latch Tools"
-  description="Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa or LinkedIn — all in your browser. Nothing is uploaded."
+  description="Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa or LinkedIn, all in your browser. Nothing is uploaded."
   ogImage="/og/resize-image.png"
 >
   <Fragment slot="head">
@@ -87,7 +87,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">Resize Image</span>
         </nav>
         <h1>Resize image for passport, visa, and social profiles</h1>
-        <p>Resize photos to exact pixel dimensions for UK passport, US passport, Schengen visa, LinkedIn, or any custom size — all in your browser.</p>
+        <p>Resize photos to exact pixel dimensions for a UK or US passport, a Schengen visa, LinkedIn, or any custom size.</p>
         <TrustPill />
       </div>
 
@@ -134,10 +134,10 @@ const structuredData = {
             <div class="opt">
               <label for="preset-select">Resize to</label>
               <select class="select" id="preset-select" aria-label="Resize preset">
-                <option value="uk-passport">UK Passport — 600 × 750 px</option>
-                <option value="us-passport">US Passport — 600 × 600 px</option>
-                <option value="schengen">Schengen Visa — 600 × 750 px</option>
-                <option value="linkedin">LinkedIn Profile — 400 × 400 px</option>
+                <option value="uk-passport">UK Passport · 600 × 750 px</option>
+                <option value="us-passport">US Passport · 600 × 600 px</option>
+                <option value="schengen">Schengen Visa · 600 × 750 px</option>
+                <option value="linkedin">LinkedIn Profile · 400 × 400 px</option>
                 <option value="custom">Custom dimensions…</option>
               </select>
             </div>
@@ -283,7 +283,7 @@ const structuredData = {
       <div class="sec-head">
         <div>
           <h2 class="sec-title" style="font-size:22px">Preset dimensions and sources</h2>
-          <p class="sec-desc">Requirements change — always verify with the official issuing authority before submitting.</p>
+          <p class="sec-desc">Requirements change, so always check with the official issuing authority before you submit.</p>
         </div>
       </div>
       <div class="spec-table">
@@ -320,7 +320,7 @@ const structuredData = {
       </div>
       <p class="spec-note">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
-        Pixel sizes are at 300 dpi. Some submission systems accept other resolutions — check the specific requirements for your application.
+        Pixel sizes are at 300 dpi. Some submission systems accept other resolutions, so check the specific requirements for your application.
       </p>
     </div>
   </section>
@@ -371,7 +371,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Crop to fill scales the image so it covers the full target frame, then trims the edges. The result has no white bars but some content near the edges may be cut. Fit with padding scales the image to fit entirely within the frame and fills the remaining space with white — no content is lost, but white bars may appear.</p>
+          <p class="faq-a">Crop to fill scales the image so it covers the full target frame, then trims the edges. The result has no white bars but some content near the edges may be cut. Fit with padding scales the image to fit entirely within the frame and fills the remaining space with white. No content is lost, but white bars may appear.</p>
         </details>
 
         <details class="faq-item">
@@ -886,7 +886,7 @@ const structuredData = {
 
   function showDone(targetW: number, targetH: number) {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} resized`;
+    doneTitleEl.textContent = `Resized ${count} image${count !== 1 ? 's' : ''}`;
     doneSub.textContent = `Resized to ${targetW}×${targetH} px`;
     resultsList.innerHTML = '';
     revokePreviewUrls();

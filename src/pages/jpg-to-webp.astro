@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert JPG images to WebP directly in your browser, with adjustable quality. No uploads required — files never leave your device.",
+      "description": "Convert JPG images to WebP directly in your browser, with adjustable quality and no uploads required. Files never leave your device.",
       "url": "https://latchtools.com/jpg-to-webp/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert JPG to WebP",
       "step": [
         { "@type": "HowToStep", "name": "Add your JPG files", "text": "Drag JPG images onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Set the quality", "text": "Pick a WebP quality level. 80 is a good default: it stays sharp while making far smaller files." },
+        { "@type": "HowToStep", "name": "Set the quality", "text": "Pick a WebP quality level. It starts at 80, which keeps images sharp and makes the files far smaller." },
         { "@type": "HowToStep", "name": "Download your WebPs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
@@ -48,7 +48,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Does converting to WebP lose quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "WebP here uses lossy compression, and your JPG was already compressed once — but at the default quality of 80 the WebP is visually indistinguishable from the JPG while being smaller. Raise the slider toward 95–100 if you want to keep as much detail as possible." }
+          "acceptedAnswer": { "@type": "Answer", "text": "The WebP output is lossy, and your JPG has already been compressed once. Even so, at the default quality of 80 the WebP is visually indistinguishable from the JPG and still smaller. Raise the slider toward 95–100 if you want to keep as much detail as possible." }
         },
         {
           "@type": "Question",
@@ -58,7 +58,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "How do I convert a JPG file to WebP?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Drag your JPG files onto the drop zone or click Browse, set your quality, then press Convert to WebP. Latch turns each JPG into a WebP and lets you download them individually or as a single zip — convert one file or batch several at once." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Drag your JPG files onto the drop zone or click Browse, set your quality, then hit Convert to WebP. Latch makes a WebP from each JPG. Download them one at a time or all together as a single zip, whether you converted one file or a batch." }
         }
       ]
     }
@@ -67,7 +67,7 @@ const structuredData = {
 ---
 <Layout
   title="JPG to WebP Converter — Free, Smaller Files · Latch Tools"
-  description="Convert JPG images to WebP in your browser, with adjustable quality. No uploads, no sign-up — files never leave your device."
+  description="Convert JPG images to WebP in your browser, with adjustable quality. No uploads and no sign-up; files never leave your device."
   ogImage="/og/jpg-to-webp.png"
 >
   <Fragment slot="head">
@@ -248,7 +248,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Set the quality</h4>
-          <p>Pick a WebP quality level. 80 is a good default: it stays sharp while making far smaller files.</p>
+          <p>Pick a WebP quality level. It starts at 80, which keeps images sharp and makes the files far smaller.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -268,13 +268,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        JPG has been the default photo format for decades, but WebP — Google's modern format for the web — compresses the same image roughly 25–35% smaller at matching quality. For a page full of photos, that adds up to faster loads and less bandwidth.
+        JPG has been the default photo format for decades. WebP, which Google designed for the web, compresses the same image roughly 25–35% smaller at matching quality. For a page full of photos, that adds up to faster loads and less bandwidth.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Every current browser displays WebP, so it's a safe choice for anything going online. Since your JPG has already been compressed once, keep the quality slider high (around 80–90) to avoid stacking too much loss — the result still comes out smaller than the original.
+        Every current browser displays WebP, so it's a safe choice for anything going online. Since your JPG has already been compressed once, keep the quality slider high (around 80–90) so the losses don't stack up too far. The result still comes out smaller than the original.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        To turn a JPG into a WebP, drop your files above, set the quality, and hit Convert — everything runs in your browser, so the images never leave your device. Need to go back? <a href="/webp-to-jpg/" style="color:var(--accent)">WebP to JPG</a> converts them the other way.
+        To turn a JPG into a WebP, drop your files above, set the quality, and hit Convert. If you later need a JPG again, <a href="/webp-to-jpg/" style="color:var(--accent)">WebP to JPG</a> converts in the other direction.
       </p>
     </div>
   </section>
@@ -315,7 +315,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">WebP here uses lossy compression, and your JPG was already compressed once — but at the default quality of 80 the WebP is visually indistinguishable from the JPG while being smaller. Raise the slider toward 95–100 if you want to keep as much detail as possible.</p>
+          <p class="faq-a">The WebP output is lossy, and your JPG has already been compressed once. Even so, at the default quality of 80 the WebP is visually indistinguishable from the JPG and still smaller. Raise the slider toward 95–100 if you want to keep as much detail as possible.</p>
         </details>
 
         <details class="faq-item">
@@ -335,7 +335,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Drag your JPG files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. Latch turns each JPG into a WebP and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
+          <p class="faq-a">Drag your JPG files onto the drop zone (or click Browse), set your quality, then hit Convert to WebP. Latch makes a WebP from each JPG. Download them one at a time or all together as a single zip, whether you converted one file or a batch.</p>
         </details>
       </div>
     </div>
@@ -355,7 +355,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 16a8 8 0 0 1-13.5 2.8L4 16"/><path d="M4 20v-4h4"/></svg>
           </div>
           <div class="tool-name">WebP to JPG</div>
-          <div class="tool-desc">Convert WebP images back to universal JPGs with adjustable quality.</div>
+          <div class="tool-desc">Convert WebP images back to JPGs that open anywhere, with adjustable quality.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/png-to-webp/" class="tool-card">
@@ -371,7 +371,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">JPG to AVIF</div>
-          <div class="tool-desc">Convert JPG photos to next-gen AVIF for even smaller files.</div>
+          <div class="tool-desc">Convert JPG photos to AVIF for even smaller files.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
@@ -636,7 +636,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done: ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

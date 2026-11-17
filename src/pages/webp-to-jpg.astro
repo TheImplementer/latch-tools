@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert WebP images to JPG directly in your browser, with adjustable quality. No uploads required — files never leave your device.",
+      "description": "Convert WebP images to JPG directly in your browser, with adjustable quality. There is no upload step, so files stay on your device.",
       "url": "https://latchtools.com/webp-to-jpg/"
     },
     {
@@ -28,7 +28,7 @@ const structuredData = {
       "name": "How to convert WebP to JPG",
       "step": [
         { "@type": "HowToStep", "name": "Add your WebP files", "text": "Drag WebP images onto the drop zone, or click Browse to pick them from your device." },
-        { "@type": "HowToStep", "name": "Set quality and background", "text": "Pick a JPG quality level and choose the colour that fills any transparent areas — white by default." },
+        { "@type": "HowToStep", "name": "Set quality and background", "text": "Pick a JPG quality level, then choose a fill colour for any transparent areas. It starts out as white." },
         { "@type": "HowToStep", "name": "Download your JPGs", "text": "Download each one on its own, or all of them in a single zip." }
       ]
     },
@@ -43,17 +43,17 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "What happens to transparent areas when converting WebP to JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JPG doesn't support transparency. You can choose a background colour to fill those areas — white is the default, but you can pick any solid colour using the colour picker." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JPG doesn't support transparency, so those areas are filled with a background colour. White is the default, and the colour picker lets you choose any other solid colour." }
         },
         {
           "@type": "Question",
           "name": "Why convert WebP to JPG instead of PNG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JPG produces much smaller files than PNG for photos, and it's accepted everywhere — every editor, email client, and upload form. Choose JPG when file size matters and you don't need transparency." }
+          "acceptedAnswer": { "@type": "Answer", "text": "For photos, a JPG is much smaller than the same image saved as PNG, and every editor, email client, and upload form accepts it. Choose JPG when file size matters and you don't need transparency; pick PNG when you need a lossless copy or an alpha channel." }
         },
         {
           "@type": "Question",
           "name": "What quality setting should I use?",
-          "acceptedAnswer": { "@type": "Answer", "text": "92% is a great default — visually identical to the original with a noticeably smaller file. Use 95–100% for images that will be printed; 70–80% for web thumbnails where file size matters more than sharpness." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Start with the default of 92%. At that level the JPG looks the same as the original, and the file is noticeably smaller. Use 95–100% for images that will be printed, or 70–80% for web thumbnails where file size matters more than sharpness." }
         },
         {
           "@type": "Question",
@@ -63,7 +63,7 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "How do I convert a WebP file to JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Drag your WebP files onto the drop zone or click Browse, set your quality, then press Convert to JPG. Latch turns each WebP into a JPG and lets you download them individually or as a single zip — convert one file or batch several at once." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Drag your WebP files onto the drop zone or click Browse, set your quality, then press Convert to JPG. Latch turns each WebP into a JPG, and you can download them one by one or together as a single zip. It handles a single file or a batch of several." }
         }
       ]
     }
@@ -260,7 +260,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">2</div>
           <h4>Set quality &amp; background</h4>
-          <p>Pick a JPG quality level and choose the colour that fills any transparent areas — white by default.</p>
+          <p>Pick a JPG quality level, then choose a fill colour for any transparent areas. It starts out as white.</p>
         </div>
         <div class="howto-step">
           <div class="n">3</div>
@@ -280,13 +280,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        WebP is Google's modern image format — it makes very small files, which is why so many sites now serve images as <code>.webp</code>. The catch: download one and plenty of desktop apps, editors, and upload forms still won't accept it. Converting to JPG gives you a file that works everywhere.
+        WebP is an image format from Google that makes very small files, which is why so many sites now serve images as <code>.webp</code>. Save one to your computer, though, and you'll find plenty of desktop apps, editors, and upload forms that still won't accept it. Converting it to JPG gives you a file that works everywhere.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        JPG is the most widely supported image format there is, and its compression keeps photos small — ideal for email, sharing, and forms with size limits. Because JPG has no transparency, any transparent areas in your WebP are flattened onto a background colour you choose (white by default), so nothing comes out with odd black edges.
+        JPG is the most widely supported image format there is, and its compression keeps photos small enough for email, sharing, and forms with size limits. Because JPG has no transparency, any transparent areas in your WebP are flattened onto a background colour you choose (white by default), so nothing comes out with odd black edges.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        To turn a WebP into a JPG, drop your files above, set the quality, and hit Convert — everything runs in your browser, so the images never leave your device. Need to keep transparency instead? <a href="/webp-to-png/" style="color:var(--accent)">WebP to PNG</a> preserves the alpha channel. Got a JPEG XL file? <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a> converts those the same way.
+        To turn a WebP into a JPG, drop your files above, set the quality, and hit Convert. If you'd rather keep the transparency, <a href="/webp-to-png/" style="color:var(--accent)">WebP to PNG</a> preserves the alpha channel. JPEG XL files go through <a href="/jxl-to-jpg/" style="color:var(--accent)">JXL to JPG</a>, which converts them the same way.
       </p>
     </div>
   </section>
@@ -317,7 +317,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JPG doesn't support transparency. You can choose a background colour to fill those areas — white is the default, but you can pick any solid colour using the colour picker.</p>
+          <p class="faq-a">JPG doesn't support transparency, so those areas are filled with a background colour. White is the default, and the colour picker lets you choose any other solid colour.</p>
         </details>
 
         <details class="faq-item">
@@ -327,7 +327,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JPG produces much smaller files than PNG for photos, and it's accepted everywhere — every editor, email client, and upload form. Choose JPG when file size matters and you don't need transparency; pick PNG when you need a lossless copy or an alpha channel.</p>
+          <p class="faq-a">For photos, a JPG is much smaller than the same image saved as PNG, and every editor, email client, and upload form accepts it. Choose JPG when file size matters and you don't need transparency; pick PNG when you need a lossless copy or an alpha channel.</p>
         </details>
 
         <details class="faq-item">
@@ -337,7 +337,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">92% is a great default — visually identical to the original with a noticeably smaller file. Use 95–100% for images that will be printed; 70–80% for web thumbnails where file size matters more than sharpness.</p>
+          <p class="faq-a">Start with the default of 92%. At that level the JPG looks the same as the original, and the file is noticeably smaller. Use 95–100% for images that will be printed, or 70–80% for web thumbnails where file size matters more than sharpness.</p>
         </details>
 
         <details class="faq-item">
@@ -357,7 +357,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Drag your WebP files onto the drop zone (or click Browse), set your quality, then hit Convert to JPG. Latch turns each WebP into a JPG and lets you download them one by one or as a single zip — convert a single file or batch several at once.</p>
+          <p class="faq-a">Drag your WebP files onto the drop zone (or click Browse), set your quality, then press Convert to JPG. Latch turns each WebP into a JPG, and you can download them one by one or together as a single zip. It handles a single file or a batch of several.</p>
         </details>
       </div>
     </div>
@@ -697,7 +697,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done: ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

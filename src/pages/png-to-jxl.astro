@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert PNG images to JPEG XL (.jxl) directly in your browser. Smaller files with transparency preserved, using the modern JPEG XL codec. No uploads required — files never leave your device.",
+      "description": "Convert PNG images to JPEG XL (.jxl) in your browser and get smaller files that keep their transparency. Files never leave your device.",
       "url": "https://latchtools.com/png-to-jxl/"
     },
     {
@@ -38,22 +38,22 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "How much smaller is JPEG XL than PNG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JPEG XL is usually far smaller than PNG — often 50% or more — because it uses a modern codec instead of PNG's older lossless compression. The savings are largest on photographic or complex images; flat graphics with few colours see smaller gains. Transparency is kept either way." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JPEG XL is usually far smaller than PNG, often by 50% or more, because its codec is newer and more efficient than PNG's older lossless compression. Savings are largest on photographic or complex images, while flat graphics with few colours see smaller gains. Transparency is kept either way." }
         },
         {
           "@type": "Question",
           "name": "Will a .jxl file open everywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or use a widely supported format instead." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No, and compatibility is the main drawback. Today only Apple's Safari opens JPEG XL by default. Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl. JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or try PNG to AVIF instead." }
         },
         {
           "@type": "Question",
           "name": "Does PNG to JXL keep transparency?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. JPEG XL supports a full alpha channel, so any transparency in your PNG is preserved in the .jxl output — you get the smaller file without losing transparent areas." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. JPEG XL supports a full alpha channel, so any transparency in your PNG is preserved in the .jxl output. The file gets smaller and the transparent areas stay transparent." }
         },
         {
           "@type": "Question",
           "name": "Is this JPEG XL lossless or lossy?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This tool encodes with an adjustable quality setting, which is lossy — raise the slider for near-lossless results and smaller savings, lower it for the smallest files. JPEG XL also has a true lossless mode; if you need an exact pixel-for-pixel copy, keep your original PNG." }
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool encodes with an adjustable quality setting, which is lossy. Raise the slider for near-lossless results (with smaller savings), or lower it for the smallest files. JPEG XL also has a true lossless mode. If you need an exact pixel-for-pixel copy, keep your original PNG." }
         },
         {
           "@type": "Question",
@@ -67,7 +67,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert PNG to JXL (JPEG XL) — Free, Private, No Upload · Latch Tools"
-  description="Convert PNG images to JPEG XL (.jxl) in your browser — smaller files with transparency kept, using the modern JPEG XL codec. Files never leave your device."
+  description="Convert PNG images to JPEG XL (.jxl) in your browser for smaller files with transparency kept, using the JPEG XL codec. Files never leave your device."
   ogImage="/og/png-to-jxl.png"
 >
   <Fragment slot="head">
@@ -269,13 +269,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        PNG is lossless and universal, but the files are large. <a href="/jpeg-xl/" style="color:var(--accent)">JPEG XL</a> is a modern format that stores the same image far smaller — often half the size or less — while keeping the alpha channel, so transparency survives the conversion. For archiving a photo library or squeezing more into limited storage, that's a meaningful saving.
+        PNG is lossless and opens everywhere, but the files are large. <a href="/jpeg-xl/" style="color:var(--accent)">JPEG XL</a> stores the same image far smaller, often at half the size or less, and it keeps the alpha channel, so transparency survives the conversion. That saving adds up when you're archiving a photo library or trying to fit more into limited storage.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        The honest catch is compatibility. Today, JPEG XL only opens natively in Apple's Safari by default — Chrome, Edge and Firefox have added JPEG XL decoders but keep them off by default, so for most people a <code>.jxl</code> file still won't display (see the full <a href="/jpeg-xl/" style="color:var(--accent)">browser support picture</a>). So this conversion makes sense for storage, archiving, or an all-Apple workflow, not for sharing a file that has to open anywhere.
+        Compatibility holds it back. Today, JPEG XL only opens natively in Apple's Safari by default. Chrome, Edge and Firefox have added JPEG XL decoders but keep them off by default, so for most people a <code>.jxl</code> file still won't display (see the full <a href="/jpeg-xl/" style="color:var(--accent)">browser support picture</a>). Use this conversion for storage, archiving or an all-Apple workflow. If you're sharing a file that has to open anywhere, pick a different format.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        If you need the picture back in a universal format later, it converts straight back with <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a>. And if broad support matters more than the format itself, <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> gives you similar compression in a format every current browser can open today.
+        Should you need the picture as a PNG again later, it converts straight back with <a href="/jxl-to-png/" style="color:var(--accent)">JXL to PNG</a>. If broad support matters more to you than the format itself, <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> gives you similar compression in a format every current browser can open today.
       </p>
     </div>
   </section>
@@ -296,7 +296,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">JPEG XL is usually far smaller than PNG — often 50% or more — because it uses a modern codec instead of PNG's older lossless compression. Savings are largest on photographic or complex images; flat graphics with few colours see smaller gains. Transparency is kept either way.</p>
+          <p class="faq-a">JPEG XL is usually far smaller than PNG, often by 50% or more, because its codec is newer and more efficient than PNG's older lossless compression. Savings are largest on photographic or complex images, while flat graphics with few colours see smaller gains. Transparency is kept either way.</p>
         </details>
 
         <details class="faq-item">
@@ -306,7 +306,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">No — this is the main catch. Today only Apple's Safari opens JPEG XL by default; Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl (more on <a href="/jpeg-xl/" style="color:var(--accent)">browser support</a>). JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or try <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> instead.</p>
+          <p class="faq-a">No, and compatibility is the main drawback. Today only Apple's Safari opens JPEG XL by default. Chrome, Edge and Firefox have added decoders but keep them off by default, so most people still can't open a .jxl (more on <a href="/jpeg-xl/" style="color:var(--accent)">browser support</a>). JPEG XL is best for storage, archiving, or the Apple ecosystem. If you need a file that opens anywhere, keep the original PNG or try <a href="/png-to-avif/" style="color:var(--accent)">PNG to AVIF</a> instead.</p>
         </details>
 
         <details class="faq-item">
@@ -316,7 +316,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes. JPEG XL supports a full alpha channel, so any transparency in your PNG is preserved in the .jxl output — you get the smaller file without losing transparent areas.</p>
+          <p class="faq-a">Yes. JPEG XL supports a full alpha channel, so any transparency in your PNG is preserved in the .jxl output. The file gets smaller and the transparent areas stay transparent.</p>
         </details>
 
         <details class="faq-item">
@@ -326,7 +326,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">This tool encodes with an adjustable quality setting, which is lossy — raise the slider for near-lossless results, lower it for the smallest files. JPEG XL also has a true lossless mode; if you need an exact pixel-for-pixel copy, keep your original PNG.</p>
+          <p class="faq-a">This tool encodes with an adjustable quality setting, which is lossy. Raise the slider for near-lossless results (with smaller savings), or lower it for the smallest files. JPEG XL also has a true lossless mode. If you need an exact pixel-for-pixel copy, keep your original PNG.</p>
         </details>
 
         <details class="faq-item">
@@ -356,7 +356,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">JPG to JXL</div>
-          <div class="tool-desc">Encode JPGs to JPEG XL too — the same modern codec, in your browser.</div>
+          <div class="tool-desc">Encode JPG photos to JPEG XL with the same codec.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/jxl-to-png/" class="tool-card">
@@ -364,7 +364,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">JXL to PNG</div>
-          <div class="tool-desc">Going the other way? Turn a .jxl back into a universal, lossless PNG.</div>
+          <div class="tool-desc">Need to go back? Turn a .jxl into a lossless PNG that opens anywhere.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/jpeg-xl/" class="tool-card">
@@ -372,7 +372,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor" stroke="none"/></svg>
           </div>
           <div class="tool-name">What is JPEG XL?</div>
-          <div class="tool-desc">New to .jxl? Why it won't open in most browsers — and how to convert it.</div>
+          <div class="tool-desc">New to .jxl? See why most browsers still can't open it, plus how to convert it.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
@@ -642,7 +642,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;

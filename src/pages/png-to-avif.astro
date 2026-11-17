@@ -20,7 +20,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Convert PNG images to AVIF directly in your browser. Dramatically smaller files with transparency preserved. No uploads required — files never leave your device.",
+      "description": "Convert PNG images to much smaller AVIF files in your browser, with transparency preserved. Files never leave your device.",
       "url": "https://latchtools.com/png-to-avif/"
     },
     {
@@ -38,22 +38,22 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "How much smaller is AVIF than PNG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "AVIF files are typically 50–90% smaller than PNG at visually similar quality, thanks to the modern AV1 codec. The savings are largest on photographic or complex images; simple graphics with few colours see smaller gains." }
+          "acceptedAnswer": { "@type": "Answer", "text": "AVIF files are typically 50–90% smaller than PNG at visually similar quality, thanks to the AV1 codec they're built on. Photographic or complex images shrink the most, while simple graphics with few colours see smaller gains." }
         },
         {
           "@type": "Question",
           "name": "Does PNG to AVIF keep transparency?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. AVIF supports a full alpha channel, so any transparency in your PNG is preserved in the AVIF output — you get the smaller file size without losing transparent areas." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. AVIF has a full alpha channel, so transparent areas in your PNG stay transparent in the AVIF, and the file still comes out smaller." }
         },
         {
           "@type": "Question",
           "name": "Is AVIF lossless or lossy?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This tool encodes lossy AVIF, which gives the biggest size savings. Raise the quality slider for near-lossless results. Because it re-encodes the image, very fine detail may change slightly at low quality settings — increase quality if you need an exact match." }
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool encodes lossy AVIF, which gives the biggest size savings. For near-lossless results, raise the quality slider. The image is re-encoded, so at low quality settings very fine detail may shift slightly. Turn the quality up if you need an exact match." }
         },
         {
           "@type": "Question",
           "name": "Where can I use AVIF files?",
-          "acceptedAnswer": { "@type": "Answer", "text": "All current browsers — Chrome, Edge, Firefox, and Safari 16 and later — display AVIF, and it's widely supported across the web. Some older apps, devices, or operating systems may not open it yet, so keep a copy of the original if you need broad compatibility." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Chrome, Edge, Firefox and Safari (version 16 onwards) all display AVIF, which covers every current browser, and support across the web is wide. Some older apps, devices, or operating systems may not open it yet, so keep a copy of the original if you need broad compatibility." }
         },
         {
           "@type": "Question",
@@ -67,7 +67,7 @@ const structuredData = {
 ---
 <Layout
   title="Convert PNG to AVIF — Free, Private, No Upload · Latch Tools"
-  description="Convert PNG images to AVIF in your browser — dramatically smaller files at the same quality, with transparency kept. Files never leave your device."
+  description="Convert PNG images to AVIF in your browser for dramatically smaller files at the same quality, with transparency kept. Files never leave your device."
   ogImage="/og/png-to-avif.png"
 >
   <Fragment slot="head">
@@ -269,13 +269,13 @@ const structuredData = {
         </div>
       </div>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        PNG is lossless and universal, but that comes at a cost: the files are large, which slows down web pages and eats storage. AVIF uses the modern AV1 codec to pack the same image into a fraction of the size — often 50–90% smaller — while staying visually indistinguishable at sensible quality settings. For website images, app assets, or anything you're shipping at scale, that's a big win for load times and Core Web Vitals.
+        PNG is lossless and opens everywhere, but its files are large. That slows down web pages and eats storage. AVIF uses the AV1 codec to store the same image in a fraction of the size, often 50–90% smaller, and at sensible quality settings you can't see the difference. For website images, app assets and anything else you serve at scale, the smaller files cut load times and help your Core Web Vitals.
       </p>
       <p style="color:var(--text-2);line-height:1.7;margin-bottom:16px">
-        Crucially, AVIF keeps the alpha channel, so PNGs with transparency convert without losing their transparent areas — something JPG can't do. That makes it a true drop-in replacement for most PNGs on the web.
+        AVIF also keeps the alpha channel, which JPG can't do, so PNGs with transparency convert without losing their transparent areas. For most PNGs on the web, you can swap in the AVIF as a direct replacement.
       </p>
       <p style="color:var(--text-2);line-height:1.7">
-        The one trade-off is reach: very old browsers and some legacy apps don't open AVIF yet. If you need a file that opens literally everywhere, keep the original — or go the other way with <a href="/avif-to-png/" style="color:var(--accent)">AVIF to PNG</a>.
+        Very old browsers and some legacy apps still don't open AVIF. If you need a file that opens everywhere, keep the original PNG, or convert back later with <a href="/avif-to-png/" style="color:var(--accent)">AVIF to PNG</a>.
       </p>
     </div>
   </section>
@@ -296,7 +296,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">AVIF files are typically 50–90% smaller than PNG at visually similar quality, thanks to the modern AV1 codec. Savings are largest on photographic or complex images; simple graphics with few colours see smaller gains.</p>
+          <p class="faq-a">AVIF files are typically 50–90% smaller than PNG at visually similar quality, thanks to the AV1 codec they're built on. Photographic or complex images shrink the most, while simple graphics with few colours see smaller gains.</p>
         </details>
 
         <details class="faq-item">
@@ -306,7 +306,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">Yes. AVIF supports a full alpha channel, so any transparency in your PNG is preserved in the AVIF output — you get the smaller file without losing transparent areas.</p>
+          <p class="faq-a">Yes. AVIF has a full alpha channel, so transparent areas in your PNG stay transparent in the AVIF, and the file still comes out smaller.</p>
         </details>
 
         <details class="faq-item">
@@ -316,7 +316,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">This tool encodes lossy AVIF, which gives the biggest size savings. Raise the quality slider for near-lossless results. Because it re-encodes the image, very fine detail may change slightly at low quality — increase quality if you need an exact match.</p>
+          <p class="faq-a">This tool encodes lossy AVIF, which gives the biggest size savings. For near-lossless results, raise the quality slider. The image is re-encoded, so at low quality settings very fine detail may shift slightly. Turn the quality up if you need an exact match.</p>
         </details>
 
         <details class="faq-item">
@@ -326,7 +326,7 @@ const structuredData = {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>
             </span>
           </summary>
-          <p class="faq-a">All current browsers — Chrome, Edge, Firefox, and Safari 16 and later — display AVIF, and it's widely supported across the web. Some older apps, devices, or operating systems may not open it yet, so keep a copy of the original if you need broad compatibility.</p>
+          <p class="faq-a">Chrome, Edge, Firefox and Safari (version 16 onwards) all display AVIF, which covers every current browser, and support across the web is wide. Some older apps, devices, or operating systems may not open it yet, so keep a copy of the original if you need broad compatibility.</p>
         </details>
 
         <details class="faq-item">
@@ -356,7 +356,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">JPG to AVIF</div>
-          <div class="tool-desc">Squeeze your JPGs smaller too — same AV1 compression, in-browser.</div>
+          <div class="tool-desc">Use the same AV1 compression to make JPGs smaller.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/avif-to-png/" class="tool-card">
@@ -364,7 +364,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4M21.5 19.5v-4"/></svg>
           </div>
           <div class="tool-name">AVIF to PNG</div>
-          <div class="tool-desc">Going the other way? Turn an AVIF back into a lossless PNG.</div>
+          <div class="tool-desc">Turn an AVIF back into a lossless PNG.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
         <a href="/webp-to-avif/" class="tool-card">
@@ -372,7 +372,7 @@ const structuredData = {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="13" height="10" rx="2.2"/><circle cx="6.8" cy="7.8" r="1.2"/><path d="M3.6 12.4l3.1-3 2.3 2.1L12 8.2l4 3.8"/><path d="M14.5 19.5h6m0 0l-2.4-2.4m2.4 2.4l-2.4 2.4"/></svg>
           </div>
           <div class="tool-name">WebP to AVIF</div>
-          <div class="tool-desc">Already have WebP? Squeeze it smaller still with the AV1 codec.</div>
+          <div class="tool-desc">Squeeze WebP files smaller still with the AV1 codec.</div>
           <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
       </div>
@@ -642,7 +642,7 @@ const structuredData = {
 
   function showDone() {
     const count = results.length;
-    doneTitleEl.textContent = `All done — ${count} image${count !== 1 ? 's' : ''} converted`;
+    doneTitleEl.textContent = `All done: ${count} image${count !== 1 ? 's' : ''} converted`;
     const totalOriginal = results.reduce((s, r) => s + r.originalSize, 0);
     const totalOutput = results.reduce((s, r) => s + r.blob.size, 0);
     const savedPct = totalOriginal > 0 ? Math.round((1 - totalOutput / totalOriginal) * 100) : 0;
