@@ -1,314 +1,354 @@
-# Build plan: PDF privacy cluster (6 pages) + EXIF viewer
+# Build plan: document redaction cluster
 
-## Context
+> **Status: rewritten 2026-08-26.** Supersedes the July 2026 "PDF privacy cluster (6
+> pages) + EXIF viewer" plan. Two of that plan's six tools are **dropped**, one is
+> **reframed**, and two new pages are added. Rationale and the SEMrush recheck that
+> drove it are below. Shipped since the original plan: `redact-pdf`, `flatten-pdf`.
 
-SEMrush (July 2026) validated a **6-page PDF privacy cluster** as the strongest next
-batch, plus an EXIF viewer that funnels into our existing `remove-exif`. Every
-incumbent in these SERPs (ilovepdf / smallpdf / Adobe / DocuSign / pdfFiller)
-**uploads the user's file** — so our client-side, never-uploaded invariant is a real
-differentiator on every one. `sign-pdf` is the volume anchor (14.8K US, $2.15 CPC).
+## Context — why this plan changed
 
-Rows below are in **build order** (not opportunity order — see the build-order section
-for the rationale):
+The July plan grouped six tools under "PDF privacy." An August recheck shows that label
+was hiding two different businesses:
 
-| #   | Tool                           | US vol    | Global | Difficulty       | CPC       | SERP softness / notes                                                                                                                                          |
-| --- | ------------------------------ | --------- | ------ | ---------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `redact-pdf`                   | 3.6K      | 15K    | 46% Possible     | **$2.27** | Reddit #3, Nitro #9 on 4 backlinks, pdfFiller 8 ref domains, pdf24 12. Highest CPC.                                                                            |
-| 2   | `flatten-pdf`                  | 5.4K      | 30.9K  | 42% Possible     | $0.79     | **No ref-domain wall anywhere** — smallpdf #1 on 26 RD; .nih/.edu/.uscourts pages + drawboard (2 RD) rank. Softest SERP of the round.                          |
-| 3   | `sign-pdf`                     | **14.8K** | 110.5K | 43% Possible     | **$2.15** | Top 3 strong (Adobe 1K RD), but **6 of 10 slots soft**: luminpdf & pdfgear on **1 RD**, DocuSign 6, play.google/utmb.edu 3. Biggest prize.                     |
-| 4   | `unlock-pdf` (remove password) | 6.6K      | 176.9K | 48% Possible     | $0.57     | Top 2 locked (ilovepdf/smallpdf 550 RD), but #3–10 soft: Adobe 10 RD, Reddit, techcommunity 0 AS, syncfusion 4 RD.                                             |
-| 5   | `password-protect-pdf`         | 4.4K      | 25.1K  | 53% Difficult    | $0.51     | One page also wins `encrypt pdf` (880 US, $0.67) + `add password to pdf` (480) — **identical SERP**. Adobe 535 RD tops it; #5–10 are .gov/.edu/Canva on ~2 RD. |
-| 6   | `remove-pdf-metadata`          | 390       | 3.8K   | **34% Possible** | **$2.23** | Extremely soft — pdf24 16 RD, Adobe 14, Reddit/pics.io/Apple on 1 RD each. Small volume, near-guaranteed rank. Quick-win.                                      |
-| ∥   | `exif-viewer`                  | 2.4K      | 15.5K  | 65% Difficult    | $0.62     | The round's only **Commercial** intent. Absorbs `view exif data` (320) + `photo gps` (110, KD 31%). Slow compound; value is the funnel into `remove-exif`.     |
+- **Document redaction** (`redact-pdf`, `unredact-pdf`, `redact-bank-statement`) —
+  CPC $2.25–$2.98, KD 5–46%, US/UK-weighted, SERPs held by blogs, forums, GitHub repos
+  and sub-10-ref-domain sites. This is winnable and it monetises.
+- **Generic PDF utility** (`unlock-pdf`, `password-protect-pdf`) — CPC $0.38–$0.52,
+  India-dominant volume, guarded by 500+ ref-domain walls. Unwinnable *and* it pays
+  badly if won. Same commodity trap as the 24 format-converter pages.
 
-**Intent caveat:** SEMrush labels the PDF terms "Informational," but their top 10 are
-tool pages — treat them as **transactional tool intent**. The Reddit / forum / YouTube
-results that rank are exactly the SERP soft spots _and_ a reminder to ship genuine
-supporting content (required by `CLAUDE.md` — no thin pages).
+The strategic correction behind this: **"privacy-first" is a positioning, not a
+differentiator.** It doesn't appear in a SERP snippet, isn't a ranking factor, and can't
+be verified before the click — smallpdf and ilovepdf upload your file and own these
+SERPs anyway. What is actually non-commodity here is **capability**: on-device detection
+(`src/lib/detect.ts`), the shared region editor across image and PDF, and a redaction
+export that genuinely destroys data (`src/lib/pdfRaster.ts`) rather than drawing a box
+over it. The plan below leads with capability and uses never-uploaded as the supporting
+proof, not the headline.
 
-**Deprioritized / skipped:**
+### Verified data (SEMrush, 2026-08-26, US volume unless noted)
 
-- `remove background from image` (49.5K US) and `remove image background` (9.9K US) —
-  both **KD 100% Very Hard**: remove.bg alone has 17K ref domains / 490K backlinks.
-  Unwinnable for a young site regardless of the "runs locally" angle. Skip as an SEO
-  play (build only for product differentiation, chasing ultra-long-tails).
-- `watermark photo` (KD 63%) / `watermark image` (KD 69%) — entrenched, India-skewed,
-  low CPC. If we ever watermark, do `watermark pdf` (KD 38%, CPC $1.48) later.
+| Keyword | US vol | KD | CPC | AI Ovw | SERP note |
+| --- | --- | --- | --- | --- | --- |
+| `redact pdf` | 3.6K | 46% | $2.25 | Yes | pdffiller **8 RD** #6, pdf24 **11 RD** #7, askubuntu **4 RD** #10; top 3 only 28–67 RD |
+| `how to redact a pdf` | **4.4K** | **39%** | — | — | how-to intent outranks the head term on volume *and* difficulty |
+| `how do i redact a pdf` | 1.9K | 45% | — | — | |
+| `how do you redact in pdf` | 1.6K | 43% | — | — | |
+| `how to black out text in pdf` | 880 | 40% | $2.07 | Yes | parent term SERP: Reddit **#1**, 2× YouTube, tungsten **2 RD**, pdf-xchange **3 RD** |
+| `unredact pdf` | 210 | **33%** | **$2.98** | Yes | **2× GitHub + SourceForge + r/hacking in the top 10**; #1 is AS 0 |
+| `how to unredact a pdf` | 880 | 34% | — | — | |
+| `redact bank statement` | 50 (UK **110**) | **5%** | **$2.91** | Yes | softest SERP in the batch — redactor.ai 3 RD, smallpdf *blog* 3 RD, xodo *blog* 2 RD, saferedact.app holds **#9 and #10** with 0 traffic |
+| `redacted bank statement` | 210 | 17% | — | — | |
+| `what is a redacted bank statement` | 90 | 19% | — | — | |
+| `how to redact bank statement` | 70 | **6%** | — | — | |
+| `sign pdf` | 12.1K | 43% | $1.70 | **No** | **Commercial** intent. 6/10 soft: luminpdf **5 RD**, docusign **7**, play.google **2**, swccd.edu **6** |
+| `flatten pdf` *(shipped)* | 5.4K | 47% | $1.08 | Yes | confirmed soft — drawboard **2 RD**, .edu 7, .gov 11 |
+
+**Dropped on this data:**
+
+- **`unlock-pdf`** — US 12.1K looks good until you read the rest: **72% of the 510K
+  global volume is India**, CPC **$0.38**, and the top of the SERP is a genuine wall
+  (ilovepdf **572 RD**, smallpdf **548**, pdf.net **225**). At DR 10 this is closed, and
+  winning it would pay less per visitor than position 5 on any redaction term.
+  *(A decrypt capability survives as an in-flow utility — see below. The landing page
+  does not.)*
+- **`password-protect-pdf`** — KD 54%, CPC **$0.52**, AI Overview *and* a video
+  carousel compressing organic CTR, and four heavyweights on page 1 (Adobe **560 RD**,
+  smallpdf 186, pdf2go 160, ilovepdf 125). It is also the semantic inverse of what this
+  site does. Dropped entirely, no surviving capability.
+- **`anonymize pdf`** — 20 US / 470 global. Dead term.
+- **`redact passport`** — no SEMrush data. The specific-document pattern holds for bank
+  statements only; do not generalise it into a page-per-document-type template.
+- **Batch / persona terms** (`blur multiple license plates`, `batch blur images`,
+  `car dealership photo editing`) — **all three return N/A on every metric**, i.e. below
+  the measurement floor. The GSC impressions for "bulk license plate blur" were real but
+  ultra-long-tail. **Batch stays a product feature that makes existing pages convert;
+  it is not a content strategy.** Do not spin up pages for it.
+- **Deblur explainer** (`can blurred images be unblurred`, `recover redacted text`) —
+  both N/A. The July/August instinct to build a deblur link-magnet was aimed at the
+  wrong term; `unredact pdf` is the version of that idea with measurable demand. See
+  Tool 2.
 
 ---
 
 ## Shared technical approach
 
-Privacy invariant unchanged: **all processing client-side, no bytes leave the
-device.** Build the plumbing once; then most pages are cheap. Two technical families:
+Privacy invariant unchanged: **all processing client-side, no bytes leave the device.**
+The plumbing already exists — this batch is mostly content and one new tool.
 
-- **Raster family** (`pdf.js` render → canvas → rebuild flat PDF with `pdf-lib`):
-  `redact-pdf` and `flatten-pdf` share this exact pipeline. Build it once in #1, reuse
-  in #2.
-- **Structure family** (`pdf-lib` / `qpdf-wasm` operating on the PDF object model,
-  keeping text/vectors crisp): `sign-pdf` (stamp a signature image), `unlock-pdf` /
-  `password-protect-pdf` (qpdf-wasm decrypt/encrypt), `remove-pdf-metadata` (clear the
-  info dict + XMP).
-
-- **`pdf.js`** (`pdfjs-dist`) — render/rasterise pages to canvas (raster family + any
-  future pdf-to-jpg).
-- **`pdf-lib`** — pure-JS page/object ops (already the planned `heic-to-pdf` dep; the
-  cluster shares it). Assembles output PDFs, stamps images, flattens form fields,
-  edits metadata.
-- **`qpdf-wasm`** (or `pdf-lib` encryption where sufficient) — encrypt/decrypt for #4/#5.
-- **Lazy-load everything** per `CLAUDE.md`: import the codec/lib only on first drop-zone
-  interaction, never on page load (Core Web Vitals).
-- Reuse the existing tool-page scaffolding: drop zone, filename+size preview, explicit
-  action button, progress indicator > ~300ms, one-click download, "convert another"
-  reset, graceful error states.
+- **`pdf.js`** (`pdfjs-dist`) — page rasterisation. Already in use.
+- **`pdf-lib`** — page/object ops, output assembly. Already in use.
+- **`src/lib/pdfRaster.ts`** — the shared raster pipeline behind both `/redact-pdf/` and
+  `/flatten-pdf/`. This is the load-bearing asset for the whole plan: it means our
+  redaction destroys the text rather than covering it, which is a demonstrable claim
+  (see Tool 2) rather than a marketing one.
+- **`src/lib/regions.ts` / `src/lib/redact.ts` / `src/lib/pdfRedact.ts`** — region
+  editor, effect maths, PDF controller. Reused as-is.
+- **`qpdf-wasm`** — introduced only for the in-flow decrypt utility, not for a
+  password-protect page.
+- **Lazy-load everything** per `CLAUDE.md` — import on first drop-zone interaction only.
 
 ---
 
-## Tool 1 — `redact-pdf` (beachhead, build first)
+## Tool 1 — rework `/redact-pdf/` for how-to intent (do this first)
 
-**Why first:** highest CPC ($2.27), reuses the most existing code (`redact.ts`), extends
-the shipped redaction cluster, and **establishes the pdf.js raster pipeline** that #2
-reuses for free.
+**Why first:** the page already exists and already ranks for nothing in particular. The
+head term is 3.6K at KD 46; the how-to cluster is **7.9K US at KD 39–45** — more volume
+at lower difficulty. This is the cheapest available upside in the whole plan: no new
+tool code, only restructuring.
 
-### Technical
+### What changes
 
-- Render each page with `pdf.js` to a canvas at a sensible DPI (e.g. 2× for crispness).
-- **Reuse `src/lib/redact.ts`** — the same drag-rectangle → blackout engine already
-  powering `redact-image`. The user draws bars over each page's raster.
-- Export: composite the bars into the raster, then rebuild a **flat raster PDF** with
-  `pdf-lib` (one image per page). Flattening to raster is the point — it destroys the
-  text layer, which is what makes PDF redaction actually safe.
-- Multi-page nav (prev/next, page thumbnails) is the main new UI vs `redact-image`.
-
-### SEO (unique per `CLAUDE.md`: `SoftwareApplication` + `HowTo` + `FAQPage`)
-
-- **Title:** `Redact PDF — Black Out Text Safely, Free · Latch Tools` (≤60 chars)
-- **H1:** `Redact a PDF`
-- **Angle:** black out names, numbers, clauses **in your browser** — bars flattened into
-  the pixels, so unlike a box drawn in a PDF editor there's no text hiding underneath.
-- **Headline FAQ:** _"Can redacted PDF text be recovered?"_ — extend the redact-image
-  safety story (the classic black-box-over-live-text failure). Also: uploaded anywhere?
-  (no) · multi-page? · scanned vs digital PDFs.
-- **Related:** `/redact-image/`, `/flatten-pdf/`, `/remove-exif/`, `/unlock-pdf/`.
-
----
-
-## Tool 2 — `flatten-pdf` (nearly free — reuses #1's raster pipeline)
-
-**Why second:** 5.4K US, KD 42%, and the **softest SERP of the round** (nothing above
-32 ref domains). Its thorough mode is _exactly_ redact-pdf's export path minus the
-drawing UI, so it's roughly a half-day add once #1 exists.
-
-### Technical
-
-- **Two modes, offer the thorough one by default:**
-  - **Rasterise (thorough):** render every page → rebuild a flat raster PDF (reuse #1's
-    pipeline verbatim). Flattens layers, annotations, form fields, and any hidden
-    content — the universal "make it uneditable / merged" that matches search intent
-    and reinforces redaction/signature safety.
-  - **Form-flatten (crisp, optional):** `pdf-lib` `form.flatten()` bakes AcroForm field
-    values into the page while keeping text vector-sharp — lighter, for the "flatten my
-    filled form so it can't be changed" use case.
-- No drawing UI; drop → (choose mode) → flatten → download.
+- **Restructure the page as a guide with the tool embedded**, not a tool page with an
+  FAQ bolted on. Reddit and YouTube hold top-10 slots on these SERPs, which is Google
+  saying it can't find a good explanation — not that it lacks another converter widget.
+- **H2s must carry the how-to phrasings verbatim**: "How to redact a PDF",
+  "How to black out text in a PDF". These are the actual queries.
+- Keep the widget above the fold; the guide runs beneath it. Do not push the tool down.
+- **Lead the copy with the mechanism, not the promise.** The differentiated claim is
+  *how* it redacts (rasterise → the text is gone), not *where* it runs.
+- Cross-link into `/unredact-pdf/` (Tool 2) as the "why this matters" companion.
 
 ### SEO
 
-- **Title:** `Flatten PDF — Lock Form Fields & Layers Free · Latch Tools` (≤60)
-- **H1:** `Flatten a PDF`
-- **Angle:** merge layers and lock form fields so the file can't be edited — and so
-  redactions/signatures can't be undone. In your browser, never uploaded.
-- **FAQ:** what does flattening do? · will my form data stay filled? (yes — baked in) ·
-  raster vs form-flatten · uploaded anywhere? (no).
-- **Related:** `/redact-pdf/`, `/sign-pdf/`, `/remove-pdf-metadata/`.
+- **Title:** keep `Redact PDF — Black Out Text Safely, Free · Latch Tools`
+- **H1:** `How to redact a PDF` (changed — matches the dominant intent)
+- **Schema:** `HowTo` becomes the primary entity; keep `SoftwareApplication` + `FAQPage`.
+- **Headline FAQ:** _"Can redacted PDF text be recovered?"_ → short answer + link to the
+  full explainer at `/unredact-pdf/`.
+- **Related:** `/unredact-pdf/`, `/redact-bank-statement/`, `/redact-image/`,
+  `/flatten-pdf/`.
 
 ---
 
-## Tool 3 — `sign-pdf` (biggest prize — the volume anchor)
+## Tool 2 — `/unredact-pdf/` (explainer, NOT a tool) — the link magnet
 
-**Why here:** 14.8K US (4× redact-pdf), CPC $2.15, KD 43%, soft page-1 back-half. It
-needs new signature-placement UI, so it follows once the PDF plumbing is proven.
+**Why:** highest CPC in the dataset (**$2.98**), KD 33–34%, ~1.1K US across
+`unredact pdf` + `how to unredact a pdf`. But the volume is not the point — **the SERP
+composition is**:
 
-### Technical
+| # | Result | Ref domains |
+| --- | --- | --- |
+| 1 | unredact.net | 34 (AS **0**) |
+| 2 | adobe.com | **2** |
+| 3 | **reddit.com/r/hacking** | 2 |
+| 4 | **github.com/kdent/unredact** | 4 |
+| 6 | tungstenautomation.de | **1** |
+| 7 | **sourceforge.net** | — |
+| 10 | **github.com/leedrake5/unredact** | 45 |
 
-- Render the page with `pdf.js`; let the user create a signature (draw on a canvas /
-  type in a script font / upload a PNG), then **drag, place, and resize** it on the page
-  — this reuses the region-placement interaction model from `redact.ts`.
-- Stamp with `pdf-lib` (`page.drawImage`) so the **text/vectors stay crisp** (structure
-  family — do NOT rasterise the whole page). Support multiple signatures + typed
-  date/text fields. Export via `pdf-lib`.
+Two GitHub repos, a SourceForge project and r/hacking in one top ten. This is a
+technical/research query space, not a commercial tool SERP — and that audience links
+out, which ilovepdf and smallpdf never do. This directly targets the DR-10 / 488-junk-
+referring-domains problem recorded in `open-source-launch` memory: a few DR-40+
+editorial links beat hundreds of directory listings, and a well-sourced security
+explainer from a public MIT repo is the asset that can earn them.
 
-### ⚠️ Honest-copy caveat
+### ⚠️ Hard constraint: explainer only
 
-Frame as **visual "fill & sign"** (a drawn/typed signature stamped on the page) — NOT
-certificate-based digital signatures (PKI). That matches what ilovepdf/smallpdf/Adobe's
-free tools do; just don't imply legal e-signature cert validity. Privacy wedge is
-strong: **"sign a contract without uploading it to DocuSign/Adobe."**
+**Do not build an un-redaction tool.** That is a deanonymisation tool, and the same
+decision was already taken for deblur. This page explains the failure mode and funnels
+to `/redact-pdf/`, which does it properly.
+
+### Content spine
+
+The reason this term has demand at all: most PDF "redaction" is a black rectangle drawn
+over text that is still sitting in the content stream, recoverable with copy-paste or
+`pdftotext`. The page should cover:
+
+- The three common failure modes: vector box over live text; image-layer cover with the
+  text layer intact; metadata/XMP and revision history surviving the visible edit.
+- **Why ours doesn't fail that way** — `/redact-pdf/` rasterises the page via
+  `src/lib/pdfRaster.ts` before the bars are baked, so there is no surviving text
+  object. Cite the repo; it is public. This is the strongest content-plus-product story
+  on the site because the claim is verifiable in source.
+- A demonstration: a "properly redacted" PDF made in a common editor, and the recovered
+  text next to it.
+- Documented real-world cases of the failure (court filings, released government
+  documents) — this is what makes it citable.
+
+**Ignore** `unredacted epstein files pdf` (590, KD 64) and `epstein files unredacted
+pdf` (320, KD 40) in the related-keyword list. Different intent, news-cycle volume, and
+they will inflate any estimate for this cluster if counted.
 
 ### SEO
 
-- **Title:** `Sign PDF — Fill & Sign in Your Browser · Latch Tools` (≤60)
+- **Title:** `Can Redacted PDF Text Be Recovered? · Latch Tools`
+- **H1:** `How to unredact a PDF — and why yours might not be redacted`
+- **Schema:** `Article` + `FAQPage`. **No `SoftwareApplication`** — there is no tool on
+  this page.
+- **Related:** `/redact-pdf/` (primary CTA), `/redact-bank-statement/`, `/redact-image/`.
+
+---
+
+## Tool 3 — `/redact-bank-statement/`
+
+**Why:** KD **5%** ("Very easy"), CPC **$2.91**, and **UK is the #1 market** (110/mo vs
+US 50) — the home market. The related cluster adds `redacted bank statement` (210, KD
+17), `what is a redacted bank statement` (90, KD 19) and `how to redact bank statement`
+(70, KD **6**).
+
+The SERP is the softest in the batch and, critically, **contains no dedicated tool
+page** — Adobe ranks a blog post, smallpdf ranks a blog post, xodo ranks a blog post,
+and `saferedact.app` holds both #9 and #10 with 0 traffic. Reddit at #2 is
+`r/NYCapartments`, which hands over the use case: **proving income to a landlord without
+exposing every transaction.** UK skew fits (rental referencing, mortgage applications).
+
+### Technical
+
+No new engine. This is `/redact-pdf/` with a purpose-built spine: preset guidance on
+what to black out (account number, sort code, balance, individual transactions) and what
+to leave legible (name, address, period, salary credits) so the document still serves
+its purpose.
+
+### SEO
+
+- **Title:** `Redact a Bank Statement — Free, In Your Browser · Latch Tools`
+- **H1:** `How to redact a bank statement`
+- **Must answer the definitional query too** — `what is a redacted bank statement` (90,
+  KD 19) is informational; give it a real H2 answer, not an FAQ line.
+- **Use cases as H2s:** rental application, mortgage/loan, visa application, expense
+  claims.
+- **FAQ:** what should I black out? · will the landlord accept a redacted statement? ·
+  is it legal to redact? · can the hidden numbers be recovered? (→ `/unredact-pdf/`).
+- **Related:** `/redact-pdf/`, `/unredact-pdf/`, `/remove-pdf-metadata/`.
+
+---
+
+## Tool 4 — `/sign-pdf/` (volume anchor, survives the recheck)
+
+**Why it survived:** it was nearly cut with the other two PDF utilities, and the data
+says otherwise. It is the **only Commercial-intent term in the batch**, carries **no AI
+Overview** eating its CTR, holds a $1.70 CPC, and its soft page-1 slots have **not**
+closed since July — luminpdf still ranks #3 on **5 ref domains**, DocuSign #6 on 7,
+play.google #7 on 2, swccd.edu #10 on 6. US volume is 12.1K (down from the 14.8K in the
+July read; point-in-time variance, not a trend).
+
+It is off the redaction thesis, and it is the most build effort in this plan, so it goes
+last — but it is genuinely winnable and the biggest prize here.
+
+### Technical
+
+Unchanged from the July plan: `pdf.js` render → user creates a signature (draw / type /
+upload PNG) → drag, place, resize reusing the `regions.ts` placement model → stamp with
+`pdf-lib` `page.drawImage`. **Structure family — do not rasterise the page**; the
+document's text must stay crisp and selectable.
+
+### ⚠️ Honest-copy caveat (unchanged)
+
+Frame as **visual "fill & sign"**, not certificate-based digital signatures (PKI). Match
+what ilovepdf/smallpdf/Adobe's free tools actually do; never imply legal e-signature
+certificate validity.
+
+### SEO
+
+- **Title:** `Sign PDF — Fill & Sign in Your Browser · Latch Tools`
 - **H1:** `Sign a PDF`
-- **Secondary keywords:** fill and sign pdf, add signature to pdf, esign pdf.
-- **FAQ:** is my document uploaded? (no — the wedge) · is this a legal e-signature?
-  (visual fill-and-sign; note the distinction) · can I type or draw? · multiple
-  signatures? · lock it afterwards (→ link `/flatten-pdf/`).
-- **Related:** `/flatten-pdf/`, `/password-protect-pdf/`, `/redact-pdf/`.
+- **Secondary:** `how to sign a pdf` (8.1K, KD 45), `pdf signer` (8.1K, KD 48).
+- **FAQ:** is my document uploaded? · is this a legal e-signature? · type or draw? ·
+  multiple signatures? · lock it afterwards (→ `/flatten-pdf/`).
+- **Related:** `/flatten-pdf/`, `/redact-pdf/`.
 
 ---
 
-## Tool 4 — `unlock-pdf` (remove password)
+## In-flow utility — decrypt (capability, not a landing page)
 
-### Technical
+**You cannot redact a password-protected PDF without decrypting it first**, and the code
+already knows: `src/lib/flattenPdf.ts:152` carries a live error path for
+`"This PDF is encrypted."` Today that is a dead end for the user.
 
-- User drops a locked PDF and **enters the password they already have**; `qpdf-wasm`
-  decrypts client-side and re-exports an unrestricted copy. Owner-password / permission
-  locks (print/copy disabled) can often be stripped without a password.
-- Simple UI — no canvas. Drop → password field → unlock → download.
+Build the decrypt step **inside the redaction flow**: when a dropped PDF is encrypted,
+prompt for the password the user already has, decrypt client-side with `qpdf-wasm`, and
+continue. Owner-password/permission locks can often be cleared without a password.
 
-### ⚠️ Framing (brand + abuse)
-
-Position strictly as **"unlock a PDF you have the password for / remove owner
-restrictions,"** never password _cracking_. Client-side is a trust win: _"we never see
-your password or your file — nothing is uploaded."_ Direct wedge against ilovepdf/
-smallpdf, which upload your confidential locked doc.
-
-### SEO
-
-- **Title:** `Unlock PDF — Remove PDF Password, Free · Latch Tools`
-- **H1:** `Remove a password from a PDF`
-- **Secondary keywords:** unlock pdf, remove pdf password, decrypt pdf.
-- **FAQ:** Do I need the password? (yes for encrypted; owner locks may not) · uploaded?
-  (no) · legal? (only unlock PDFs you're authorised to).
-- **Related:** `/password-protect-pdf/`, `/redact-pdf/`, `/remove-exif/`.
+**What this is not:** a `/unlock-pdf/` landing page. No head-term optimisation, no
+`SoftwareApplication` schema, no OG campaign, not in the primary nav. If it gets a URL
+at all, it is a thin honest utility page reachable from the redaction tools — never an
+investment target. Framing stays "unlock a PDF you have the password for," never
+cracking.
 
 ---
 
-## Tool 5 — `password-protect-pdf` (one page, three keywords)
+## Held — not in this batch
 
-### Technical
-
-- Reuse the `qpdf-wasm` (or `pdf-lib` encryption) plumbing from #4, inverted: drop a PDF
-  → set a password → export an encrypted copy. Optionally expose permission flags.
-
-### SEO
-
-- **Title:** `Password Protect PDF — Encrypt PDF Free · Latch Tools`
-- **H1:** `Password protect a PDF`
-- **Target `password protect pdf` + `encrypt pdf` + `add password to pdf` on this one
-  page** — same SERP. Work all three phrasings into H2s / FAQ.
-- **FAQ:** encryption strength (AES-256) · uploaded? (no) · how to remove it again (→
-  `/unlock-pdf/`) · opens everywhere? (yes — standard PDF encryption).
-- **Related:** `/unlock-pdf/`, `/redact-pdf/`.
+- **`remove-pdf-metadata`** — was the July plan's quick win (390 US, KD 34%, CPC $2.23)
+  and was **not** re-verified on 2026-08-26. Trivial to build (`pdf-lib`: clear info
+  dict + strip XMP) and it is genuine glue between `remove-exif` and the redaction
+  cluster. **Re-pull the keyword before committing to it**; if it still holds, slot it
+  in anywhere — it costs almost nothing.
+- **`exif-viewer`** — remains **demoted** (2026-08-13, on GSC evidence: `remove-exif`
+  sits at position 97 for its own exact-match query). Nothing in the August data
+  changes that. Do not build without re-validating *viewer* intent as its own SERP.
 
 ---
 
-## Tool 6 — `remove-pdf-metadata` (quick-win)
+## Site-wide wiring
 
-**Why:** only 390 US, but KD 34%, CPC $2.23, and a SERP where Reddit/Apple/pics.io rank
-on a single ref domain. Trivial to build and it's the glue between the metadata cluster
-(`remove-exif`) and the PDF cluster.
+The repositioning matters as much as the new pages:
 
-### Technical
-
-- `pdf-lib`: load → clear the document info dictionary (title/author/subject/keywords/
-  producer/creator) and **strip the XMP metadata stream** → re-save. No rendering, no
-  crypto.
-
-### SEO
-
-- **Title:** `Remove PDF Metadata — Strip Author & Info · Latch Tools` (trim to ≤60)
-- **H1:** `Remove metadata from a PDF`
-- **Secondary keywords:** remove pdf metadata, pdf metadata remover, remove author from pdf.
-- **FAQ:** what metadata does a PDF carry? · uploaded? (no) · does it change the visible
-  content? (no — only hidden properties).
-- **Related:** `/remove-exif/`, `/flatten-pdf/`, `/redact-pdf/`.
-
----
-
-## Tool ∥ — `exif-viewer` (parallel non-PDF build, funnels to remove-exif)
-
-### Technical
-
-- No PDF dep — build any time. Parse EXIF/IPTC/XMP client-side (`exifr`, lazy-imported)
-  and render a readable table: camera, timestamp, **GPS map link**, software, etc. Show
-  a prominent "these details are embedded in your file" message with a one-click
-  hand-off to **`/remove-exif/`**.
-
-### SEO
-
-- **Title:** `EXIF Viewer — See Photo Metadata & GPS · Latch Tools`
-- **H1:** `View a photo's EXIF data`
-- **Absorb** `view exif data` (320) + `photo gps` (110, KD 31%) + "photo metadata
-  viewer" on one page (pics.io ranks across all of these from one URL — precedent).
-- **Angle:** see exactly what a photo reveals — location, device, timestamp — _then
-  remove it before you share._ View → strip is the two-step privacy funnel.
-- **Related (hard cross-link):** `/remove-exif/`, `/blur-image/`.
-- Note KD 65% + entrenched incumbents (jimpl, exif.tools, exiftool): slow compound, not
-  a quick win. Near-term value is the funnel into `remove-exif`, which we already rank for.
-
----
-
-## Site-wide wiring (each tool)
-
-1. `src/pages/index.astro` — add a `.tool-card` (chips e.g. `pdf` / `privacy`), grouped
-   near the redaction + `remove-exif` privacy tools; bump the grid count.
-2. `src/components/Footer.astro` — add to the Tools column.
-3. Reciprocal contextual links: every new page links to its siblings and to the existing
-   redaction cluster / `remove-exif`; add return links from those pages (same muted
-   inline-link pattern used across the redaction cluster).
-4. Sitemap + per-URL `lastmod` are automatic (`@astrojs/sitemap` + git-date serialize).
-5. OG images: run `scripts/gen-og.mjs` after each page lands (it reads the H1).
+1. **`src/pages/index.astro` — flip the hierarchy.** It currently leads with
+   `<h3>Convert images` and puts `Protect your privacy` second. Redaction goes first;
+   the h1 (`Edit your files without…`) should name redaction outright.
+2. **Converters get a `/convert/` hub** and come off the homepage primary grid. They
+   stay live and keep whatever they rank for — `/jpeg-xl/` (245 imp) and
+   `/jfif-to-jpg/` (187 imp) are still the #2 and #3 pages by impressions, so deleting
+   them buys nothing. They just stop defining the site. **Add no new converter slugs.**
+3. **Internal links point *into* redaction**, not sideways between converters. The link
+   graph currently treats all 32 tools as peers.
+4. `src/components/Footer.astro` — Tools column updated per new page.
+5. Sitemap + `lastmod` automatic (`@astrojs/sitemap` + git-date serialize).
+6. OG images: run `scripts/gen-og.mjs` after each page lands (it reads the H1 — note
+   Tool 1's H1 changes, so regenerate `/redact-pdf/`'s).
 
 ---
 
 ## Build order
 
-1. **`redact-pdf`** — establishes `pdf.js` rasterisation, reuses `redact.ts`, best CPC,
-   tightest cluster fit. Risk-adjusted beachhead.
-2. **`flatten-pdf`** — reuses #1's raster pipeline (nearly free); 5.4K US, softest SERP.
-3. **`sign-pdf`** — biggest prize (14.8K US, $2.15 CPC); needs new signature UI, so it
-   follows the proven plumbing.
-4. **`unlock-pdf`** — 6.6K US; introduces `qpdf-wasm`.
-5. **`password-protect-pdf`** — reuses qpdf-wasm from #4; one page, three keywords.
-6. **`remove-pdf-metadata`** — cheap quick-win; slot in anytime after `pdf-lib` lands.
-7. **`exif-viewer`** — independent of the PDF stack; build in parallel whenever there's
-   a gap.
+1. **Rework `/redact-pdf/` for how-to intent** — no new tool code, targets 7.9K US at
+   KD 39–45 instead of 3.6K at 46. Cheapest upside on the board.
+2. **`/unredact-pdf/` explainer** — aimed at the link bottleneck rather than traffic.
+   Depends on nothing; it is writing plus a demonstration. Ship close behind #1 so
+   the two cross-link on arrival.
+3. **`/redact-bank-statement/`** — reuses the `/redact-pdf/` widget wholesale; near-
+   certain rank at KD 5–19, highest-value visitors, UK-first.
+4. **`/sign-pdf/`** — most new UI, off-thesis but genuinely winnable and the volume
+   anchor. Last because it is the only one that needs real build time.
+5. **Decrypt in-flow utility** — slot in whenever an encrypted PDF blocking the
+   redaction flow becomes annoying enough. Not urgent, not a page.
 
-**Sequencing logic:** #1–2 are the raster family (build the pipeline, then harvest it
-twice). #3 is the highest-value structure-family tool but carries the most new UI. #4–5
-share qpdf-wasm. #6 is a trivial pickup. If optimising purely for fastest traffic, #3
-could jump ahead of #1 (it has 4× the US volume) — but leading with redact-pdf reuses
-the most existing code, monetises 6×, and de-risks the pipeline the others depend on.
+**Sequencing logic:** #1–3 are content and configuration on top of an engine that
+already exists, so they land fast and they compound (each one links the others). #2 is
+sequenced early despite the smallest volume because links are the constraint on
+everything else — ranking anywhere near these terms needs authority the site does not
+have, and this is the only page in the plan that can earn it. #4 is the one real build.
 
 ---
 
-## Verification (per tool)
+## Verification (per page)
 
 1. `npx astro check` — 0 errors; `npm run build` clean; `dist/<slug>/` exists.
 2. `npm run preview`, full round-trip:
-   - **redact-pdf** — exported pages are flat rasters with **no selectable text under
-     the bars**.
-   - **flatten-pdf** — output has no editable form fields (raster mode) / baked-in field
-     values (form-flatten mode); opens in a standard viewer.
-   - **sign-pdf** — signature is stamped at the right position/scale, the rest of the
-     document's text stays **selectable/crisp** (not rasterised), file opens everywhere.
-   - **unlock/protect** — output opens with the expected password state.
-   - **remove-pdf-metadata** — document properties (in a viewer / `exiftool`) show the
-     info dict + XMP cleared; visible content unchanged.
-3. **Privacy check:** confirm nothing hits the network during processing (DevTools
-   Network tab empty for file bytes) — the core invariant.
-4. Real-browser functional test (Puppeteer/Playwright against preview), as with the AVIF
-   and redaction batches.
-5. Post-launch: submit each new URL in Google Search Console (URL Inspection → Request
-   Indexing) and confirm it's in `sitemap-0.xml`.
+   - **redact-pdf / redact-bank-statement** — exported pages are flat rasters with **no
+     selectable text under the bars** (the non-vacuous check: `pdftotext` the output and
+     confirm the redacted strings are absent).
+   - **sign-pdf** — signature stamped at the right position/scale; the rest of the
+     document's text stays **selectable and crisp**, not rasterised.
+   - **unredact-pdf** — no widget, no file handling; check links and schema only.
+3. **Privacy check:** DevTools Network tab empty for file bytes during processing — the
+   core invariant.
+4. Playwright run (`npm test`, chromium + webkit) per the existing harness.
+5. Post-launch: submit each URL in GSC (URL Inspection → Request Indexing); confirm in
+   `sitemap-0.xml`.
 
 ---
 
 ## Future / not in this batch
 
-- `watermark-pdf` — cheap once the PDF plumbing exists (KD 38%, CPC $1.48).
-- The rest of the volume PDF cluster: `merge-pdf`, `split-pdf`, `compress-pdf`,
-  `pdf-to-jpg` (see `tool-roadmap` memory — big volume, harder SERPs).
-- `remove-background-from-image` — tool is buildable client-side (ML/WASM) but the head
-  term is KD 100%; only revisit for product value + ultra-long-tails.
-- Auto-detection for redact-pdf (on-device OCR/PII highlight) — keep client-side.
+- `watermark-pdf` — cheap once PDF plumbing exists (KD 38%, CPC $1.48).
+- Auto-detection for `redact-pdf` (on-device OCR / PII highlight) — keep client-side.
+  This is the capability lane that is genuinely hard to copy; revisit once the content
+  above is live.
+- `merge-pdf`, `split-pdf`, `compress-pdf`, `pdf-to-jpg` — big volume, harder SERPs, and
+  all of them are PDF *utility* rather than redaction. Treat with the same suspicion
+  that killed `unlock-pdf`: check CPC and geography before KD.
+- `remove-background-from-image` — KD 100%; product value only.
