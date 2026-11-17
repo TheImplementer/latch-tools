@@ -15,10 +15,46 @@ const { enUrl, esUrl } = Astro.props;
       <span>Latch</span>
     </a>
     <nav class="nav" aria-label="Primary">
-      <a class="nav-link" href="/redact-pdf/">Redact PDF</a>
-      <a class="nav-link" href="/redact-image/">Redact image</a>
-      <a class="nav-link" href="/#tools">All tools</a>
-      {enUrl && esUrl && <LangSwitcher current="en" enUrl={enUrl} esUrl={esUrl} />}
+      <div class="nav-links" id="nav-links">
+        <a class="nav-link" href="/redact-pdf/">Redact PDF</a>
+        <a class="nav-link" href="/redact-image/">Redact image</a>
+        <a class="nav-link" href="/#tools">All tools</a>
+        {enUrl && esUrl && <LangSwitcher current="en" enUrl={enUrl} esUrl={esUrl} />}
+      </div>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">
+        <svg class="nav-toggle-icon" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+          <path class="bar bar-1" d="M2 5h14" />
+          <path class="bar bar-2" d="M2 9h14" />
+          <path class="bar bar-3" d="M2 13h14" />
+        </svg>
+        <span>Menu</span>
+      </button>
     </nav>
   </div>
 </header>
+
+<script>
+  // Phone-width disclosure for the primary links. Above 760px the toggle is
+  // hidden by CSS and the links sit inline, so this only ever runs a click.
+  const hdr = document.querySelector<HTMLElement>(".hdr");
+  const toggle = hdr?.querySelector<HTMLButtonElement>(".nav-toggle");
+  if (hdr && toggle) {
+    const setOpen = (open: boolean) => {
+      hdr.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+    };
+    toggle.addEventListener("click", () => setOpen(!hdr.classList.contains("is-open")));
+    // Same-page links (/#tools on the home page) don't navigate, so close.
+    hdr.querySelectorAll(".nav-links a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && hdr.classList.contains("is-open")) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (hdr.classList.contains("is-open") && !hdr.contains(e.target as Node)) setOpen(false);
+    });
+    matchMedia("(min-width: 761px)").addEventListener("change", (e) => e.matches && setOpen(false));
+  }
+</script>
