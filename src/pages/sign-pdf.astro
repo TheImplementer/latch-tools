@@ -69,6 +69,20 @@ const faqs: { q: string; a: Seg[] }[] = [
     ],
   },
   {
+    q: 'How do I sign a PDF on a Mac?',
+    a: [
+      "Use this tool in any browser, or Preview, which comes with every Mac. In Preview, click the Markup button, then Sign, and create a signature with the trackpad, the camera or a nearby iPhone. Preview saves into the file you opened, so duplicate it first if you want to keep an unsigned copy. ",
+      { href: '#mac-iphone', text: 'Step-by-step instructions' },
+      " are above.",
+    ],
+  },
+  {
+    q: 'How do I sign a PDF on an iPhone?',
+    a: [
+      "Open the PDF in the Files app or Mail, tap the Markup button, tap the add button (+), choose Add Signature and sign with your finger. This tool works on an iPhone too: open this page in Safari, draw your signature with your finger and drag it into place.",
+    ],
+  },
+  {
     q: 'Can I sign a password-protected PDF?',
     a: [
       "Yes, if you know the password. You'll be asked for it when you open the file, and the signed copy is locked with the same password. A PDF whose author restricted editing can be signed too, after a warning, but the signed copy doesn't keep that restriction, so only sign it if you're allowed to.",
@@ -197,6 +211,40 @@ const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" view
 
       <h3>Initials on every page</h3>
       <p>Some agreements want initials at the foot of each page. Place a short signature or your typed initials in a bottom corner of one page, select it and press Copy to all pages. Look through the pages afterwards, because pages of different sizes won't all suit the same position.</p>
+    </div>
+  </section>
+
+  <!-- MAC / IPHONE -->
+  <section class="section" style="padding-top:0" id="mac-iphone">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">How to sign a PDF on a Mac or iPhone</h2>
+      <p>Apple devices can already sign a PDF without anything extra. Here's how, and when this tool is the easier route.</p>
+
+      <h3>On a Mac, with Preview</h3>
+      <ol>
+        <li>Open the PDF in Preview.</li>
+        <li>Click the Markup button (the pen tip) to show the Markup toolbar, then click the Sign button.</li>
+        <li>Choose Create Signature. Sign with a finger on the trackpad and press any key when you're done, or sign a sheet of white paper and hold it up to the camera, or draw it on a nearby iPhone or iPad.</li>
+        <li>Pick the signature from the Sign menu to put it on the page, then drag it into place and drag a corner to resize it.</li>
+      </ol>
+      <p>Preview saves changes into the file you opened. To keep an unsigned original, make a copy first with File &gt; Duplicate, or save the signed version with File &gt; Export as PDF.</p>
+
+      <h3>On an iPhone or iPad, with Markup</h3>
+      <ol>
+        <li>Open the PDF in the Files app, or tap it in a Mail message.</li>
+        <li>Tap the Markup button (the pen tip).</li>
+        <li>Tap the add button (+), then Add Signature, and sign with your finger.</li>
+        <li>Drag the signature into place, resize it with its corners, and tap Done.</li>
+      </ol>
+
+      <h3>When this tool is the better choice</h3>
+      <ul>
+        <li><strong>You're not on your own Mac or iPhone.</strong> It works the same in any modern browser, on Windows, a Chromebook, or a work computer where you can't install anything.</li>
+        <li><strong>You want a different kind of signature.</strong> Type your name in a handwriting style, or upload a photo of your paper signature and have the white background removed.</li>
+        <li><strong>You want the original left alone.</strong> The signed version is always a separate download named with -signed on the end.</li>
+        <li><strong>The PDF needs a password.</strong> The signed copy is locked with the same password.</li>
+        <li><strong>Every page needs initials.</strong> Copy to all pages puts them on every page in one step.</li>
+      </ul>
     </div>
   </section>
 
