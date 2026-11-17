@@ -1124,7 +1124,7 @@ h1.hero-h {
   .actions .btn {
     /* In a column, .grow's flex: 1 (basis 0) beats height and collapsed the
        primary button to its text height. */
-    flex: none;
+    flex: 0 0 auto;
     width: 100%;
     height: 58px;
     font-size: 16px;
