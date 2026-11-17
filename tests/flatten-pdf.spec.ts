@@ -29,7 +29,7 @@ import {
   makeTextPdf,
   pageSizes,
 } from "./fixtures";
-import { downloadBytes, inset, sampleRect, watchOrigins } from "./helpers";
+import { downloadBytes, inset, openTool, sampleRect, watchOrigins } from "./helpers";
 
 const PASSWORD = "hunter2";
 
@@ -49,7 +49,7 @@ async function open(
   page: Page,
   file: { name: string; mimeType: string; buffer: Buffer },
 ) {
-  await page.goto("/flatten-pdf/");
+  await openTool(page, "/flatten-pdf/");
   await page.locator('[data-el="file-input"]').setInputFiles(file);
   await expect(page.locator('[data-panel="options"]')).toBeVisible();
 }
@@ -213,7 +213,7 @@ test("hidden form fields switch the crisp mode off rather than baking them in", 
 test("a file that isn't a PDF is refused in plain language", async ({
   page,
 }) => {
-  await page.goto("/flatten-pdf/");
+  await openTool(page, "/flatten-pdf/");
   await page.locator('[data-el="file-input"]').setInputFiles({
     name: "photo.png",
     mimeType: "image/png",
@@ -231,7 +231,7 @@ test("a file that isn't a PDF is refused in plain language", async ({
 test("a locked PDF asks for its password instead of failing", async ({
   page,
 }) => {
-  await page.goto("/flatten-pdf/");
+  await openTool(page, "/flatten-pdf/");
   await page.locator('[data-el="file-input"]').setInputFiles({
     name: "locked.pdf",
     mimeType: "application/pdf",

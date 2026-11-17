@@ -25,6 +25,7 @@ import {
   inset,
   sampleRect,
   watchOrigins,
+  openTool,
 } from "./helpers";
 
 const PASSWORD = "hunter2";
@@ -39,7 +40,7 @@ async function pdfFile(pages = 2) {
 
 /** Drop a PDF and wait for the editor. */
 async function open(page: import("@playwright/test").Page, pages = 2) {
-  await page.goto("/redact-pdf/");
+  await openTool(page, "/redact-pdf/");
   await page
     .locator('[data-el="file-input"]')
     .setInputFiles(await pdfFile(pages));
@@ -197,7 +198,7 @@ test("the page strip lets you edit a later page", async ({ page }) => {
 test("a file that isn't a PDF is refused in plain language", async ({
   page,
 }) => {
-  await page.goto("/redact-pdf/");
+  await openTool(page, "/redact-pdf/");
   await page.locator('[data-el="file-input"]').setInputFiles({
     name: "notes.txt",
     mimeType: "text/plain",
@@ -216,7 +217,7 @@ test("a file that isn't a PDF is refused in plain language", async ({
 test("a locked PDF asks for its password instead of failing", async ({
   page,
 }) => {
-  await page.goto("/redact-pdf/");
+  await openTool(page, "/redact-pdf/");
   await page.locator('[data-el="file-input"]').setInputFiles({
     name: "locked.pdf",
     mimeType: "application/pdf",

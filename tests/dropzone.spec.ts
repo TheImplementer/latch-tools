@@ -8,6 +8,7 @@
 // exactly the wrong thing to be true of code that has just been moved.
 
 import { expect, test } from "@playwright/test";
+import { openTool } from "./helpers";
 import type { Page } from "@playwright/test";
 import { makeFormPdf, makeTestPng } from "./fixtures";
 
@@ -45,7 +46,7 @@ async function dropFiles(
 test("a dragged-and-dropped PDF is loaded, and the label tracks the drag", async ({
   page,
 }) => {
-  await page.goto("/flatten-pdf/");
+  await openTool(page, "/flatten-pdf/");
   const zone = page.locator('[data-el="dropzone"]');
   const title = page.locator('[data-el="dz-title"]');
 
@@ -79,7 +80,7 @@ test("a dragged-and-dropped PDF is loaded, and the label tracks the drag", async
 });
 
 test("the browse button opens the picker exactly once", async ({ page }) => {
-  await page.goto("/flatten-pdf/");
+  await openTool(page, "/flatten-pdf/");
 
   // Counting `filechooser` events cannot see this: once a chooser is open the
   // browser won't fire a second one, so a duplicate open is invisible from
@@ -114,7 +115,7 @@ test("the browse button opens the picker exactly once", async ({ page }) => {
 });
 
 test("the drop zone is operable from the keyboard", async ({ page }) => {
-  await page.goto("/flatten-pdf/");
+  await openTool(page, "/flatten-pdf/");
   const zone = page.locator('[data-el="dropzone"]');
 
   await zone.focus();
@@ -138,7 +139,7 @@ test("the filmstrip's + adds to the batch while the drop zone replaces it", asyn
     mimeType: "image/png",
     buffer: Buffer.from(makeTestPng()),
   };
-  await page.goto("/redact-image/");
+  await openTool(page, "/redact-image/");
   // Two to begin with: the filmstrip only renders for a batch of 2 or more.
   await page
     .locator('[data-el="file-input"]')

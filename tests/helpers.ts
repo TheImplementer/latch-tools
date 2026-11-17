@@ -7,6 +7,20 @@ import {
   type Page,
 } from "@playwright/test";
 
+/**
+ * Load a tool page and wait until its widget is wired. The controller arrives
+ * through a lazy import(), so a file set (or a drop fired) straight after
+ * goto can land before any listener exists, and the panel never opens. That
+ * race only shows under load, as one random PDF/image test failing per run.
+ */
+export async function openTool(page: Page, path: string): Promise<void> {
+  await page.goto(path);
+  await page
+    .locator('[data-ready="true"]')
+    .first()
+    .waitFor({ state: "attached" });
+}
+
 /** Normalised (0–1) rectangle, matching the engine's own coordinate space. */
 export interface NRect {
   x: number;

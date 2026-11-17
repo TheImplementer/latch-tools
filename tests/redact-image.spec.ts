@@ -14,6 +14,7 @@ import {
   inset,
   sampleRect,
   watchOrigins,
+  openTool,
 } from "./helpers";
 
 const png = () => ({
@@ -27,7 +28,7 @@ test("blacks out the dragged region and leaves the rest alone", async ({
   baseURL,
 }) => {
   const origins = watchOrigins(page, baseURL!);
-  await page.goto("/redact-image/");
+  await openTool(page, "/redact-image/");
 
   await page.locator('[data-el="file-input"]').setInputFiles(png());
   await expect(page.locator('[data-panel="editor"]')).toBeVisible();
@@ -70,7 +71,7 @@ test("blacks out the dragged region and leaves the rest alone", async ({
 });
 
 test("keyboard editing still deletes a selected box", async ({ page }) => {
-  await page.goto("/redact-image/");
+  await openTool(page, "/redact-image/");
   await page.locator('[data-el="file-input"]').setInputFiles(png());
   await expect(page.locator('[data-panel="editor"]')).toBeVisible();
 
@@ -87,7 +88,7 @@ test("keyboard editing still deletes a selected box", async ({ page }) => {
 test("a drag too small to be a box is discarded as a click", async ({
   page,
 }) => {
-  await page.goto("/redact-image/");
+  await openTool(page, "/redact-image/");
   await page.locator('[data-el="file-input"]').setInputFiles(png());
   await expect(page.locator('[data-panel="editor"]')).toBeVisible();
 

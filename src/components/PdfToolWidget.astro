@@ -249,6 +249,8 @@ const { heading, tool, applyLabel, pillTo, dropHint } = Astro.props;
       if (el.dataset.tool === 'flatten') {
         (await import('../lib/flattenPdf')).initFlattenPdfWidget(el);
       }
+      // Listeners are attached now (see RedactWidget for why tests wait on it).
+      el.dataset.ready = 'true';
     });
   }
   if (document.readyState === 'loading') {

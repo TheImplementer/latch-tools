@@ -669,6 +669,9 @@ const noun = isPdf ? 'PDF' : 'images';
       } else {
         (await import('../lib/redact')).initRedactWidget(el);
       }
+      // Listeners are attached now. Tests wait on this: a file set before the
+      // lazy import lands would go nowhere.
+      el.dataset.ready = 'true';
     });
   }
   if (document.readyState === 'loading') {
