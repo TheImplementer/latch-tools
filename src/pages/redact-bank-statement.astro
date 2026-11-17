@@ -1,0 +1,346 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+import RedactWidget from '../components/RedactWidget.astro';
+
+// One source for the visible steps and the HowTo schema, and one for the
+// visible FAQ and the FAQPage schema, so the two can't drift apart.
+const steps = [
+  {
+    name: 'Open the statement',
+    text: "Drag the PDF onto the editor or click Browse. If your bank locked it with a password, you'll be asked for it.",
+  },
+  {
+    name: 'Draw over what to hide',
+    text: "Drag a box over each account number, sort code, card number and transaction you don't want to show. Click a box to move, resize or delete it.",
+  },
+  {
+    name: 'Check every page',
+    text: 'Use the page strip to go through each page. If the account details repeat in the same place, draw a box once and use Copy boxes to all pages.',
+  },
+  {
+    name: 'Redact and download',
+    text: 'Press the button, then open the new file and read through it before you send it.',
+  },
+];
+
+type Seg = string | { href: string; text: string };
+const faqs: { q: string; a: Seg[] }[] = [
+  {
+    q: 'What should I black out on a bank statement?',
+    a: [
+      "Cover your account number, your sort code (a UK IBAN contains both), any card numbers and any customer or login ID, plus balances and any transactions the reader doesn't need to see. Leave your name, your address, the bank's name, the statement period and the income the reader asked about. If the person asking has told you what they need, follow that instead.",
+    ],
+  },
+  {
+    q: 'Will a landlord or lender accept a redacted bank statement?',
+    a: [
+      "It depends on who is asking and what they need to see. Some landlords and letting agents only need your name, the dates and your income, and may be happy with a statement where the rest is covered. Others won't take it. Mortgage lenders, visa and immigration applications and some referencing companies may require complete, unedited statements, or may check them with your bank. Ask what they need before you redact anything. If they say they need the full statement, a redacted copy won't meet the request.",
+    ],
+  },
+  {
+    q: 'Is it legal to redact my own bank statement?',
+    a: [
+      "Hiding details on your own copy to protect your privacy is generally fine. The statement is yours and you choose what to share. It's a different matter if you alter a figure, or cover something to mislead the person you're sending it to, and some requesters ask for statements to be unaltered. This page gives general information and isn't legal or financial advice, and the rules differ between countries. If a lot depends on the outcome, check with the person asking or with a qualified adviser.",
+    ],
+  },
+  {
+    q: 'Can the hidden numbers be recovered?',
+    a: [
+      "Not from a file redacted here. Each page is rendered to an image with your boxes already burned into the pixels, and the new PDF is built from those images, so the original text isn't in the file at all. A black rectangle drawn in an ordinary PDF editor is different: the numbers stay underneath and copy and paste brings them back. Two things can still give hints: a box cut tight around a short value, and a running balance that lets someone work out a hidden amount. Cover whole fields and the balance column to avoid both. For how other redactions fail, see ",
+      { href: '/unredact-pdf/', text: 'Can redacted PDF text be recovered?' },
+    ],
+  },
+  {
+    q: 'My statement is a screenshot or a photo of a paper copy. Can I use this?',
+    a: [
+      'This page takes PDFs. For a screenshot or a photo, use ',
+      { href: '/redact-image/', text: 'Redact an image' },
+      ', which burns black boxes into the picture in the same way.',
+    ],
+  },
+  {
+    q: "Can I redact a password-protected statement from my bank?",
+    a: [
+      "Yes, if you know the password. Some banks send statements as locked PDFs. The editor asks for the password when you open the file, and uses it to open the document in your browser. The redacted copy has no password.",
+    ],
+  },
+  {
+    q: 'Is my statement uploaded anywhere?',
+    a: [
+      "No. Your browser does all the work, so the file never goes to a server. You can test it: load this page, switch off your internet connection, and redact a statement. The code is open source, so you can also read what it does on ",
+      { href: 'https://github.com/TheImplementer/latch-tools', text: 'GitHub' },
+      '.',
+    ],
+  },
+  {
+    q: 'Can I do this on my phone?',
+    a: [
+      'Yes. It works in a phone or tablet browser with nothing to install. Save the PDF from your bank\'s app, pick it with Browse, and drag with one finger to draw each box.',
+    ],
+  },
+];
+const plain = (a: Seg[]) => a.map((s) => (typeof s === 'string' ? s : s.text)).join('');
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Redact a bank statement", "item": "https://latchtools.com/redact-bank-statement/" }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to redact a bank statement",
+      "description": "Black out the account number, sort code and any transactions you don't need to share, and leave your name, the dates and your income readable.",
+      "step": steps.map((s) => ({ "@type": "HowToStep", "name": s.name, "text": s.text }))
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Redact a bank statement",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Redact a bank statement PDF: black out account numbers, sort codes and individual transactions while your name and income stay readable. Pages are rebuilt in your browser, so nothing under a box remains in the file.",
+      "url": "https://latchtools.com/redact-bank-statement/"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((f) => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": plain(f.a) }
+      }))
+    }
+  ]
+};
+const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>';
+---
+<Layout
+  title="Redact a Bank Statement — Free, In Your Browser · Latch Tools"
+  description="How to redact a bank statement PDF: black out account numbers and transactions, keep your name and income visible. Free, with no account needed."
+  ogImage="/og/redact-bank-statement.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Redact a bank statement</span>
+        </nav>
+        <h1>How to redact a bank statement</h1>
+        <p>Black out the account number, sort code and any transactions the reader doesn't need to see. Your name, the dates and your income stay readable, so the statement still does its job. Whatever sits under a box is deleted from the file.</p>
+        <TrustPill />
+      </div>
+
+      <RedactWidget heading="Redact your statement" defaultEffect="blackout" applyLabel="Redact statement &amp; download" mode="pdf" />
+    </div>
+  </section>
+
+  <!-- WHAT IT IS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">What is a redacted bank statement?</h2>
+      <p>A redacted bank statement is a copy of your statement with some of the details blacked out before you send it on. The layout, the bank's branding and everything you leave visible stay as the bank issued them.</p>
+      <p>People do this when someone asks for proof of income, an address or a payment, and the full statement shows a good deal more than that. A month of statements lists every shop, subscription and transfer, along with the account number and sort code. Redacting lets you show the part that answers the question.</p>
+      <p>The reader can see that parts are covered, so it helps to say in your message what you blacked out and why.</p>
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to redact a bank statement, step by step</h2>
+          <p class="sec-desc">Four steps in the editor above. You need the statement as a PDF file, so download it from online banking or your bank's app first.</p>
+        </div>
+      </div>
+      <div class="howto">
+        {steps.map((s, i) => (
+          <div class="howto-step">
+            <div class="n">{i + 1}</div>
+            <h4>{s.name}</h4>
+            <p>{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT TO COVER -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">What to black out and what to leave visible</h2>
+      <p>The right answer depends on who will read the statement. This split suits a typical income check. If the person asking has told you what they need, follow that instead.</p>
+
+      <div class="cover-grid">
+        <div class="cover-col">
+          <h3>Black out</h3>
+          <ul>
+            <li>Your account number and sort code. A UK IBAN contains both, so cover that too.</li>
+            <li>Card numbers, and any customer or login ID printed on the page.</li>
+            <li>Balances, unless the reader has asked to see them.</li>
+            <li>Transactions and payees the reader has no need for, including the names of other people you've paid or been paid by.</li>
+          </ul>
+        </div>
+        <div class="cover-col">
+          <h3>Leave readable</h3>
+          <ul>
+            <li>Your name and address, so the reader can match the statement to you.</li>
+            <li>The bank's name and logo.</li>
+            <li>The statement period and dates, which show how recent it is.</li>
+            <li>The income the reader needs: salary credits with their dates, amounts and the payer's name.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Cover the whole line</h3>
+      <p>If you hide only the payee, the amount and date beside it may still show what the payment was. Box the full row, and make the box slightly larger than the text. A box cut tight around a short value gives away roughly how long it was.</p>
+      <h3>Watch the balance column</h3>
+      <p>Most statements print a running balance after each line. Hide a transaction but leave the balances either side of it, and anyone can subtract to get the amount back. Black out the balance column as well, or accept that the figure can be worked out.</p>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">When people redact a bank statement, and when to ask first</h2>
+      <p>Who is asking decides what you can hide. Requirements differ between landlords, lenders and authorities, and this page can't tell you what a particular one will accept. Ask them what they need to see before you redact anything.</p>
+
+      <h3>Rental application</h3>
+      <p>Letting agents and landlords often ask for recent statements to check that your income covers the rent. What they are checking is typically that the account is yours and that income arrives regularly, so keep those parts readable. Account details and unrelated spending are the usual candidates for blacking out. Some agents pass applications to a referencing company, which may have its own rules about what it accepts.</p>
+
+      <h3>Mortgage or loan</h3>
+      <p>Lenders can look at spending as well as income when they decide what you can afford, so some want every transaction visible, and some verify statements with the bank. A redacted copy may be refused, or you may be asked for the full version. Check with your broker or the lender's own guidance before you black anything out.</p>
+
+      <h3>Visa application</h3>
+      <p>Visa and immigration applications often set out which documents to provide and how they should look. Some ask for statements that are complete, unedited or issued by the bank in a particular way. Read the official guidance for your application. If it says the statement must not be altered, send it as the bank issued it.</p>
+
+      <h3>Expense claims</h3>
+      <p>For an expense claim, the finance team typically needs to see one thing: the payment you're claiming, with its date and amount. Some employers prefer a receipt, or ask for the statement as it is, so check your company's policy.</p>
+    </div>
+  </section>
+
+  <!-- THE FILE -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">What the redacted file looks like</h2>
+      <p>This is the same engine as <a href="/redact-pdf/">Redact a PDF</a>. It renders each page to an image, draws your boxes into the pixels, and builds a new PDF from the finished images. The text under a box is never copied into the new file. Page size, orientation and layout stay as they were.</p>
+      <ul class="file-list">
+        <li><strong>The text can't be selected or searched.</strong> That includes the parts you left visible, and a screen reader can't read it aloud. If the recipient uses a system that reads statements automatically, an image-only PDF may be harder for it to handle.</li>
+        <li><strong>The file is usually larger.</strong> Standard quality renders at 150 DPI and suits most statements. High renders at 300 DPI, which is sharper but bigger, so choose it if the recipient will print the statement or zoom in.</li>
+        <li><strong>Hidden extras stay behind.</strong> Document properties, comments and attachments from the original aren't copied across. If your bank signed the PDF digitally, that signature isn't carried over either.</li>
+        <li><strong>There are limits.</strong> A file can have up to 150 pages and be up to 100 MB.</li>
+      </ul>
+      <p>Before you send it, open the downloaded file and read every page the way the recipient will. The <a href="/redact-pdf/#check">checks for a redacted PDF</a> take a couple of minutes.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Questions about redacting a bank statement</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {faqs.map((f, i) => (
+          <details class="faq-item" open={i === 0}>
+            <summary class="faq-q">{f.q}<Fragment set:html={PM} /></summary>
+            <p class="faq-a">{f.a.map((s) => (typeof s === 'string' ? s : <a href={s.href} style="color:var(--accent-text);font-weight:600">{s.text}</a>))}</p>
+          </details>
+        ))}
+      </div>
+
+      <p class="muted" style="font-size:14px;margin-top:30px">
+        Related: <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">Redact a PDF</a> · <a href="/unredact-pdf/" style="color:var(--accent-text);font-weight:600">Can redacted PDF text be recovered?</a> · <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/flatten-pdf/" style="color:var(--accent-text);font-weight:600">Flatten a PDF</a>
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .prose p {
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.65;
+    margin: 14px 0 0;
+  }
+  .prose .sec-title + p {
+    margin-top: 16px;
+  }
+  .prose h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    margin: 26px 0 0;
+  }
+  .prose h3 + p {
+    margin-top: 8px;
+  }
+  .prose a {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .cover-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 22px;
+  }
+  @media (max-width: 640px) {
+    .cover-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .cover-col {
+    padding: 20px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+  }
+  .cover-col h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+  }
+  .cover-col ul,
+  .file-list {
+    margin: 0;
+    padding-left: 1.2em;
+    color: var(--text-2);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .cover-col li + li {
+    margin-top: 8px;
+  }
+  .file-list {
+    margin-top: 16px;
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+  .file-list li + li {
+    margin-top: 10px;
+  }
+  .file-list strong {
+    color: var(--text);
+  }
+</style>
