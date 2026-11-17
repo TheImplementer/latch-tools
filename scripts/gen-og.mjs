@@ -162,8 +162,8 @@ for (const file of readdirSync(ROOT + "src/pages")) {
   let middle,
     sub = SUB;
   if (slug === "index") {
-    middle = brandMiddle("Private, in-browser file tools");
-    sub = "No uploads · No sign-up · Files never leave your device";
+    middle = brandMiddle("Redact PDFs and photos for good");
+    sub = "Runs in your browser — your files never leave your device";
   } else if (slug === "about" || slug === "privacy-policy") {
     middle = brandMiddle("Private, in-browser file tools");
   } else {

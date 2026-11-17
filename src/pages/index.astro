@@ -5,8 +5,8 @@ import Footer from '../components/Footer.astro';
 import TrustPill from '../components/TrustPill.astro';
 ---
 <Layout
-  title="Latch Tools — Private file tools that run in your browser"
-  description="A fast, free toolkit for your images — convert, compress, resize and clean metadata, entirely in your browser. Nothing is uploaded or stored."
+  title="Latch Tools — Redact PDFs and photos for good"
+  description="Black out names, account numbers, faces and plates in PDFs and photos. The bars are burned into the pixels, so nothing can be copied back out."
   ogImage="/og/home.png"
 >
   <Header />
@@ -16,24 +16,21 @@ import TrustPill from '../components/TrustPill.astro';
     <div class="wrap" style="text-align:center;display:flex;flex-direction:column;align-items:center;padding:72px 28px 40px">
       <span class="eyebrow">
         <span class="bar"></span>
-        Private by design
+        PDF and photo redaction
       </span>
-      <h1 class="hero-h">Edit your files without<br>ever uploading them.</h1>
+      <h1 class="hero-h">Redact it so it<br>stays redacted.</h1>
       <p class="hero-sub">
-        A fast, free toolkit for your images — convert, compress, resize and clean metadata.
-        Every tool runs entirely in your browser. Nothing is uploaded, nothing is stored, nothing leaves your device.
+        Black out names, account numbers, faces and plates. The file you download is rebuilt with
+        the boxes burned into its pixels, so there's no hidden text or layer left to copy back out.
       </p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href="#tools">
-          Browse the tools
+        <a class="btn btn-primary btn-lg" href="/redact-pdf/">
+          Redact a PDF
           <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
         </a>
-        <a class="btn btn-ghost btn-lg" href="#how">How it works</a>
+        <a class="btn btn-ghost btn-lg" href="/redact-image/">Redact an image</a>
       </div>
-      <TrustPill
-        lead="Your files stay on this device."
-        text="Every tool runs in your browser — nothing is uploaded or stored."
-      />
+      <TrustPill />
     </div>
   </section>
 
@@ -47,11 +44,34 @@ import TrustPill from '../components/TrustPill.astro';
         </div>
         <div class="search-wrap">
           <label for="tool-search">Search tools</label>
-          <input id="tool-search" type="search" placeholder="HEIC, resize, remove location…" data-tool-search autocomplete="off" />
+          <input id="tool-search" type="search" placeholder="PDF, blur a face, HEIC…" data-tool-search autocomplete="off" />
         </div>
       </div>
 
       <div class="groups">
+        <section class="tool-group" id="redact" data-tool-group>
+          <h3>Redact and hide</h3>
+          <div class="tool-list">
+            <a class="tool-row" href="/redact-pdf/" data-tool-row><span class="format-label">pdf · redact</span><span class="tool-name">Redact a PDF</span><span class="tool-description">Black out text so it can't be copied back out</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/redact-image/" data-tool-row><span class="format-label">redact</span><span class="tool-name">Redact an image</span><span class="tool-description">Black out details permanently — nothing left underneath</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/flatten-pdf/" data-tool-row><span class="format-label">pdf · flatten</span><span class="tool-name">Flatten a PDF</span><span class="tool-description">Lock form fields and merge layers so nothing can be edited</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/blur-face/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur a face</span><span class="tool-description">Hide someone's identity before sharing a photo</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/blur-license-plate/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur a license plate</span><span class="tool-description">Hide a number plate in a vehicle photo</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/blur-image/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur part of an image</span><span class="tool-description">Blur a face, logo or text — anything you box over</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/pixelate-image/" data-tool-row><span class="format-label">pixelate</span><span class="tool-name">Pixelate an image</span><span class="tool-description">Censor names and faces with pixel blocks</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/remove-exif/" data-tool-row><span class="format-label">exif · gps</span><span class="tool-name">Remove image metadata</span><span class="tool-description">Strip location, camera and other hidden details</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </section>
+
+        <section class="tool-group" data-tool-group>
+          <h3>Resize and encode</h3>
+          <div class="tool-list">
+            <a class="tool-row" href="/resize-image/" data-tool-row><span class="format-label">resize</span><span class="tool-name">Resize for passport &amp; visa</span><span class="tool-description">Crop to passport, visa and LinkedIn presets</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/image-to-base64/" data-tool-row><span class="format-label">base64</span><span class="tool-name">Image to Base64</span><span class="tool-description">Encode an image to a Base64 data URI</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="/base64-to-image/" data-tool-row><span class="format-label">base64</span><span class="tool-name">Base64 to Image</span><span class="tool-description">Decode a Base64 string back into an image</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+            <a class="tool-row" href="mailto:hello@latchtools.com?subject=Tool%20suggestion" data-tool-row><span class="format-label">suggest</span><span class="tool-name">Need another tool?</span><span class="tool-description">Tell us what to build next — we ship the most-asked first</span><span class="tool-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </section>
         <section class="tool-group" data-tool-group>
           <h3>Convert images</h3>
           <div class="tool-list">
@@ -78,30 +98,6 @@ import TrustPill from '../components/TrustPill.astro';
             <a class="tool-row" href="/svg-to-png/" data-tool-row><span class="format-label">.svg → .png</span><span class="tool-name">SVG to PNG</span><span class="tool-description">Rasterise vector SVGs to PNG with transparency</span><span class="tool-arrow" aria-hidden="true">→</span></a>
           </div>
         </section>
-
-        <section class="tool-group" id="privacy" data-tool-group>
-          <h3>Protect your privacy</h3>
-          <div class="tool-list">
-            <a class="tool-row" href="/remove-exif/" data-tool-row><span class="format-label">exif · gps</span><span class="tool-name">Remove image metadata</span><span class="tool-description">Strip location, camera and other hidden details</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/blur-face/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur a face</span><span class="tool-description">Hide someone's identity before sharing a photo</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/blur-license-plate/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur a license plate</span><span class="tool-description">Hide a number plate in a vehicle photo</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/blur-image/" data-tool-row><span class="format-label">blur</span><span class="tool-name">Blur part of an image</span><span class="tool-description">Blur a face, logo or text — anything you box over</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/pixelate-image/" data-tool-row><span class="format-label">pixelate</span><span class="tool-name">Pixelate an image</span><span class="tool-description">Censor names and faces with pixel blocks</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/redact-image/" data-tool-row><span class="format-label">redact</span><span class="tool-name">Redact an image</span><span class="tool-description">Black out details permanently — nothing left underneath</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/redact-pdf/" data-tool-row><span class="format-label">pdf · redact</span><span class="tool-name">Redact a PDF</span><span class="tool-description">Black out text so it can't be copied back out</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/flatten-pdf/" data-tool-row><span class="format-label">pdf · flatten</span><span class="tool-name">Flatten a PDF</span><span class="tool-description">Lock form fields and merge layers so nothing can be edited</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-          </div>
-        </section>
-
-        <section class="tool-group" data-tool-group>
-          <h3>Resize and encode</h3>
-          <div class="tool-list">
-            <a class="tool-row" href="/resize-image/" data-tool-row><span class="format-label">resize</span><span class="tool-name">Resize for passport &amp; visa</span><span class="tool-description">Crop to passport, visa and LinkedIn presets</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/image-to-base64/" data-tool-row><span class="format-label">base64</span><span class="tool-name">Image to Base64</span><span class="tool-description">Encode an image to a Base64 data URI</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="/base64-to-image/" data-tool-row><span class="format-label">base64</span><span class="tool-name">Base64 to Image</span><span class="tool-description">Decode a Base64 string back into an image</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-            <a class="tool-row" href="mailto:hello@latchtools.com?subject=Tool%20suggestion" data-tool-row><span class="format-label">suggest</span><span class="tool-name">Need another tool?</span><span class="tool-description">Tell us what to build next — we ship the most-asked first</span><span class="tool-arrow" aria-hidden="true">→</span></a>
-          </div>
-        </section>
       </div>
       <p class="no-results" data-no-results hidden>No tools match that search.</p>
     </div>
@@ -113,7 +109,7 @@ import TrustPill from '../components/TrustPill.astro';
       <div class="sec-head">
         <div>
           <h2 class="sec-title">How it works</h2>
-          <p class="sec-desc">No uploads. No queue. No sign-up.</p>
+          <p class="sec-desc">Three steps, and the file stays in your browser the whole way.</p>
         </div>
       </div>
       <div class="steps">
@@ -123,23 +119,23 @@ import TrustPill from '../components/TrustPill.astro';
           </div>
           <div class="step-n">Step 01</div>
           <h3>Choose a tool</h3>
-          <p>Pick the conversion or edit you need from the list above. Each one opens on its own focused page.</p>
+          <p>Redact a PDF, black out part of a photo, or blur a face or a plate. Each tool opens on its own page.</p>
         </div>
         <div class="step">
           <div class="step-ic">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0l-3.5-3.5M12 14l3.5-3.5"/><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
           </div>
           <div class="step-n">Step 02</div>
-          <h3>Drop your file</h3>
-          <p>Drag it in or browse. The file is read directly by your browser — it is never sent across the network.</p>
+          <h3>Draw over what to hide</h3>
+          <p>Drag a box over each name, number or face. Nothing changes in your file until you export.</p>
         </div>
         <div class="step">
           <div class="step-ic">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
           </div>
           <div class="step-n">Step 03</div>
-          <h3>Download &amp; done</h3>
-          <p>Your processed file is ready instantly. Close the tab and every trace of it is gone for good.</p>
+          <h3>Download the redacted copy</h3>
+          <p>The export rebuilds the file with the boxes burned in, so there's nothing underneath to recover.</p>
         </div>
       </div>
     </div>
