@@ -7,7 +7,7 @@ import TrustPill from '../components/TrustPill.astro';
 
 <Layout
   title="About Latch Tools — Private, browser-based file tools"
-  description="Latch Tools is a collection of browser-based file tools built on a single promise: your files never leave your device. No uploads, no accounts, no tracking."
+  description="Latch Tools is a set of free redaction and file tools that run in your browser, so your files never leave your device. No accounts and no tracking."
   ogImage="/og/about.png"
 >
   <Header />
@@ -16,15 +16,15 @@ import TrustPill from '../components/TrustPill.astro';
     <!-- Hero -->
     <section class="section" style="padding-bottom: 0">
       <div class="wrap" style="max-width: 780px">
-        <span class="eyebrow"><span class="bar"></span>About</span>
+        <span class="eyebrow">About</span>
         <h1 style="font-family: var(--font-display); font-weight: 600; letter-spacing: -.035em; line-height: 1.06; font-size: clamp(34px, 5.5vw, 54px); margin: 20px 0 0; text-wrap: balance;">
           Built to keep your<br />
           <span style="color: var(--accent)">files yours.</span>
         </h1>
         <p style="font-size: clamp(16px, 2.2vw, 18px); color: var(--text-2); max-width: 34em; margin: 20px 0 28px; text-wrap: pretty;">
-          Latch is a set of fast, free file utilities that run entirely in your browser.
-          Every conversion, resize and metadata strip runs in your browser, so no file ever
-          touches a server.
+          Latch is a set of free tools for redacting documents and photos, plus the everyday
+          image converters people keep needing. Everything runs in your browser, so no file
+          ever touches a server.
         </p>
         <TrustPill />
       </div>
@@ -36,26 +36,14 @@ import TrustPill from '../components/TrustPill.astro';
         <h2 class="sec-title" style="margin-bottom: 28px">Why on-device?</h2>
         <div class="steps" style="grid-template-columns: repeat(3, 1fr)">
           <div class="step">
-            <div class="step-ic" aria-hidden="true">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <span class="step-n">01</span>
             <h3>Nothing to leak</h3>
             <p>A server that never receives your file can't leak it, sell it, or hand it to anyone. No privacy policy can promise as much.</p>
           </div>
           <div class="step">
-            <div class="step-ic" aria-hidden="true">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            </div>
-            <span class="step-n">02</span>
             <h3>Fast by default</h3>
             <p>With no upload and no queue, processing starts the moment you drop a file and often finishes in under a second. Nothing has to come back from a remote server.</p>
           </div>
           <div class="step">
-            <div class="step-ic" aria-hidden="true">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-            <span class="step-n">03</span>
             <h3>Works offline</h3>
             <p>Once the page loads, Latch has everything it needs. Your files keep converting on a patchy connection, or with no connection at all.</p>
           </div>
@@ -73,9 +61,12 @@ import TrustPill from '../components/TrustPill.astro';
           nothing about. The fix seemed obvious: do the work in the browser instead.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; max-width: 60ch; margin: 0 0 32px;">
-          The tools available today all handle single-pass jobs. You can convert HEIC to JPG,
-          swap between PNG and JPG, strip EXIF metadata, convert WebP, or resize for passport
-          photos and LinkedIn. More are on the way, and they will work without uploads too.
+          Most of the site is now about redaction: blacking out text in PDFs, flattening PDFs,
+          and blacking out, blurring or pixelating parts of photos, with automatic face finding
+          when you blur faces. You can also strip photo metadata. The original converters are still
+          here for HEIC, WebP, AVIF, JPEG XL, JFIF and SVG files, along with Base64 tools and a
+          passport-photo resizer. The code is open source on
+          <a href="https://github.com/TheImplementer/latch-tools" rel="noopener" style="color:var(--accent-text);font-weight:600">GitHub</a>.
         </p>
         <a href="/#tools" class="btn btn-primary btn-lg">
           Try the tools

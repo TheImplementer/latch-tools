@@ -445,20 +445,13 @@ button {
 
 /* ---- Hero ---- */
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  display: inline-block;
+  font-size: 14.5px;
+  font-weight: 600;
   color: var(--accent-text);
 }
 .eyebrow .bar {
-  width: 22px;
-  height: 1.5px;
-  background: currentColor;
-  opacity: 0.5;
+  display: none;
 }
 h1.hero-h {
   font-family: var(--font-display);
@@ -530,39 +523,28 @@ h1.hero-h {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 24px;
+  gap: 6px;
+  padding: 20px 44px 20px 22px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s,
-    transform 0.15s;
-  min-height: 168px;
+  transition: border-color 0.15s;
 }
 .tool-card:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
 }
 .tool-card:focus-visible {
   box-shadow: 0 0 0 3px var(--ring);
 }
+/* Card icons are kept in the markup but not shown: a pastel icon tile on
+   every card read as template decoration. */
 .tool-ic {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: var(--accent-weak);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: none;
 }
 .tool-name {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 18px;
+  font-size: 16.5px;
   letter-spacing: -0.015em;
   margin: 0;
 }
@@ -590,7 +572,7 @@ h1.hero-h {
 }
 .tool-arrow {
   position: absolute;
-  top: 24px;
+  top: 22px;
   right: 22px;
   color: var(--text-3);
   transition:
@@ -621,8 +603,8 @@ h1.hero-h {
   border-radius: var(--r-lg);
 }
 .step-n {
-  font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--accent-text);
 }
 .step h3 {
@@ -639,15 +621,7 @@ h1.hero-h {
   line-height: 1.5;
 }
 .step-ic {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-2);
-  color: var(--accent);
-  margin-bottom: 16px;
+  display: none;
 }
 
 /* ---- Reassurance band ---- */
@@ -765,22 +739,15 @@ h1.hero-h {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--text-3);
-  font-family: var(--font-mono);
 }
 .crumb a:hover {
   color: var(--text-2);
 }
 /* Tool page — two-column hero + widget layout */
 .tool-section {
-  background:
-    radial-gradient(
-      ellipse 72% 55% at 50% 0%,
-      color-mix(in srgb, var(--accent) 8%, transparent),
-      transparent
-    ),
-    var(--bg);
+  background: var(--bg);
   padding: 48px 0 72px;
 }
 /* Stacked, centered tool hero: title section on top, converter below it. */
@@ -1432,18 +1399,10 @@ h1.hero-h {
   background: var(--surface);
 }
 .howto-step .n {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: var(--accent-weak);
   color: var(--accent-text);
-  font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
 }
 .howto-step h4 {
   font-family: var(--font-display);

@@ -12,12 +12,9 @@ import TrustPill from '../components/TrustPill.astro';
   <Header />
 
   <!-- HERO -->
-  <section style="background:radial-gradient(62% 120% at 50% -8%, var(--accent-soft), transparent 60%)">
+  <section>
     <div class="wrap" style="text-align:center;display:flex;flex-direction:column;align-items:center;padding:72px 28px 40px">
-      <span class="eyebrow">
-        <span class="bar"></span>
-        PDF and photo redaction
-      </span>
+      <span class="eyebrow">PDF and photo redaction</span>
       <h1 class="hero-h">Redact it so it<br>stays redacted.</h1>
       <p class="hero-sub">
         Black out names, account numbers, faces and plates. The file you download is rebuilt with
@@ -109,35 +106,44 @@ import TrustPill from '../components/TrustPill.astro';
       <div class="sec-head">
         <div>
           <h2 class="sec-title">How it works</h2>
-          <p class="sec-desc">Three steps, and the file stays in your browser the whole way.</p>
+          <p class="sec-desc">Open a tool, drag a box over each detail, and download the copy. The difference is in what that copy contains.</p>
         </div>
       </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-ic">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+
+      <div class="compare">
+        <figure class="cmp-card">
+          <figcaption class="cmp-label">A black box drawn in a PDF editor</figcaption>
+          <div class="cmp-doc" aria-hidden="true">
+            <p class="cmp-head">Statement of account</p>
+            <p>Account holder: <span class="cmp-bar">Jane Example</span></p>
+            <p>Sort code: <span class="cmp-bar">12-34-56</span></p>
+            <p>Account no.: <span class="cmp-bar">87654321</span></p>
           </div>
-          <div class="step-n">Step 01</div>
-          <h3>Choose a tool</h3>
-          <p>Redact a PDF, black out part of a photo, or blur a face or a plate. Each tool opens on its own page.</p>
-        </div>
-        <div class="step">
-          <div class="step-ic">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0l-3.5-3.5M12 14l3.5-3.5"/><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+          <div class="cmp-out">
+            <span class="cmp-out-label">Copy and paste returns</span>
+            <code>Account holder: Jane Example<br>Sort code: 12-34-56<br>Account no.: 87654321</code>
           </div>
-          <div class="step-n">Step 02</div>
-          <h3>Draw over what to hide</h3>
-          <p>Drag a box over each name, number or face. Nothing changes in your file until you export.</p>
-        </div>
-        <div class="step">
-          <div class="step-ic">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+        </figure>
+
+        <figure class="cmp-card cmp-card--ok">
+          <figcaption class="cmp-label">The same page redacted here</figcaption>
+          <div class="cmp-doc cmp-doc--flat" aria-hidden="true">
+            <p class="cmp-head">Statement of account</p>
+            <p>Account holder: <span class="cmp-bar cmp-bar--empty" style="width:7.2em"></span></p>
+            <p>Sort code: <span class="cmp-bar cmp-bar--empty" style="width:4.6em"></span></p>
+            <p>Account no.: <span class="cmp-bar cmp-bar--empty" style="width:5.2em"></span></p>
           </div>
-          <div class="step-n">Step 03</div>
-          <h3>Download the redacted copy</h3>
-          <p>The export rebuilds the file with the boxes burned in, so there's nothing underneath to recover.</p>
-        </div>
+          <div class="cmp-out">
+            <span class="cmp-out-label">Copy and paste returns</span>
+            <code class="cmp-empty">Nothing. Every page is now an image, with the bars burned into its pixels.</code>
+          </div>
+        </figure>
       </div>
+
+      <p class="cmp-more">
+        Real cases where the left-hand version leaked, and how to check a file:
+        <a href="/unredact-pdf/">can redacted PDF text be recovered?</a>
+      </p>
     </div>
   </section>
 
@@ -164,3 +170,105 @@ import TrustPill from '../components/TrustPill.astro';
     if (empty) empty.hidden = visible > 0;
   });
 </script>
+
+<style>
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 760px) {
+    .compare {
+      grid-template-columns: 1fr;
+    }
+  }
+  .cmp-card {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .cmp-label {
+    padding: 14px 18px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .cmp-card--ok .cmp-label {
+    color: var(--accent-text);
+  }
+  /* Paper-white in both themes, so the bars read as ink on a page. */
+  .cmp-doc {
+    padding: 20px 22px;
+    background: #fdfdfb;
+    color: #1d211e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15.5px;
+    line-height: 1.95;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmp-doc p {
+    margin: 0;
+  }
+  .cmp-head {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #5e6962;
+    margin-bottom: 6px !important;
+  }
+  .cmp-bar {
+    background: #111;
+    color: #111;
+    padding: 1px 2px;
+    border-radius: 1px;
+  }
+  .cmp-bar--empty {
+    display: inline-block;
+    height: 1.05em;
+    vertical-align: -0.15em;
+    padding: 0;
+  }
+  /* The redacted copy is an image: nothing on it can be selected. */
+  .cmp-doc--flat {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .cmp-out {
+    padding: 14px 18px 18px;
+    background: var(--surface-soft);
+    flex: 1;
+  }
+  .cmp-out-label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+  .cmp-out code {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--danger);
+  }
+  .cmp-out code.cmp-empty {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-2);
+  }
+  .cmp-more {
+    margin: 18px 0 0;
+    font-size: 14.5px;
+    color: var(--text-2);
+  }
+  .cmp-more a {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+</style>
