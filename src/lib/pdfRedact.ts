@@ -123,7 +123,11 @@ export function initPdfRedactWidget(root: HTMLElement): void {
   const anotherBtn = q('[data-el="another-btn"]');
   const errTitle = q('[data-el="err-title"]');
   const errMessage = q('[data-el="err-message"]');
-  const tryAnotherBtn = q('[data-el="try-another-btn"]');
+  // The editor's "Start over" and the error panel's "Try another file" share
+  // this data-el; q() would only bind the first, leaving the error button dead.
+  const tryAnotherBtns = root.querySelectorAll<HTMLButtonElement>(
+    '[data-el="try-another-btn"]',
+  );
 
   // ---- State ----
   let opened: OpenedPdf | null = null;
@@ -618,7 +622,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     if (result) saveBlob(result.blob, result.name);
   });
   anotherBtn.addEventListener("click", () => void reset());
-  tryAnotherBtn.addEventListener("click", () => void reset());
+  tryAnotherBtns.forEach((b) => b.addEventListener("click", () => void reset()));
 
   pwForm.addEventListener("submit", (e) => {
     e.preventDefault();

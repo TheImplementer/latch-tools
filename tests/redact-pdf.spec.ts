@@ -264,3 +264,21 @@ test("high quality renders at a higher resolution", async ({ page }) => {
   // 300 DPI against 150 DPI: four times the pixels, so comfortably larger.
   expect(highImages[0].length).toBeGreaterThan(stdImages[0].length);
 });
+
+test("the error screen's Try another file button goes back to the start", async ({
+  page,
+}) => {
+  await openTool(page, "/redact-pdf/");
+  await page.locator('[data-el="file-input"]').setInputFiles({
+    name: "notes.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from("not a pdf"),
+  });
+  const error = page.locator('[data-panel="error"]');
+  await expect(error).toBeVisible();
+  // It shares data-el="try-another-btn" with the editor's Start over, so a
+  // controller that only binds the first match leaves this one dead.
+  await error.getByRole("button", { name: "Try another file" }).click();
+  await expect(error).toBeHidden();
+  await expect(page.locator('[data-panel="drop"]')).toBeVisible();
+});

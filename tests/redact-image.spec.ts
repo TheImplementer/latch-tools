@@ -100,3 +100,19 @@ test("a drag too small to be a box is discarded as a click", async ({
   });
   await expect(page.locator('[data-el="apply-btn"]')).toBeDisabled();
 });
+
+test("the error screen's Try another file button goes back to the start", async ({
+  page,
+}) => {
+  await openTool(page, "/redact-image/");
+  await page.locator('[data-el="file-input"]').setInputFiles({
+    name: "notes.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from("not an image"),
+  });
+  const error = page.locator('[data-panel="error"]');
+  await expect(error).toBeVisible();
+  await error.getByRole("button", { name: "Try another file" }).click();
+  await expect(error).toBeHidden();
+  await expect(page.locator('[data-panel="drop"]')).toBeVisible();
+});
