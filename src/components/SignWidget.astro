@@ -1,0 +1,1161 @@
+---
+// The "sign a PDF" widget: drop a PDF, make a signature, drag it onto the pages,
+// download the signed copy.
+//
+// It follows RedactWidget's shape on purpose (the same panels, the same
+// `data-el` contract, the same focused-editor layout) so the two PDF editors
+// feel like one product. The editing itself is different enough that it has its
+// own component: the middle is a placement layer over a page preview
+// (src/lib/placement.ts), not a box-drawing canvas, and there is a signature
+// dialog. Controller: src/lib/pdfSign.ts, booted lazily by the script below.
+export interface Props {
+  heading: string; // widget-header title, e.g. "Sign this PDF"
+  applyLabel: string; // primary button, e.g. "Sign & download"
+}
+const { heading, applyLabel } = Astro.props;
+
+// Order matches SIGNATURE_FONTS in src/lib/signatureFonts.ts, which the
+// controller loads only when the Type tab opens.
+const STYLES = ['Flowing', 'Casual', 'Formal'];
+---
+
+<div class="widget sign-widget" role="region" aria-label={heading}>
+  <div class="widget-head">
+    <span
+      class="wt"
+      style="font-family:var(--font-display);font-weight:600;font-size:16px;letter-spacing:-.01em"
+      data-el="widget-title"
+    >
+      {heading}
+    </span>
+    <span class="fmt-pill" aria-hidden="true">
+      <span class="from">PDF</span>
+      <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h10M10 5l4 4-4 4"></path></svg>
+      <span class="to">SIGNED</span>
+    </span>
+  </div>
+
+  <!-- STATE: drop -->
+  <div data-panel="drop" class="widget-state">
+    <div class="dropzone" data-el="dropzone" role="button" tabindex="0" aria-label="Drop a PDF here or click to browse" aria-describedby="sign-dz-hint">
+      <div class="dz-icon" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5m0 0L8 9m4-4l4 4"></path><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+      </div>
+      <p class="dz-title" data-el="dz-title">Drag &amp; drop your PDF</p>
+      <p class="dz-or" aria-hidden="true">or</p>
+      <button class="btn btn-secondary" type="button" data-el="browse-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"></path></svg>
+        Browse for a PDF
+      </button>
+      <p class="dz-hint" id="sign-dz-hint">Accepts PDF · up to 150 pages, 100 MB</p>
+    </div>
+  </div>
+
+  <!-- STATE: editor
+       Two blocks so the focused layout (see .is-focus below) can put the page
+       and the controls side by side; narrow screens stack them. -->
+  <div data-panel="editor" class="widget-state" hidden>
+    <div class="sign-main">
+      <div class="sign-stage-wrap" data-el="stage-wrap">
+        <canvas class="sign-stage" data-el="stage" role="img" aria-label="Preview of the page you are signing"></canvas>
+        <div class="sign-overlay" data-el="overlay"></div>
+      </div>
+      <div class="filmstrip" data-el="filmstrip" role="group" aria-label="Pages in this document" hidden></div>
+    </div>
+
+    <div class="sign-side">
+      <p class="sign-file" data-el="file-meta"></p>
+      <p class="sign-hint" data-el="editor-hint" aria-live="polite"></p>
+      <p class="sign-warn" data-el="cert-note" hidden>
+        This PDF already carries a certificate-based digital signature. Saving a signed copy here rewrites the file, so that original signature won't validate any more.
+      </p>
+
+      <section class="sign-block sign-block--sig" aria-labelledby="sign-sig-h">
+        <p class="sign-block-title" id="sign-sig-h">Your signature</p>
+        <div class="sig-preview" data-el="sig-preview"></div>
+        <div class="sig-buttons">
+          <button class="btn btn-primary" type="button" data-el="create-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21c3-1 5-1.5 7-3.5L19 8.5a2.1 2.1 0 0 0-3-3L7 14.5C5 16.5 4.500 18.500 3 21z"></path><path d="M14 7l3 3"></path></svg>
+            <span data-el="create-label">Create signature</span>
+          </button>
+          <button class="btn btn-secondary" type="button" data-el="add-sig-btn" disabled hidden>Add to page</button>
+        </div>
+      </section>
+
+      <section class="sign-block sign-block--text" aria-labelledby="sign-text-h">
+        <p class="sign-block-title" id="sign-text-h">Add text</p>
+        <label class="sr-only" for="sign-text">Text to place on the page</label>
+        <input class="pw-input sign-text" id="sign-text" data-el="text-input" type="text" maxlength="60" autocomplete="off" spellcheck="false" placeholder="Printed name, a note…" />
+        <div class="sign-text-row">
+          <button class="btn-icon-text" type="button" data-el="add-text-btn" disabled>Add text</button>
+          <button class="btn-icon-text" type="button" data-el="date-btn">Add today's date</button>
+        </div>
+      </section>
+
+      <div class="sign-toolbar">
+        <button class="btn-icon-text" type="button" data-el="copy-all-btn" disabled hidden>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M4 16V6a2 2 0 0 1 2-2h10"></path></svg>
+          Copy to all pages
+        </button>
+        <button class="btn-icon-text" type="button" data-el="remove-btn" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"></path></svg>
+          Remove
+        </button>
+        <button class="btn-icon-text" type="button" data-el="clear-btn" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+          Clear page
+        </button>
+      </div>
+
+      <div class="actions sign-actions">
+        <button class="btn btn-ghost" type="button" data-el="try-another-btn">Start over</button>
+        <button class="btn btn-primary grow" type="button" data-el="apply-btn" disabled>
+          <span data-el="apply-label" data-base={applyLabel}>{applyLabel}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"></path><path d="M5 19h14"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE: processing -->
+  <div data-panel="processing" class="widget-state" hidden>
+    <div class="proc">
+      <div class="proc-row">
+        <div class="spinner" role="status" aria-label="Working"></div>
+        <div>
+          <div class="pt" data-el="proc-title">Opening your PDF</div>
+          <div class="ps" data-el="proc-sub">Reading the pages…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE: done -->
+  <div data-panel="done" class="widget-state" hidden>
+    <div class="result-head">
+      <span class="result-badge" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+      </span>
+      <div>
+        <div class="rt" data-el="done-title">All done</div>
+        <div class="rs" data-el="done-sub"></div>
+      </div>
+    </div>
+    <figure class="result-preview" data-el="done-preview"></figure>
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" data-el="another-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a8 8 0 0 1 13.5-2.8L20 8M20 4v4h-4"></path></svg>
+        Sign another
+      </button>
+      <button class="btn btn-ghost" type="button" data-el="keep-editing-btn">Keep editing</button>
+      <button class="btn btn-primary grow" type="button" data-el="download-btn">
+        <span data-el="download-label">Download</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"></path><path d="M5 19h14"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STATE: error -->
+  <div data-panel="error" class="widget-state" hidden>
+    <div class="err-head">
+      <span class="err-badge" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"></path><circle cx="12" cy="16.4" r=".4" fill="currentColor"></circle><path d="M10.3 4.2L3.4 16a2 2 0 0 0 1.7 3h13.8a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"></path></svg>
+      </span>
+      <div>
+        <div class="et" data-el="err-title">Something went wrong</div>
+        <div class="es" data-el="err-message"></div>
+        <p class="help-text">Your original PDF has not been changed.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary grow" type="button" data-el="try-another-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"></path></svg>
+        Try another file
+      </button>
+    </div>
+  </div>
+
+  <input type="file" data-el="file-input" accept="application/pdf,.pdf" hidden aria-hidden="true" />
+
+  <!-- Signature maker. A native <dialog>: focus is trapped, Esc closes it and
+       focus returns to the button that opened it. -->
+  <dialog class="sg-dialog" data-el="sig-dialog" aria-labelledby="sg-dlg-title">
+    <div class="sg-head">
+      <p class="sg-title" id="sg-dlg-title">Create your signature</p>
+      <button class="sg-x" type="button" data-el="sig-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+    </div>
+
+    <fieldset class="sg-seg">
+      <legend class="sr-only">How to make your signature</legend>
+      <label class="seg"><input type="radio" name="sg-method" value="draw" checked /><span>Draw</span></label>
+      <label class="seg"><input type="radio" name="sg-method" value="type" /><span>Type</span></label>
+      <label class="seg"><input type="radio" name="sg-method" value="upload" /><span>Upload</span></label>
+    </fieldset>
+
+    <div class="sg-body">
+      <div data-sg-panel="draw">
+        <div class="sg-pad-wrap" data-el="pad-wrap">
+          <canvas class="sg-pad" data-el="pad" role="img" aria-label="Signature drawing area. Draw with a mouse, pen or finger."></canvas>
+          <span class="sg-pad-hint" aria-hidden="true">Sign here</span>
+          <span class="sg-pad-line" aria-hidden="true"></span>
+        </div>
+        <div class="sg-pad-tools">
+          <button class="btn-icon-text" type="button" data-el="pad-undo" disabled>Undo</button>
+          <button class="btn-icon-text" type="button" data-el="pad-clear" disabled>Clear</button>
+          <span class="sg-pad-note">Drawing needs a mouse, pen or touch. Choose Type or Upload to use the keyboard.</span>
+        </div>
+      </div>
+
+      <div data-sg-panel="type" hidden>
+        <label class="pw-label" for="sg-type">Your name</label>
+        <input class="pw-input sg-type" id="sg-type" data-el="type-input" type="text" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Type your name" />
+        <fieldset class="sg-styles">
+          <legend class="sr-only">Handwriting style</legend>
+          {STYLES.map((label, i) => (
+            <label class="sg-style" data-el="type-row">
+              <input type="radio" name="sg-font" value={String(i)} checked={i === 0} />
+              <span class="sg-style-body">
+                <canvas aria-hidden="true" width="1" height="1"></canvas>
+                <span class="sg-style-name">{label}</span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+        <p class="help-text" data-el="type-note" hidden>The handwriting font couldn't be loaded, so a standard script font is used instead.</p>
+      </div>
+
+      <div data-sg-panel="upload" hidden>
+        <p class="sg-upload-text">Choose a picture of your signature, ideally dark ink on white paper. PNG or JPG.</p>
+        <div class="sg-upload-row">
+          <button class="btn btn-secondary" type="button" data-el="upload-browse">Choose a picture</button>
+          <label class="sg-check"><input type="checkbox" data-el="upload-bg" checked /> Remove white background</label>
+        </div>
+        <div class="sg-upload-preview" data-el="upload-preview"></div>
+        <p class="help-text" data-el="upload-name"></p>
+        <input type="file" data-el="upload-input" accept="image/png,image/jpeg,.png,.jpg,.jpeg" hidden aria-hidden="true" />
+      </div>
+
+      <div class="sg-ink" data-el="ink-row">
+        <span class="sg-ink-label" id="sg-ink-l">Ink</span>
+        <div class="sg-ink-opts" role="radiogroup" aria-labelledby="sg-ink-l">
+          <label class="sg-ink-opt"><input type="radio" name="sg-ink" value="black" checked /><span class="dot dot-black"></span>Black</label>
+          <label class="sg-ink-opt"><input type="radio" name="sg-ink" value="blue" /><span class="dot dot-blue"></span>Blue</label>
+        </div>
+      </div>
+      <p class="sg-message" data-el="sig-message" role="alert" hidden></p>
+    </div>
+
+    <div class="sg-foot">
+      <button class="btn btn-ghost" type="button" data-el="sig-cancel">Cancel</button>
+      <button class="btn btn-primary" type="button" data-el="sig-use" disabled>Use signature</button>
+    </div>
+  </dialog>
+</div>
+
+<style>
+  /* Panel chrome shared with the other PDF widgets (.widget-state[hidden],
+     .proc*, .pw-input, .result-*, .err-*, .actions) lives in global.css.
+     Everything below mirrors the redaction editor's layout, renamed so the two
+     components can't affect each other. */
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* ---- Page stage ---- */
+  .sign-stage-wrap {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    background-image:
+      linear-gradient(45deg, var(--surface-3) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--surface-3) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--surface-3) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--surface-3) 75%);
+    background-size: 18px 18px;
+    background-position:
+      0 0,
+      0 9px,
+      9px -9px,
+      -9px 0;
+  }
+  /* Sized by its own aspect ratio inside both limits, so the element box is the
+     picture. JS still measures the painted area, in case a browser letterboxes. */
+  .sign-stage {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    max-height: 460px;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--border-strong);
+    background: #fff;
+  }
+  /* Laid over the painted page by placement.ts. It ignores the pointer except
+     on its items, so a finger on empty page still scrolls the screen. */
+  .sign-overlay {
+    position: absolute;
+    pointer-events: none;
+  }
+  .sign-overlay :global(.sg-item) {
+    scroll-margin: 90px 0 110px;
+    position: absolute;
+    pointer-events: auto;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    outline: 1px dashed transparent;
+    outline-offset: 2px;
+  }
+  .sign-overlay :global(.sg-item:hover) {
+    outline-color: var(--accent);
+  }
+  .sign-overlay :global(.sg-item.is-selected) {
+    outline: 2px solid var(--accent);
+    cursor: move;
+    z-index: 2;
+  }
+  .sign-overlay :global(.sg-item:focus-visible) {
+    outline: 2px solid var(--accent);
+    box-shadow: 0 0 0 5px var(--ring);
+  }
+  .sign-overlay :global(.sg-item img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  .sign-overlay :global(.sg-handle) {
+    display: none;
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid #fff;
+    box-sizing: border-box;
+  }
+  /* The drawn dot is small; the part that takes a pointer is not. */
+  .sign-overlay :global(.sg-handle)::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+  }
+  .sign-overlay :global(.sg-item.is-selected .sg-handle) {
+    display: block;
+  }
+  .sign-overlay :global(.sg-nw) {
+    left: -7px;
+    top: -7px;
+    cursor: nwse-resize;
+  }
+  .sign-overlay :global(.sg-ne) {
+    right: -7px;
+    top: -7px;
+    cursor: nesw-resize;
+  }
+  .sign-overlay :global(.sg-se) {
+    right: -7px;
+    bottom: -7px;
+    cursor: nwse-resize;
+  }
+  .sign-overlay :global(.sg-sw) {
+    left: -7px;
+    bottom: -7px;
+    cursor: nesw-resize;
+  }
+  @media (pointer: coarse) {
+    .sign-overlay :global(.sg-handle) {
+      width: 18px;
+      height: 18px;
+    }
+    .sign-overlay :global(.sg-nw) {
+      left: -10px;
+      top: -10px;
+    }
+    .sign-overlay :global(.sg-ne) {
+      right: -10px;
+      top: -10px;
+    }
+    .sign-overlay :global(.sg-se) {
+      right: -10px;
+      bottom: -10px;
+    }
+    .sign-overlay :global(.sg-sw) {
+      left: -10px;
+      bottom: -10px;
+    }
+    .sign-overlay :global(.sg-handle)::before {
+      inset: -14px;
+    }
+  }
+  .sign-overlay :global(.sg-del) {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: -40px;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: var(--danger);
+    color: #fff;
+    cursor: pointer;
+  }
+  /* Clear of the item itself, so a press on the picture can never land on it. */
+  .sign-overlay :global(.sg-del)::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+  .sign-overlay :global(.sg-item[data-near-top='1'] .sg-del) {
+    top: auto;
+    bottom: -40px;
+  }
+  .sign-overlay :global(.sg-item.is-selected .sg-del) {
+    display: flex;
+  }
+
+  /* ---- Side panel ---- */
+  .sign-file {
+    margin: 14px 4px 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-3);
+    overflow-wrap: anywhere;
+  }
+  .sign-hint {
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 8px 4px 0;
+    min-height: 2.6em;
+    line-height: 1.45;
+  }
+  .sign-warn {
+    margin: 10px 4px 0;
+    padding: 10px 12px;
+    border-radius: var(--r-sm);
+    background: var(--danger-soft);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .sign-warn[hidden] {
+    display: none;
+  }
+  .sign-block {
+    margin: 14px 4px 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .sign-block-title {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  /* Signatures are ink on paper, so the preview is always paper. */
+  .sig-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 68px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: #fff;
+    color: #5e6962;
+    font-size: 13px;
+  }
+  .sig-preview:not(.has-sig)::before {
+    content: 'No signature yet';
+  }
+  .sig-preview :global(img) {
+    display: block;
+    max-width: 100%;
+    max-height: 56px;
+    width: auto;
+    height: auto;
+  }
+  .sig-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .sig-buttons .btn {
+    height: 44px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+  .sig-buttons .btn[hidden] {
+    display: none;
+  }
+  .sign-text {
+    width: 100%;
+  }
+  .sign-text-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 6px -4px 0;
+  }
+  .sign-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-icon-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: var(--r-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-2);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .btn-icon-text:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  .btn-icon-text:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn-icon-text[hidden] {
+    display: none;
+  }
+  .btn-icon-text:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  /* ---- Focused editing (class toggled by setFocus() in regions.ts) ---- */
+  .sign-widget.is-focus {
+    max-width: none;
+    width: min(1180px, calc(100vw - 32px));
+    margin-inline: calc(50% - min(590px, 50vw - 16px));
+    scroll-margin-top: 76px;
+  }
+  .sign-widget.is-focus .sign-stage {
+    max-height: max(300px, calc(100svh - 300px));
+  }
+  .sign-widget.is-focus .sign-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    margin-inline: -4px;
+    padding: 12px 4px;
+    background: var(--surface);
+  }
+  @media (max-width: 640px) {
+    /* Two 58px stacked buttons would eat a phone screen once pinned. */
+    .sign-widget.is-focus .sign-actions {
+      flex-direction: row;
+    }
+    .sign-widget.is-focus .sign-actions .btn {
+      width: auto;
+      min-width: 0;
+    }
+    .sign-widget.is-focus .sign-actions .btn-ghost {
+      flex: 0 0 auto;
+      padding-inline: 16px;
+    }
+    /* "Sign & download (2/3)" plus an icon is wider than the space left beside
+       Start over on a 375px screen, and the label got clipped. */
+    .sign-widget.is-focus .sign-actions .btn-primary {
+      padding-inline: 10px;
+      font-size: 15px;
+    }
+    .sign-widget.is-focus .sign-actions .btn-primary svg {
+      display: none;
+    }
+  }
+  /* Below the two-column layout the controls sit under the page, which would
+     leave "Create signature", the first thing anyone needs, a screen below it.
+     So the side panel's pieces are re-ordered around the page: what you need
+     to start (the signature) above it, the rest below. */
+  @media (max-width: 959px) {
+    .sign-widget [data-panel='editor']:not([hidden]) {
+      display: flex;
+      flex-direction: column;
+    }
+    .sign-side {
+      display: contents;
+    }
+    .sign-file {
+      order: 1;
+    }
+    .sign-hint,
+    .sign-warn {
+      order: 2;
+    }
+    .sign-hint {
+      min-height: 0;
+    }
+    .sign-block--sig {
+      order: 3;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 8px 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+    .sign-block--sig .sign-block-title {
+      grid-column: 1 / -1;
+      margin: 0;
+    }
+    .sign-block--sig .sig-buttons {
+      margin-top: 0;
+    }
+    /* Half a phone screen per button: drop the icon so the label fits. */
+    .sig-buttons .btn {
+      min-width: 0;
+      padding-inline: 8px;
+    }
+    .sig-buttons .btn svg {
+      display: none;
+    }
+    .sign-main {
+      order: 4;
+      margin-top: 14px;
+    }
+    .sign-block--text {
+      order: 5;
+    }
+    .sign-toolbar {
+      order: 6;
+    }
+    .sign-actions {
+      order: 7;
+    }
+  }
+  @media (min-width: 960px) {
+    .sign-widget.is-focus [data-panel='editor']:not([hidden]) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 24px;
+      align-items: start;
+    }
+    .sign-widget.is-focus .sign-stage {
+      max-height: max(360px, calc(100svh - 260px));
+    }
+    .sign-widget.is-focus .sign-side {
+      position: sticky;
+      top: 76px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sign-widget.is-focus .sign-file {
+      margin-top: 0;
+    }
+    .sign-widget.is-focus .sign-actions {
+      position: static;
+      flex-direction: column-reverse;
+      gap: 8px;
+      padding: 0;
+      margin: 20px 0 0;
+    }
+    .sign-widget.is-focus .sign-actions .btn {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+  }
+
+  /* ---- Page strip (cells are built by pdfSign.ts, hence :global) ---- */
+  .filmstrip {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding: 12px 2px 4px;
+    scrollbar-width: thin;
+  }
+  .filmstrip[hidden] {
+    display: none;
+  }
+  .filmstrip :global(.strip-item) {
+    position: relative;
+    flex: 0 0 auto;
+    width: 58px;
+    height: 58px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--surface-2);
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .filmstrip :global(.strip-item img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .filmstrip :global(.strip-item:hover) {
+    border-color: var(--border-strong);
+  }
+  .filmstrip :global(.strip-item.is-active) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .filmstrip :global(.strip-item:focus-visible) {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .filmstrip :global(.strip-page) {
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: var(--r-pill);
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 17px;
+    text-align: center;
+  }
+  .filmstrip :global(.strip-badge) {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: var(--r-pill);
+    background: var(--accent);
+    color: var(--button-text);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 17px;
+    text-align: center;
+  }
+
+  /* ---- Signature dialog ---- */
+  .sg-dialog {
+    padding: 0;
+    width: min(560px, calc(100vw - 24px));
+    max-height: calc(100svh - 24px);
+    overflow: auto;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-lg);
+  }
+  .sg-dialog::backdrop {
+    background: rgba(10, 14, 11, 0.55);
+  }
+  .sg-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px 4px;
+  }
+  .sg-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+  }
+  .sg-x {
+    width: 44px;
+    height: 44px;
+    margin: -8px -10px -8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .sg-x:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  .sg-x:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .sg-seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin: 12px 20px 0;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    min-width: auto;
+  }
+  .seg {
+    position: relative;
+  }
+  .seg input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .seg span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-radius: calc(var(--r-md) - 3px);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .seg input:hover + span {
+    color: var(--text);
+  }
+  .seg input:checked + span {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--border-strong);
+  }
+  .seg input:focus-visible + span {
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .sg-body {
+    padding: 16px 20px 0;
+  }
+  .sg-pad-wrap {
+    position: relative;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: #fff;
+    overflow: hidden;
+  }
+  .sg-pad {
+    display: block;
+    width: 100%;
+    aspect-ratio: 5 / 2;
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .sg-pad-line {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    bottom: 22%;
+    border-bottom: 1px solid #c5cdc7;
+    pointer-events: none;
+  }
+  .sg-pad-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6a746d;
+    font-size: 15px;
+    pointer-events: none;
+  }
+  .sg-pad-wrap.has-ink .sg-pad-hint {
+    display: none;
+  }
+  .sg-pad-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 8px -4px 0;
+  }
+  .sg-pad-note {
+    flex: 1 1 100%;
+    margin: 4px 4px 0;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  .sg-type {
+    width: 100%;
+    margin-top: 6px;
+    height: 44px;
+    font-size: 16px;
+  }
+  .sg-styles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  .sg-style {
+    position: relative;
+    display: block;
+    cursor: pointer;
+  }
+  .sg-style input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .sg-style-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 68px;
+    padding: 8px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: #fff;
+  }
+  .sg-style input:checked + .sg-style-body {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .sg-style input:focus-visible + .sg-style-body {
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 0 0 5px var(--ring);
+  }
+  .sg-style-body canvas {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 46px;
+    width: auto;
+    max-width: calc(100% - 80px);
+    object-fit: contain;
+    object-position: left center;
+  }
+  .sg-style-body canvas.is-placeholder {
+    opacity: 0.35;
+  }
+  .sg-style-name {
+    margin-left: auto;
+    font-size: 12.5px;
+    color: #5e6962;
+  }
+  .sg-upload-text {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+  .sg-upload-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 18px;
+  }
+  .sg-upload-row .btn {
+    height: 44px;
+    font-size: 14px;
+  }
+  .sg-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .sg-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+  }
+  .sg-upload-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    margin-top: 12px;
+    padding: 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: #fff;
+  }
+  .sg-upload-preview :global(canvas) {
+    display: block;
+    max-width: 100%;
+    max-height: 120px;
+    width: auto;
+    height: auto;
+  }
+  .sg-upload-preview:empty::before {
+    content: 'Your picture will appear here';
+    color: #5e6962;
+    font-size: 13px;
+  }
+  .sg-ink {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .sg-ink[hidden] {
+    display: none;
+  }
+  .sg-ink-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .sg-ink-opts {
+    display: flex;
+    gap: 6px;
+  }
+  .sg-ink-opt {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 14px 0 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-pill);
+    font-size: 14px;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .sg-ink-opt input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .sg-ink-opt:has(input:checked) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent);
+    color: var(--text);
+  }
+  .sg-ink-opt:has(input:focus-visible) {
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 0 0 5px var(--ring);
+  }
+  .dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(127, 127, 127, 0.5);
+  }
+  .dot-black {
+    background: #141414;
+  }
+  .dot-blue {
+    background: #1b3a9e;
+  }
+  .sg-message {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-radius: var(--r-sm);
+    background: var(--danger-soft);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .sg-message[hidden] {
+    display: none;
+  }
+  .sg-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 20px 20px;
+  }
+  .sg-foot .btn {
+    height: 46px;
+  }
+  @media (max-width: 640px) {
+    .sg-head {
+      padding-inline: 16px;
+    }
+    .sg-seg {
+      margin-inline: 16px;
+    }
+    .sg-body {
+      padding-inline: 16px;
+    }
+    .sg-foot {
+      padding-inline: 16px;
+    }
+    .sg-foot .btn-primary {
+      flex: 1 1 auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .filmstrip :global(.strip-item),
+    .seg span,
+    .btn-icon-text {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // The controller is a dynamic import so a page only downloads what it uses.
+  // pdf.js, pdf-lib, the signature maker and the handwriting fonts are further
+  // imports still, each behind the first action that needs it.
+  function boot() {
+    document.querySelectorAll<HTMLElement>('.sign-widget').forEach(async (el) => {
+      (await import('../lib/pdfSign')).initPdfSignWidget(el);
+      // Listeners are attached now. Tests wait on this: a file set before the
+      // lazy import lands would go nowhere.
+      el.dataset.ready = 'true';
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+</script>

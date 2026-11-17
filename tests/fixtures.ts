@@ -529,3 +529,173 @@ export async function pageSizes(
   await task.destroy();
   return sizes;
 }
+
+// -----------------------------------------------------------------------
+// Fixtures for /sign-pdf/.
+//
+// The thing to prove is WHERE a signature lands and that the page underneath is
+// untouched, on the documents where getting that wrong is easiest: rotated
+// pages and pages whose visible area does not start at the origin. So the page
+// is tinted edge to edge (a stamp with a white box around it would show against
+// it), carries one line of real text in the middle (so "the text survived" is a
+// real assertion, and nothing but the signature can be dark in a corner), and
+// can be rotated, cropped, or left with an unbalanced graphics state.
+// -----------------------------------------------------------------------
+
+/** The page tint's luma (Rec. 601), which sampled blank page should match. */
+export const PLACEMENT_LUMA = 198;
+
+export interface PlacementPdfOptions {
+  pages?: number;
+  /** /Rotate, clockwise, as a viewer displays it. */
+  rotate?: 0 | 90 | 180 | 270;
+  /** [x0, y0, x1, y1] in user space; the MediaBox stays the full A4. */
+  cropBox?: [number, number, number, number];
+  /** Leave a stray `q` and a translate open at the end of the page content. */
+  unbalanced?: boolean;
+}
+
+/** Text in the middle of page n, for extraction checks. */
+export const placementText = (n: number) => `PLACEMENT-TEXT-PAGE-${n}`;
+
+export async function makePlacementPdf(
+  opts: PlacementPdfOptions = {},
+): Promise<Uint8Array> {
+  const {
+    PDFDocument,
+    StandardFonts,
+    degrees,
+    rgb,
+    pushGraphicsState,
+    concatTransformationMatrix,
+  } = await import("pdf-lib");
+  const doc = await PDFDocument.create();
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  for (let i = 0; i < (opts.pages ?? 1); i++) {
+    const page = doc.addPage([PAGE_W, PAGE_H]);
+    page.drawRectangle({
+      x: 0,
+      y: 0,
+      width: PAGE_W,
+      height: PAGE_H,
+      color: rgb(1, 0.745, 0.353),
+    });
+    page.drawText(placementText(i + 1), {
+      x: 215,
+      y: 420,
+      size: 16,
+      font,
+      color: rgb(0, 0, 0),
+    });
+    if (opts.cropBox) {
+      const [x0, y0, x1, y1] = opts.cropBox;
+      page.setCropBox(x0, y0, x1 - x0, y1 - y0);
+    }
+    if (opts.rotate) page.setRotation(degrees(opts.rotate));
+    if (opts.unbalanced) {
+      page.pushOperators(
+        pushGraphicsState(),
+        concatTransformationMatrix(1, 0, 0, 1, 120, -90),
+      );
+    }
+  }
+  return doc.save();
+}
+
+/**
+ * A 400×160 signature stand-in: a black diagonal band from bottom-left to
+ * top-right, so the other two corners of its bounding box are empty. Placed on
+ * a tinted page, those empty corners must show the tint, which is what proves
+ * the image went down with its transparency intact.
+ *
+ * `opaque` paints the empty area white instead of leaving it transparent, which
+ * is what a photographed signature looks like before "remove white background".
+ */
+export function makeSignaturePng(opts: { opaque?: boolean } = {}): Uint8Array {
+  const w = 400;
+  const h = 160;
+  const px = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      const onBand = Math.abs(y - h * (1 - x / w)) < 9;
+      if (onBand) {
+        px[i + 3] = 255; // opaque black
+      } else if (opts.opaque) {
+        px[i] = px[i + 1] = px[i + 2] = px[i + 3] = 255;
+      }
+    }
+  }
+  const raw = new Uint8Array(h * (w * 4 + 1));
+  for (let y = 0; y < h; y++) {
+    raw.set(px.subarray(y * w * 4, (y + 1) * w * 4), y * (w * 4 + 1) + 1);
+  }
+  const chunk = (type: string, data: Uint8Array) => {
+    const body = new Uint8Array(4 + type.length + data.length + 4);
+    const view = new DataView(body.buffer);
+    view.setUint32(0, data.length);
+    body.set(latin1(type), 4);
+    body.set(data, 8);
+    view.setUint32(
+      body.length - 4,
+      crc32(Buffer.from(body.subarray(4, body.length - 4))),
+    );
+    return body;
+  };
+  const ihdr = new Uint8Array(13);
+  const iv = new DataView(ihdr.buffer);
+  iv.setUint32(0, w);
+  iv.setUint32(4, h);
+  ihdr[8] = 8;
+  ihdr[9] = 6;
+  const parts = [
+    Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk("IHDR", ihdr),
+    chunk("IDAT", new Uint8Array(deflateSync(Buffer.from(raw)))),
+    chunk("IEND", new Uint8Array(0)),
+  ];
+  const out = new Uint8Array(parts.reduce((n, c) => n + c.length, 0));
+  let at = 0;
+  for (const c of parts) {
+    out.set(c, at);
+    at += c.length;
+  }
+  return out;
+}
+
+/**
+ * How many images each page paints, from pdf.js's operator list. This counts
+ * placements (a signature stamped twice paints twice), where the number of
+ * image objects in the file counts how many times the picture is STORED.
+ */
+export async function countPaintedImages(bytes: Uint8Array): Promise<number[]> {
+  const { task, doc } = await openInNode(bytes);
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const painted = new Set<number>([
+    pdfjs.OPS.paintImageXObject,
+    pdfjs.OPS.paintInlineImageXObject,
+    pdfjs.OPS.paintImageMaskXObject,
+  ]);
+  const counts: number[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const ops = await (await doc.getPage(i)).getOperatorList();
+    counts.push(ops.fnArray.filter((fn: number) => painted.has(fn)).length);
+  }
+  await task.destroy();
+  return counts;
+}
+
+/** Image objects stored in the file (a PNG with transparency is two: image + mask). */
+export async function countImageObjects(bytes: Uint8Array): Promise<number> {
+  const { PDFDocument, PDFName, PDFRawStream } = await import("pdf-lib");
+  const doc = await PDFDocument.load(bytes);
+  let n = 0;
+  for (const [, obj] of doc.context.enumerateIndirectObjects()) {
+    if (
+      obj instanceof PDFRawStream &&
+      obj.dict.get(PDFName.of("Subtype")) === PDFName.of("Image")
+    )
+      n++;
+  }
+  return n;
+}

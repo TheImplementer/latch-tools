@@ -1,5 +1,7 @@
 // Shared Playwright helpers for the redaction tools.
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import {
   expect,
   type Download,
@@ -214,4 +216,111 @@ export function watchOrigins(page: Page, baseURL: string) {
       );
     },
   };
+}
+
+// ---- Rendering a finished PDF in the browser -----------------------------
+//
+// To check what a viewer would show, the output is rendered with pdf.js in the
+// same engine the test runs in. The library and its worker are served by the
+// test itself from node_modules under a path the site does not use, so the page
+// still talks only to its own origin; the self-hosted cmaps and fonts come from
+// the site's own /pdfjs/<version>/ directory, exactly as the app gets them.
+
+const PDFJS_DIR = fileURLToPath(
+  new URL("../node_modules/pdfjs-dist/", import.meta.url),
+);
+const PDFJS_VERSION: string = JSON.parse(
+  readFileSync(PDFJS_DIR + "package.json", "utf8"),
+).version;
+const served = new WeakSet<Page>();
+
+async function servePdfJs(page: Page): Promise<void> {
+  if (served.has(page)) return;
+  served.add(page);
+  await page.route("**/__test-pdfjs/*", async (route) => {
+    const name = new URL(route.request().url()).pathname.split("/").pop()!;
+    await route.fulfill({
+      path: PDFJS_DIR + "build/" + name,
+      contentType: "text/javascript",
+    });
+  });
+}
+
+/**
+ * Render page `pageNo` of `bytes` and measure luminance inside each
+ * normalised rect of the rendered page. The page is drawn the way a viewer
+ * draws it, so /Rotate and the CropBox are already applied: a rect's top-left
+ * is the top-left of what a person sees.
+ */
+export async function renderSamples(
+  page: Page,
+  bytes: Uint8Array,
+  pageNo: number,
+  rects: NRect[],
+  scale = 1.5,
+): Promise<{ width: number; height: number; samples: Luminance[] }> {
+  await servePdfJs(page);
+  return page.evaluate(
+    async ({ b64, pageNo, rects, scale, assets }) => {
+      // new Function keeps the bundler/transpiler from rewriting import().
+      const load = new Function("u", "return import(u)") as (
+        u: string,
+      ) => Promise<any>;
+      const pdfjs = await load("/__test-pdfjs/pdf.mjs");
+      // A blob URL for the worker, so no worker-level request interception is
+      // needed and the worker needs no network of its own.
+      const src = await (await fetch("/__test-pdfjs/pdf.worker.mjs")).text();
+      pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(
+        new Blob([src], { type: "text/javascript" }),
+      );
+      const bin = atob(b64);
+      const data = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) data[i] = bin.charCodeAt(i);
+      const task = pdfjs.getDocument({
+        data,
+        standardFontDataUrl: assets + "standard_fonts/",
+        cMapUrl: assets + "cmaps/",
+        cMapPacked: true,
+        wasmUrl: assets + "wasm/",
+        iccUrl: assets + "iccs/",
+      });
+      const doc = await task.promise;
+      const pg = await doc.getPage(pageNo);
+      const viewport = pg.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(viewport.width);
+      canvas.height = Math.round(viewport.height);
+      const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await pg.render({ canvasContext: ctx, canvas, viewport }).promise;
+      const samples = rects.map((r) => {
+        const x = Math.round(r.x * canvas.width);
+        const y = Math.round(r.y * canvas.height);
+        const w = Math.max(1, Math.round(r.w * canvas.width));
+        const h = Math.max(1, Math.round(r.h * canvas.height));
+        const { data } = ctx.getImageData(x, y, w, h);
+        let sum = 0;
+        let max = 0;
+        let min = 255;
+        for (let i = 0; i < data.length; i += 4) {
+          const l = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          sum += l;
+          if (l > max) max = l;
+          if (l < min) min = l;
+        }
+        return { mean: sum / (data.length / 4), max, min };
+      });
+      const out = { width: canvas.width, height: canvas.height, samples };
+      await task.destroy();
+      return out;
+    },
+    {
+      b64: Buffer.from(bytes).toString("base64"),
+      pageNo,
+      rects,
+      scale,
+      assets: `/pdfjs/${PDFJS_VERSION}/`,
+    },
+  );
 }

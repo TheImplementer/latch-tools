@@ -1,0 +1,301 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TrustPill from '../components/TrustPill.astro';
+import SignWidget from '../components/SignWidget.astro';
+
+// One source for the visible steps and the HowTo schema, and one for the
+// visible FAQ and the FAQPage schema, so the two can't drift apart.
+const steps = [
+  {
+    name: 'Open the PDF',
+    text: 'Drag the PDF onto the editor or click Browse. Each page appears as a preview, with a page strip underneath when there is more than one.',
+  },
+  {
+    name: 'Make your signature',
+    text: 'Press Create signature. Draw it with a mouse, pen or finger, type your name in a handwriting style, or upload a picture of a signature you already have. Choose black or blue ink.',
+  },
+  {
+    name: 'Drag it into place',
+    text: 'The signature lands on the page. Drag it to where it belongs and drag a corner to resize it. Use Add to page for another copy, or Copy to all pages to put it on every page.',
+  },
+  {
+    name: 'Sign and download',
+    text: 'Press Sign & download, then open the new file and look over each page you signed before you send it. The copy is saved as your original name with -signed on the end.',
+  },
+];
+
+type Seg = string | { href: string; text: string };
+const faqs: { q: string; a: Seg[] }[] = [
+  {
+    q: 'Is my document uploaded anywhere?',
+    a: [
+      "No. The PDF and your signature are processed in your browser and never sent to a server. To check, open your browser's network tab while you sign. It lists only downloads of this site's own scripts and fonts. The source code is on ",
+      { href: 'https://github.com/TheImplementer/latch-tools', text: 'GitHub' },
+      ' as well.',
+    ],
+  },
+  {
+    q: 'Is this a legal e-signature?',
+    a: [
+      "Simple electronic signatures like this one, an image of your signature placed on a document, are widely used and recognised for many everyday documents in many countries. Some documents and some recipients ask for more, such as a signature witnessed in person or a certificate-based digital signature. This tool makes neither of those. Whether a visual signature is enough depends on the document and on who is asking, so check with them before you rely on it. This page gives general information and isn't legal advice.",
+    ],
+  },
+  {
+    q: 'Should I type, draw or upload my signature?',
+    a: [
+      "Draw it if you want it to look like your handwriting. A pen or a finger gives a better line than a mouse. Type it for a quick, tidy result or to use the keyboard. Upload a photo or scan if you already have a signature you like on paper. All three end up as the same kind of transparent image.",
+    ],
+  },
+  {
+    q: 'Can I add more than one signature, or sign several pages?',
+    a: [
+      'Yes. Press Add to page for another copy on the same page, pick another page from the page strip and add one there, or select a signature and press Copy to all pages. Each copy moves and resizes separately, and a signature used on several pages is stored in the file once.',
+    ],
+  },
+  {
+    q: 'Can I lock the PDF after I sign it?',
+    a: [
+      "Not in this tool, but there is a next step. The signature is an image on the page and the file stays editable. To fix filled-in form fields in place, run the signed copy through ",
+      { href: '/flatten-pdf/', text: 'Flatten a PDF' },
+      " and choose Flatten form fields only, which keeps the text selectable. Rasterise turns every page into a picture and removes the text layer. Both make casual changes harder, but neither adds a certificate or proves the file is unchanged.",
+    ],
+  },
+  {
+    q: 'Will the text in my PDF stay selectable?',
+    a: [
+      "Yes. The signature is added on top of the existing pages and the pages aren't turned into images, so their text stays sharp, selectable and searchable at any zoom.",
+    ],
+  },
+  {
+    q: 'Can I sign a password-protected PDF?',
+    a: [
+      "Not yet. A PDF that asks for a password, or that restricts editing, can't be signed here, because the tool has to rewrite the file. If you're allowed to, save an unprotected copy from the program you opened it in and use that.",
+    ],
+  },
+];
+const plain = (a: Seg[]) => a.map((s) => (typeof s === 'string' ? s : s.text)).join('');
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Tools", "item": "https://latchtools.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Sign PDF", "item": "https://latchtools.com/sign-pdf/" }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to sign a PDF",
+      "description": "Draw, type or upload a signature, drag it onto any page of the PDF, and download a signed copy.",
+      "step": steps.map((s) => ({ "@type": "HowToStep", "name": s.name, "text": s.text }))
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Sign PDF",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Sign a PDF in your browser: draw, type or upload a signature and place it on any page. The signature is stamped onto the original pages, so the text stays selectable. It is a visual signature, not a certificate-based digital signature.",
+      "url": "https://latchtools.com/sign-pdf/"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((f) => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": plain(f.a) }
+      }))
+    }
+  ]
+};
+const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>';
+---
+<Layout
+  title="Sign PDF — Fill & Sign in Your Browser · Latch Tools"
+  description="Sign a PDF online: draw, type or upload your signature and drag it onto any page. The text in your document stays sharp and searchable. Free, no account."
+  ogImage="/og/sign-pdf.png"
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <Header />
+
+  <section class="tool-section">
+    <div class="wrap tool-split">
+      <div class="tool-hero">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="/">Tools</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:var(--text-2)" aria-current="page">Sign PDF</span>
+        </nav>
+        <h1>Sign a PDF</h1>
+        <p>Open a PDF, make a signature by drawing, typing or uploading one, and drag it into place on any page. Add it to as many pages as you need. The signature sits on top of the page, so the document's own text stays sharp and searchable.</p>
+        <TrustPill />
+      </div>
+
+      <SignWidget heading="Sign this PDF" applyLabel="Sign &amp; download" />
+    </div>
+  </section>
+
+  <!-- HOW TO -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:980px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">How to sign a PDF, step by step</h2>
+          <p class="sec-desc">Four steps in the editor above. It works with a mouse, pen or touch, and needs no install or account.</p>
+        </div>
+      </div>
+      <div class="howto">
+        {steps.map((s, i) => (
+          <div class="howto-step">
+            <div class="n">{i + 1}</div>
+            <h4>{s.name}</h4>
+            <p>{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- DRAW / TYPE / UPLOAD -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">Draw, type or upload: which signature to use</h2>
+      <p>This PDF signer offers three ways to make the signature. All three produce a transparent image trimmed to the ink, so the choice is about how you want it to look and what you have to hand.</p>
+
+      <h3>Draw it</h3>
+      <p>Drawing gives the closest match to your own handwriting, which is what most people expect on a contract or a form. A pen on a tablet or a finger on a phone gives the smoothest line. A mouse or trackpad is wobblier, but Undo and Clear let you try again. Drawn and typed signatures can be black or blue, and blue stands out against black printed text.</p>
+
+      <h3>Type it</h3>
+      <p>Typing is quick and tidy, and it is the one route that works entirely from the keyboard. You pick a handwriting style (flowing, casual or formal) and your name is drawn in that font. Because it comes from a font, it won't look like the signature on your bank card or passport. If matching your usual signature matters, draw or upload instead.</p>
+
+      <h3>Upload one</h3>
+      <p>If you already have a signature you like, sign a sheet of white paper with a dark pen, photograph or scan it, and upload the PNG or JPG. Remove white background turns the paper transparent, so the signature doesn't bring a white box onto the page. Even light and a plain sheet give the cleanest result. An uploaded picture keeps its own colours.</p>
+    </div>
+  </section>
+
+  <!-- WHERE IT GOES -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">Where a signature goes, and signing several pages</h2>
+      <p>The first copy lands in the lower right of the page, which suits many documents. Drag it from there.</p>
+
+      <h3>Find the signature line</h3>
+      <p>Most forms and contracts have a line near the end, often labelled Signature or Sign here, with space for a date beside or below it. Put the signature just above the line so your writing rests on it, clear of the printed text above. Drag a corner if it looks too big or too small. The proportions stay fixed, so it can't come out stretched.</p>
+
+      <h3>Add a date or a printed name</h3>
+      <p>Add text puts a typed line on the page: a printed name, a date, or a short note. Add today's date uses your computer's clock and your browser's usual date format, so type it yourself if a form wants a particular style. Text moves and resizes like the signature.</p>
+
+      <h3>More than one signature on a page</h3>
+      <p>Press Add to page again for a second copy, for example when two places in a document both need your signature. Each copy moves and resizes on its own. When two people are signing the same file, the second can choose New signature and make their own. Both stay on the page.</p>
+
+      <h3>Initials on every page</h3>
+      <p>Some agreements want initials at the foot of each page. Place a short signature or your typed initials in a bottom corner of one page, select it and press Copy to all pages. Look through the pages afterwards, because pages of different sizes won't all suit the same position.</p>
+    </div>
+  </section>
+
+  <!-- LOCKING -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">Locking the PDF after you sign it</h2>
+      <p>A signature added here is an image on the page, and the file isn't locked. Form fields stay fillable, and PDF editing software can still remove the image or change the text around it.</p>
+      <p>If the PDF has form fields and you want the answers fixed, run the signed copy through <a href="/flatten-pdf/">Flatten a PDF</a> and choose Flatten form fields only. That bakes the filled-in values into the page and keeps the text selectable. Rasterise goes further and turns each page into a single picture, signature included, but the text can then no longer be selected or searched.</p>
+      <p>Neither option adds a certificate or a tamper check. Flattening makes casual changes harder, and it doesn't prove that nobody has altered the file.</p>
+    </div>
+  </section>
+
+  <!-- WHAT IT IS -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">What this kind of signature is, and what it isn't</h2>
+      <p>This tool adds a visual signature: a picture of your signature placed on the page. It is the same as pasting a scan of your signature into a document.</p>
+      <p>A certificate-based digital signature is a different thing. It is made with a digital certificate, is tied to the exact contents of the file, and a PDF viewer can report whether the document has changed since it was signed. This tool doesn't create one. A picture of a signature carries no certificate and shows nothing about whether the file was altered afterwards.</p>
+      <p>Some documents and some recipients ask for a witnessed signature in person or for a certificate-based one, and a visual signature won't meet that request. If you aren't sure, ask whoever sent you the document what they will accept.</p>
+      <p>If the PDF you open already has a certificate-based signature, saving a copy here rewrites the file and that original signature stops validating. The editor warns you when it finds one.</p>
+    </div>
+  </section>
+
+  <!-- THE FILE -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap prose" style="max-width:780px">
+      <h2 class="sec-title" style="font-size:26px">What changes in the file</h2>
+      <p>Only the pages you signed are touched, and only by adding to them.</p>
+      <ul class="file-list">
+        <li><strong>The page text stays as it was.</strong> The pages aren't rendered to pictures, so text keeps its sharpness at any zoom and can still be selected, searched and read aloud by a screen reader. The signature is a transparent image laid on top, with no white box around it.</li>
+        <li><strong>Rotated and cropped pages work.</strong> A page stored sideways, or with a cropped visible area, gets the signature where you placed it on the preview.</li>
+        <li><strong>The file grows a little.</strong> It gains roughly the size of the signature image, and a signature placed on ten pages is stored once.</li>
+        <li><strong>There are limits.</strong> A file can have up to 150 pages and be up to 100 MB. Password-protected PDFs, and PDFs that restrict editing, can't be signed here yet.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:26px">Questions about signing a PDF</h2>
+        </div>
+      </div>
+      <div class="faq">
+        {faqs.map((f, i) => (
+          <details class="faq-item" open={i === 0}>
+            <summary class="faq-q">{f.q}<Fragment set:html={PM} /></summary>
+            <p class="faq-a">{f.a.map((s) => (typeof s === 'string' ? s : <a href={s.href} style="color:var(--accent-text);font-weight:600">{s.text}</a>))}</p>
+          </details>
+        ))}
+      </div>
+
+      <p class="muted" style="font-size:14px;margin-top:30px">
+        Related: <a href="/flatten-pdf/" style="color:var(--accent-text);font-weight:600">Flatten a PDF</a> · <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">Redact a PDF</a>
+      </p>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .prose p {
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.65;
+    margin: 14px 0 0;
+  }
+  .prose .sec-title + p {
+    margin-top: 16px;
+  }
+  .prose h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    margin: 26px 0 0;
+  }
+  .prose h3 + p {
+    margin-top: 8px;
+  }
+  .prose a {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+  .file-list {
+    margin: 16px 0 0;
+    padding-left: 1.2em;
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+  .file-list li + li {
+    margin-top: 10px;
+  }
+  .file-list strong {
+    color: var(--text);
+  }
+</style>
