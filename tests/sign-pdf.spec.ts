@@ -19,7 +19,10 @@ import {
   countImageObjects,
   countPaintedImages,
   countTextItems,
+  decryptWithQpdf,
+  encryptWithQpdf,
   extractText,
+  isEncryptedFile,
   makeEncryptedPdf,
   makePlacementPdf,
   makeSignaturePng,
@@ -537,42 +540,142 @@ test("nothing heavy loads before the page is used", async ({ page }) => {
   expect(sizes.reduce((n, s) => n + s.bytes, 0)).toBeLessThan(110_000);
 });
 
-// ---- Files that cannot be signed -------------------------------------------
+// ---- Encrypted files -------------------------------------------------------
+//
+// pdf-lib can't read an encrypted PDF, so the tool unlocks it with qpdf (wasm)
+// first. Each test proves the input really is encrypted before signing, then
+// checks what the user is handed: locked with the same password when one was
+// needed, plain otherwise, with the original text and one stamped image.
 
-for (const [name, password] of [
-  ["a password-protected PDF", "hunter2"],
-  ["a PDF locked by an owner password only", ""],
+/** Assert a signed copy has the source's text plus exactly one stamped image. */
+async function expectSignedCopyOf(plain: Uint8Array, source: Uint8Array) {
+  expect(await extractText(plain)).toEqual(await extractText(source));
+  expect(await countPaintedImages(plain)).toEqual([1]);
+}
+
+for (const [label, make] of [
+  ["RC4-40 (the oldest scheme)", async () => makeEncryptedPdf("hunter2")],
+  [
+    "AES-256",
+    async () =>
+      encryptWithQpdf(await makePlacementPdf(), {
+        user: "hunter2",
+        owner: "owner-pw",
+      }),
+  ],
 ] as const) {
-  test(`${name} gets a plain-language message instead of a broken file`, async ({
+  test(`a password-protected PDF (${label}) asks for its password and stays locked with it after signing`, async ({
     page,
+    baseURL,
   }) => {
-    let downloads = 0;
-    page.on("download", () => downloads++);
+    const origins = watchOrigins(page, baseURL!);
+    const source = await make();
+    expect(await isEncryptedFile(source)).toBe(true);
+    const sourcePlain = (await decryptWithQpdf(source, "hunter2"))!;
+
     await openTool(page, "/sign-pdf/");
     await page.locator('[data-el="file-input"]').setInputFiles({
-      name: "locked.pdf",
+      name: "statement.pdf",
       mimeType: "application/pdf",
-      buffer: Buffer.from(makeEncryptedPdf(password)),
+      buffer: Buffer.from(source),
     });
-
-    await expect(page.locator('[data-panel="error"]')).toBeVisible();
-    await expect(page.locator('[data-el="err-title"]')).toHaveText(
-      "This PDF is protected",
+    await expect(page.locator('[data-panel="password"]')).toBeVisible();
+    await expect(page.locator('[data-el="pw-message"]')).toContainText(
+      "locked with the same one",
     );
-    const message = page.locator('[data-el="err-message"]');
-    await expect(message).toContainText("can't be signed here yet");
-    await expect(message).not.toContainText(/error|encrypt/i);
-    // Not an editor with a signature button that would fail later.
-    await expect(page.locator('[data-panel="editor"]')).toBeHidden();
-    expect(downloads).toBe(0);
 
-    // The way out works.
-    await page
-      .locator('[data-panel="error"] [data-el="try-another-btn"]')
-      .click();
-    await expect(page.locator('[data-panel="drop"]')).toBeVisible();
+    // A wrong password is an ordinary retry, not an error screen.
+    await page.locator('[data-el="pw-input"]').fill("nope");
+    await page.locator('[data-panel="password"] button[type="submit"]').click();
+    await expect(page.locator('[data-el="pw-message"]')).toContainText(
+      "didn't work",
+    );
+    await expect(page.locator('[data-panel="password"]')).toBeVisible();
+
+    await page.locator('[data-el="pw-input"]').fill("hunter2");
+    await page.locator('[data-panel="password"] button[type="submit"]').click();
+    await expect(page.locator('[data-panel="editor"]')).toBeVisible();
+    // Opening a file the author didn't restrict doesn't warn.
+    await expect(page.locator('[data-panel="restricted"]')).toBeHidden();
+
+    await createByUpload(page, makeSignaturePng());
+    const { bytes, filename } = await signAndDownload(page);
+    expect(filename).toBe("statement-signed.pdf");
+    await expect(page.locator('[data-el="done-sub"]')).toContainText(
+      "locked with the same password",
+    );
+
+    // Locked: nothing opens it without the password...
+    expect(await isEncryptedFile(bytes)).toBe(true);
+    expect(await decryptWithQpdf(bytes, "")).toBeNull();
+    expect(await decryptWithQpdf(bytes, "owner-pw")).toBeNull();
+    // ...and with it, it is the original plus the signature.
+    const plain = await decryptWithQpdf(bytes, "hunter2");
+    expect(plain).not.toBeNull();
+    await expectSignedCopyOf(plain!, sourcePlain);
+
+    // The password unlocked the file in the browser; nothing else was fetched.
+    origins.assertNoneOffOrigin();
   });
 }
+
+test("a PDF with an owner password but no restrictions opens straight into the editor", async ({
+  page,
+}) => {
+  const source = makeEncryptedPdf("");
+  expect(await isEncryptedFile(source)).toBe(true);
+
+  await openSigner(page, source, "form.pdf");
+  await createByUpload(page, makeSignaturePng());
+  const { bytes } = await signAndDownload(page);
+
+  // Nothing to put back: it opened without a password, so it comes out plain.
+  expect(await isEncryptedFile(bytes)).toBe(false);
+  await expectSignedCopyOf(bytes, (await decryptWithQpdf(source, ""))!);
+});
+
+test("a PDF whose author restricted editing warns first, then signs on Continue", async ({
+  page,
+}) => {
+  const original = await makePlacementPdf();
+  const source = await encryptWithQpdf(original, {
+    user: "",
+    owner: "author-only",
+    restrictEditing: true,
+  });
+  expect(await isEncryptedFile(source)).toBe(true);
+  const file = {
+    name: "contract.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from(source),
+  };
+
+  await openTool(page, "/sign-pdf/");
+  await page.locator('[data-el="file-input"]').setInputFiles(file);
+  const warning = page.locator('[data-panel="restricted"]');
+  await expect(warning).toBeVisible();
+  await expect(warning).toContainText("won't keep that restriction");
+  await expect(warning).toContainText("allowed to sign");
+  await expect(page.locator('[data-panel="editor"]')).toBeHidden();
+
+  // Backing out is a real way out.
+  await page.locator('[data-el="restricted-cancel"]').click();
+  await expect(page.locator('[data-panel="drop"]')).toBeVisible();
+
+  // Opening it again and continuing signs it.
+  await page.locator('[data-el="file-input"]').setInputFiles(file);
+  await expect(warning).toBeVisible();
+  await page.locator('[data-el="restricted-continue"]').click();
+  await expect(page.locator('[data-panel="editor"]')).toBeVisible();
+
+  await createByUpload(page, makeSignaturePng());
+  const { bytes } = await signAndDownload(page);
+  await expect(page.locator('[data-el="done-sub"]')).toContainText(
+    "editing restriction isn't carried over",
+  );
+  expect(await isEncryptedFile(bytes)).toBe(false);
+  await expectSignedCopyOf(bytes, original);
+});
 
 test("a file that isn't a PDF is refused in plain language", async ({
   page,

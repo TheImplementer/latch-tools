@@ -12,6 +12,7 @@
 import { createHash } from "node:crypto";
 import { crc32, deflateSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 /** The string the redaction tests hunt for. Must not appear in the output. */
 export const SECRET = "CONFIDENTIAL-SECRET-12345";
@@ -698,4 +699,111 @@ export async function countImageObjects(bytes: Uint8Array): Promise<number> {
       n++;
   }
   return n;
+}
+
+// ---- Real encryption, via qpdf --------------------------------------------
+//
+// makeEncryptedPdf() above is hand-rolled RC4-40, the oldest scheme. Real
+// files mostly use AES, and editing restrictions need an owner password that
+// differs from the user's. The app itself ships qpdf for /sign-pdf/, so the
+// tests use that same build to make (and inspect) such files.
+
+type QpdfNode = {
+  callMain(args: string[]): number;
+  FS: {
+    writeFile(p: string, d: Uint8Array): void;
+    readFile(p: string): Uint8Array;
+  };
+};
+let qpdfNode: Promise<QpdfNode> | null = null;
+let qpdfSeq = 0;
+
+async function qpdf(args: string[], input: Uint8Array) {
+  qpdfNode ??= (async () => {
+    const require = createRequire(import.meta.url);
+    const create = require("@neslinesli93/qpdf-wasm") as (
+      o: object,
+    ) => Promise<QpdfNode>;
+    const wasm = require.resolve("@neslinesli93/qpdf-wasm/dist/qpdf.wasm");
+    return create({
+      locateFile: () => wasm,
+      print: () => {},
+      printErr: () => {},
+    });
+  })();
+  const q = await qpdfNode;
+  const n = ++qpdfSeq;
+  q.FS.writeFile(`/in${n}.pdf`, input);
+  const code = q.callMain(
+    args.map((a) =>
+      a.replace("$IN", `/in${n}.pdf`).replace("$OUT", `/out${n}.pdf`),
+    ),
+  );
+  let out: Uint8Array | null = null;
+  try {
+    out = q.FS.readFile(`/out${n}.pdf`);
+  } catch {
+    /* no output for --check-style runs or failures */
+  }
+  return { code, out };
+}
+
+/**
+ * AES-256 encrypt `bytes`. `user` "" makes a file that opens without a
+ * password; `restrictEditing` turns off changing the page, annotating and
+ * filling forms, which is what "Restrict editing" in a PDF editor sets.
+ */
+export async function encryptWithQpdf(
+  bytes: Uint8Array,
+  opts: { user: string; owner: string; restrictEditing?: boolean },
+): Promise<Uint8Array> {
+  const { code, out } = await qpdf(
+    [
+      "$IN",
+      "--encrypt",
+      `--user-password=${opts.user}`,
+      `--owner-password=${opts.owner}`,
+      "--bits=256",
+      ...(opts.restrictEditing
+        ? ["--modify=none", "--annotate=n", "--form=n"]
+        : []),
+      "--",
+      "$OUT",
+    ],
+    bytes,
+  );
+  if (code !== 0 || !out) throw new Error(`qpdf --encrypt exit ${code}`);
+  return out;
+}
+
+/** Decrypt with qpdf, or null if `password` doesn't open it. */
+export async function decryptWithQpdf(
+  bytes: Uint8Array,
+  password: string,
+): Promise<Uint8Array | null> {
+  const { code, out } = await qpdf(
+    [`--password=${password}`, "--decrypt", "$IN", "$OUT"],
+    bytes,
+  );
+  return code === 0 || code === 3 ? out : null;
+}
+
+/**
+ * Is the file encrypted, whether or not it needs a password to open? Asked of
+ * pdf.js, not qpdf: this qpdf build's --is-encrypted exits 2 ("not encrypted")
+ * when the file needs a password it wasn't given.
+ */
+export async function isEncryptedFile(bytes: Uint8Array): Promise<boolean> {
+  let opened: Awaited<ReturnType<typeof openInNode>>;
+  try {
+    opened = await openInNode(bytes);
+  } catch (e) {
+    if ((e as { name?: string })?.name === "PasswordException") return true;
+    throw e;
+  }
+  const info = (await opened.doc.getMetadata()).info as {
+    EncryptFilterName?: string | null;
+  };
+  await opened.task.destroy();
+  return !!info?.EncryptFilterName;
 }

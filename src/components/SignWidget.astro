@@ -51,6 +51,49 @@ const STYLES = ['Flowing', 'Casual', 'Formal'];
     </div>
   </div>
 
+  <!-- STATE: password. Same markup and global styles as the redaction tools. -->
+  <div data-panel="password" class="widget-state" hidden>
+    <form class="pw" data-el="pw-form">
+      <div class="pw-head">
+        <span class="pw-badge" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.2"></rect><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"></path></svg>
+        </span>
+        <div>
+          <div class="pw-title">This PDF is locked</div>
+          <p class="pw-msg" data-el="pw-message" aria-live="polite"></p>
+        </div>
+      </div>
+      <label class="pw-label" for="sign-pw">Password</label>
+      <input class="pw-input" id="sign-pw" data-el="pw-input" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" />
+      <div class="actions">
+        <button class="btn btn-ghost" type="button" data-el="pw-cancel">Start over</button>
+        <button class="btn btn-primary grow" type="submit">Unlock</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- STATE: restricted. The file opened, but its author turned editing off.
+       A warning the user has to answer, not a refusal. -->
+  <div data-panel="restricted" class="widget-state" hidden>
+    <div class="pw">
+      <div class="pw-head">
+        <span class="pw-badge" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.2"></rect><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"></path></svg>
+        </span>
+        <div>
+          <div class="pw-title" id="sign-restricted-h">Editing is restricted</div>
+          <p class="pw-msg" id="sign-restricted-msg" data-el="restricted-message">
+            Whoever made this PDF set it so it can't be changed. Signing adds to the page, so your signed copy won't keep that restriction. Only continue if you're allowed to sign this document.
+          </p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" type="button" data-el="restricted-cancel">Start over</button>
+        <button class="btn btn-primary grow" type="button" data-el="restricted-continue" aria-describedby="sign-restricted-msg">Continue to sign</button>
+      </div>
+    </div>
+  </div>
+
   <!-- STATE: editor
        Two blocks so the focused layout (see .is-focus below) can put the page
        and the controls side by side; narrow screens stack them. -->

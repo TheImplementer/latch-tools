@@ -71,7 +71,7 @@ const faqs: { q: string; a: Seg[] }[] = [
   {
     q: 'Can I sign a password-protected PDF?',
     a: [
-      "Not yet. A PDF that asks for a password, or that restricts editing, can't be signed here, because the tool has to rewrite the file. If you're allowed to, save an unprotected copy from the program you opened it in and use that.",
+      "Yes, if you know the password. You'll be asked for it when you open the file, and the signed copy is locked with the same password. A PDF whose author restricted editing can be signed too, after a warning, but the signed copy doesn't keep that restriction, so only sign it if you're allowed to.",
     ],
   },
 ];
@@ -230,7 +230,7 @@ const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" view
         <li><strong>The page text stays as it was.</strong> The pages aren't rendered to pictures, so text keeps its sharpness at any zoom and can still be selected, searched and read aloud by a screen reader. The signature is a transparent image laid on top, with no white box around it.</li>
         <li><strong>Rotated and cropped pages work.</strong> A page stored sideways, or with a cropped visible area, gets the signature where you placed it on the preview.</li>
         <li><strong>The file grows a little.</strong> It gains roughly the size of the signature image, and a signature placed on ten pages is stored once.</li>
-        <li><strong>There are limits.</strong> A file can have up to 150 pages and be up to 100 MB. Password-protected PDFs, and PDFs that restrict editing, can't be signed here yet.</li>
+        <li><strong>There are limits.</strong> A file can have up to 150 pages and be up to 100 MB.</li>
       </ul>
     </div>
   </section>

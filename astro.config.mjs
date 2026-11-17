@@ -69,7 +69,9 @@ export default defineConfig({
     // at server start. For pdf-lib that meant it was optimized the first time a
     // PDF was opened and the page then full-page reloaded, throwing away the
     // document the user had just dropped. `include` forces it to be pre-bundled
-    // up front instead, which is what stops the reload.
+    // up front instead, which is what stops the reload. qpdf-wasm (sign-pdf's
+    // decryption, reached only when an encrypted file is opened) is CommonJS
+    // and was bitten the same way, so it is included for the same reason.
     optimizeDeps: {
       exclude: [
         "@jsquash/avif",
@@ -77,7 +79,7 @@ export default defineConfig({
         "onnxruntime-web",
         "pdfjs-dist",
       ],
-      include: ["pdf-lib"],
+      include: ["pdf-lib", "@neslinesli93/qpdf-wasm"],
     },
     // The AVIF encoder ships a multithreaded variant that bundles a Web Worker.
     // Rollup can't code-split the default `iife` worker format, so emit ES

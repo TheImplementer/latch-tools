@@ -19,7 +19,16 @@
 // Weight: this controller loads on page ready, but pdf.js, pdf-lib, the
 // signature maker and the handwriting fonts all arrive on demand: pdf.js when
 // a file is opened, the signature maker when "Create signature" is pressed,
-// the fonts when the Type tab opens, pdf-lib when the signed copy is built.
+// the fonts when the Type tab opens, pdf-lib when the signed copy is built,
+// and qpdf (./qpdf, ~440 KB of wasm) only when an encrypted file is opened.
+//
+// Encrypted files: pdf-lib can't read them, so qpdf removes the encryption as
+// soon as the file is opened (failing at the door, not after the user has
+// placed a signature), the signing works on that plain copy, and a file that
+// needed a password to open is locked again with the same password on export.
+// A file whose author restricted editing gets a warning the user must answer,
+// then is signed anyway: the restriction is not carried over, and the warning
+// and the done panel both say so.
 // -----------------------------------------------------------------------
 
 import type { PDFImage } from "pdf-lib";
@@ -70,7 +79,14 @@ interface Page {
   items: Placed[];
 }
 
-type Panel = "drop" | "editor" | "processing" | "done" | "error";
+type Panel =
+  | "drop"
+  | "password"
+  | "restricted"
+  | "editor"
+  | "processing"
+  | "done"
+  | "error";
 
 const MAX_SIZE_MB = 100;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
@@ -143,9 +159,26 @@ async function isEncrypted(doc: PdfDoc): Promise<boolean> {
   }
 }
 
-const ENCRYPTED_TITLE = "This PDF is protected";
-const ENCRYPTED_MESSAGE =
-  "Password-protected PDFs, and PDFs with restrictions on editing, can't be signed here yet. If you are allowed to, save an unprotected copy from the program you opened it in, then open that copy here.";
+/**
+ * Did the file's author turn off changing the page? pdf.js returns null when
+ * nothing is restricted, otherwise the list of operations that ARE allowed.
+ * Stamping a signature writes to the page's content, so MODIFY_CONTENTS is
+ * the flag that matters; "fill in forms and sign" alone doesn't cover it.
+ */
+async function isEditRestricted(doc: PdfDoc): Promise<boolean> {
+  try {
+    const allowed = await doc.getPermissions();
+    if (!allowed) return false;
+    const { PermissionFlag } = await import("pdfjs-dist");
+    return !allowed.includes(PermissionFlag.MODIFY_CONTENTS);
+  } catch {
+    return false;
+  }
+}
+
+const UNLOCK_FAILED_TITLE = "This PDF's protection can't be removed here";
+const UNLOCK_FAILED_MESSAGE =
+  "It opened, but it uses a kind of protection this tool can't take off to add a signature. If you're allowed to, save an unprotected copy from the program you opened it in, then open that copy here.";
 
 export function initPdfSignWidget(root: HTMLElement): void {
   const q = <T extends HTMLElement = HTMLElement>(sel: string) =>
@@ -154,6 +187,8 @@ export function initPdfSignWidget(root: HTMLElement): void {
   // ---- Elements ----
   const panels: Record<Panel, HTMLElement> = {
     drop: q('[data-panel="drop"]'),
+    password: q('[data-panel="password"]'),
+    restricted: q('[data-panel="restricted"]'),
     editor: q('[data-panel="editor"]'),
     processing: q('[data-panel="processing"]'),
     done: q('[data-panel="done"]'),
@@ -191,6 +226,16 @@ export function initPdfSignWidget(root: HTMLElement): void {
   const downloadBtn = q('[data-el="download-btn"]');
   const anotherBtn = q('[data-el="another-btn"]');
   const keepEditingBtn = q('[data-el="keep-editing-btn"]');
+  const pwForm = q<HTMLFormElement>('[data-el="pw-form"]');
+  const pwInput = q<HTMLInputElement>('[data-el="pw-input"]');
+  const pwMessage = q('[data-el="pw-message"]');
+  const pwCancelBtn = q<HTMLButtonElement>('[data-el="pw-cancel"]');
+  const restrictedContinueBtn = q<HTMLButtonElement>(
+    '[data-el="restricted-continue"]',
+  );
+  const restrictedCancelBtn = q<HTMLButtonElement>(
+    '[data-el="restricted-cancel"]',
+  );
   const errTitle = q('[data-el="err-title"]');
   const errMessage = q('[data-el="err-message"]');
   // The editor and the error panel both offer a way back to the start.
@@ -210,6 +255,19 @@ export function initPdfSignWidget(root: HTMLElement): void {
   let assets: SignAsset[] = [];
   let seq = 0;
   let certSigned = false;
+  /**
+   * Set when the opened file was encrypted. `plain` is the decrypted copy that
+   * export signs; `password` is what it took to open ("" if it opened without
+   * one), and a non-empty one is put back on the signed copy. Both live only
+   * in memory and are dropped on reset.
+   */
+  let lock: {
+    plain: Uint8Array;
+    password: string;
+    restricted: boolean;
+  } | null = null;
+  /** A file waiting on the restriction warning, between open and editor. */
+  let pending: { doc: OpenedPdf; bytes: Uint8Array } | null = null;
   let result: {
     blob: Blob;
     name: string;
@@ -362,7 +420,14 @@ export function initPdfSignWidget(root: HTMLElement): void {
     await openAndBuild();
   }
 
-  async function openAndBuild() {
+  /**
+   * Open the stored file and, if it is encrypted, unlock it for pdf-lib.
+   *
+   * `password` only arrives on a retry from the password panel. The bytes are
+   * re-read from the File every time, because pdf.js transfers (detaches) the
+   * buffer it is given.
+   */
+  async function openAndBuild(password?: string) {
     if (!sourceFile) return;
     procTitle.textContent = "Opening your PDF";
     procSub.textContent = "Reading the pages…";
@@ -375,21 +440,12 @@ export function initPdfSignWidget(root: HTMLElement): void {
     let bytes: Uint8Array;
     try {
       bytes = new Uint8Array(await sourceFile.arrayBuffer());
-      next = await openPdf(bytes);
+      next = await openPdf(bytes, password);
     } catch (e) {
       handleOpenFailure(e);
       return;
     }
 
-    // pdf-lib cannot read an encrypted file, so this has to be caught here, at
-    // the door, rather than after the user has placed a signature. Telling the
-    // two apart matters too: an owner-password-only file opens in pdf.js
-    // without ever asking for a password, and would otherwise sail through.
-    if (await isEncrypted(next.doc)) {
-      await next.close();
-      showError(ENCRYPTED_TITLE, ENCRYPTED_MESSAGE);
-      return;
-    }
     if (next.doc.numPages > MAX_PAGES) {
       await next.close();
       showError(
@@ -399,6 +455,39 @@ export function initPdfSignWidget(root: HTMLElement): void {
       return;
     }
 
+    // Unlocking happens here, at the door, rather than at export: if qpdf
+    // can't do it, the user should hear so before placing anything. Note an
+    // owner-password-only file opens in pdf.js without asking for anything, so
+    // "encrypted" can't be inferred from whether a password was needed.
+    if (await isEncrypted(next.doc)) {
+      procSub.textContent = "Unlocking it in your browser…";
+      try {
+        const { decryptPdf } = await import("./qpdf");
+        lock = {
+          plain: await decryptPdf(bytes, password ?? ""),
+          password: password ?? "",
+          restricted: await isEditRestricted(next.doc),
+        };
+      } catch (e) {
+        console.error("[sign-pdf] unlock failed", e);
+        await next.close();
+        showError(UNLOCK_FAILED_TITLE, UNLOCK_FAILED_MESSAGE);
+        return;
+      }
+      if (lock.restricted) {
+        pending = { doc: next, bytes };
+        widgetTitle.textContent = "Before you sign";
+        showPanel("restricted");
+        restrictedContinueBtn.focus();
+        return;
+      }
+    }
+    await showEditor(next, bytes);
+  }
+
+  async function showEditor(next: OpenedPdf, bytes: Uint8Array) {
+    if (!sourceFile) return;
+    pending = null;
     opened = next;
     certSigned = hasCertificateSignature(bytes);
     try {
@@ -418,9 +507,17 @@ export function initPdfSignWidget(root: HTMLElement): void {
 
   function handleOpenFailure(e: unknown) {
     const reason = e instanceof PdfOpenError ? e.reason : "load";
-    // A file that asks for a password could not be signed even with it.
     if (reason === "password" || reason === "wrong-password") {
-      showError(ENCRYPTED_TITLE, ENCRYPTED_MESSAGE);
+      // Deliberately NOT showError(): needing a password is an ordinary state
+      // of an ordinary file, and the error panel's only exit discards it.
+      pwMessage.textContent =
+        reason === "wrong-password"
+          ? "That password didn't work. Check it and try again."
+          : "Enter its password to open it. The password stays in your browser, and your signed copy is locked with the same one.";
+      pwInput.value = "";
+      widgetTitle.textContent = "Password needed";
+      showPanel("password");
+      pwInput.focus();
       return;
     }
     if (reason === "corrupt") {
@@ -655,7 +752,10 @@ export function initPdfSignWidget(root: HTMLElement): void {
 
     try {
       const { PDFDocument, degrees } = await import("pdf-lib");
-      const bytes = new Uint8Array(await sourceFile.arrayBuffer());
+      // An encrypted original was unlocked when it was opened; sign that copy.
+      const bytes = lock
+        ? lock.plain.slice()
+        : new Uint8Array(await sourceFile.arrayBuffer());
       // updateMetadata:false keeps pdf-lib from rewriting Producer and ModDate:
       // the only thing this export should change is what the user placed.
       const doc = await PDFDocument.load(bytes, { updateMetadata: false });
@@ -701,13 +801,25 @@ export function initPdfSignWidget(root: HTMLElement): void {
           });
         }
       }
-      const out = await doc.save();
+      let out = await doc.save();
       if (
         (
           await PDFDocument.load(out, { updateMetadata: false })
         ).getPageCount() !== pages.length
       ) {
         throw new Error("signed copy has a different page count");
+      }
+      const password = lock?.password ?? "";
+      if (password) {
+        procSub.textContent = "Locking it with the same password…";
+        const { encryptPdf } = await import("./qpdf");
+        out = await encryptPdf(out, password);
+        // The locked file must open with that password and still have every
+        // page, or the user would be handed something nobody can read.
+        const check = await openPdf(out, password);
+        const n = check.doc.numPages;
+        await check.close();
+        if (n !== pages.length) throw new Error("locked copy lost pages");
       }
 
       const stem = sourceFile.name.replace(/\.pdf$/i, "");
@@ -717,7 +829,7 @@ export function initPdfSignWidget(root: HTMLElement): void {
         count,
         marked,
       };
-      showDone(await previewOf(out));
+      showDone(await previewOf(out, password));
     } catch (e) {
       // Plain language for the user, the cause for a developer.
       console.error("[sign-pdf] export failed", e);
@@ -739,14 +851,17 @@ export function initPdfSignWidget(root: HTMLElement): void {
    * are about to hand over opens. Decorative, so a failure costs only the
    * preview.
    */
-  async function previewOf(bytes: Uint8Array): Promise<Blob | null> {
+  async function previewOf(
+    bytes: Uint8Array,
+    password = "",
+  ): Promise<Blob | null> {
     let out: OpenedPdf | null = null;
     try {
       const first = Math.max(
         0,
         pages.findIndex((p) => p.items.length > 0),
       );
-      out = await openPdf(bytes);
+      out = await openPdf(bytes, password || undefined);
       const page = await out.doc.getPage(first + 1);
       try {
         const { ptW, ptH } = pageSize(page);
@@ -778,9 +893,14 @@ export function initPdfSignWidget(root: HTMLElement): void {
       donePreview.appendChild(img);
     }
     doneTitle.textContent = `Done: ${plural(result.count, "item")} added across ${plural(result.marked, "page")}`;
-    const note = certSigned
-      ? " · this file had a certificate-based digital signature, which a re-saved copy can't keep valid"
-      : "";
+    let note = "";
+    if (lock?.password)
+      note += " · locked with the same password as the original";
+    else if (lock?.restricted)
+      note += " · the original's editing restriction isn't carried over";
+    if (certSigned)
+      note +=
+        " · this file had a certificate-based digital signature, which a re-saved copy can't keep valid";
     doneSub.textContent = `${formatBytes(result.blob.size)} · the original text on every page is unchanged${note}`;
     widgetTitle.textContent = "Ready to download";
     showPanel("done");
@@ -798,6 +918,12 @@ export function initPdfSignWidget(root: HTMLElement): void {
   async function releaseDoc() {
     for (const p of pages) if (p.thumbUrl) URL.revokeObjectURL(p.thumbUrl);
     pages = [];
+    lock = null;
+    if (pending) {
+      const p = pending;
+      pending = null;
+      await p.doc.close().catch(() => {});
+    }
     if (opened) {
       const o = opened;
       opened = null;
@@ -876,6 +1002,18 @@ export function initPdfSignWidget(root: HTMLElement): void {
     });
     void addText(date);
   });
+
+  pwForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const pw = pwInput.value;
+    if (!pw) return;
+    void openAndBuild(pw);
+  });
+  pwCancelBtn.addEventListener("click", () => void reset());
+  restrictedContinueBtn.addEventListener("click", () => {
+    if (pending) void showEditor(pending.doc, pending.bytes);
+  });
+  restrictedCancelBtn.addEventListener("click", () => void reset());
 
   applyBtn.addEventListener("click", () => void exportPdf());
   downloadBtn.addEventListener("click", () => {
