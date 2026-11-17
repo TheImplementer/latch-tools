@@ -272,7 +272,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     if (file.size > MAX_SIZE_BYTES) {
       showError(
         "That PDF is too large",
-        `${file.name} is ${formatBytes(file.size)}. This tool handles files up to ${MAX_SIZE_MB} MB — everything runs in your browser's memory, so there is a real ceiling.`,
+        `${file.name} is ${formatBytes(file.size)}. This tool handles files up to ${MAX_SIZE_MB} MB, because the whole document has to fit in your browser's memory.`,
       );
       return;
     }
@@ -290,7 +290,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
   async function openAndBuild(password?: string) {
     if (!sourceFile) return;
     procTitle.textContent = "Opening your PDF";
-    procSub.textContent = "Reading it in your browser — nothing is uploaded";
+    procSub.textContent = "Opening your PDF…";
     procMeter.hidden = true;
     widgetTitle.textContent = "Opening…";
     showPanel("processing");
@@ -338,7 +338,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
       pwMessage.textContent =
         reason === "wrong-password"
           ? "That password didn't work. Check it and try again."
-          : "This PDF is password-protected. Enter its password to open it — the password stays in your browser, like the file itself.";
+          : "This PDF is password-protected. Enter its password to open it. The password stays in your browser, like the file.";
       pwInput.value = "";
       widgetTitle.textContent = "Password needed";
       showPanel("password");
@@ -367,7 +367,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     const metered = total > 1;
     procTitle.textContent = `Reading ${plural(total, "page")}`;
     procSub.textContent =
-      "Rendering previews on your device — nothing is uploaded";
+      "Rendering page previews…";
     procMeter.hidden = !metered;
     if (metered) setProgress(0, total, `0 of ${total}`);
     showPanel("processing");
@@ -468,7 +468,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
       if (!out.ok) {
         showPanel("editor");
         updateHint(
-          "Stopped — nothing was exported. Your boxes are still here.",
+          "Stopped. Nothing was exported, and your boxes are still here.",
         );
         return;
       }
@@ -492,7 +492,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
       // would throw away every box the user drew. Nothing partial is emitted.
       showPanel("editor");
       updateHint(
-        "We couldn't finish redacting that document, so nothing was exported — your boxes are still here. Try the Standard quality setting, which uses less memory.",
+        "We couldn't finish redacting that document, so nothing was exported. Your boxes are still here. Try the Standard quality setting, which uses less memory.",
       );
     } finally {
       busy = false;
@@ -522,8 +522,8 @@ export function initPdfRedactWidget(root: HTMLElement): void {
       img.decoding = "async";
       donePreview.appendChild(img);
     }
-    doneTitle.textContent = `Done — ${plural(result.bars, "area")} blacked out across ${plural(pages.length, "page")}`;
-    doneSub.textContent = `${formatBytes(result.blob.size)} · the text under the bars is gone, not covered — and none of it left your device`;
+    doneTitle.textContent = `Done: ${plural(result.bars, "area")} blacked out across ${plural(pages.length, "page")}`;
+    doneSub.textContent = `${formatBytes(result.blob.size)} · the text under the bars has been removed`;
     widgetTitle.textContent = "Ready to download";
     showPanel("done");
   }
@@ -605,7 +605,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
       pg.regions = src.map((r) => ({ ...r }));
     });
     updateHint(
-      `Copied ${plural(src.length, "box")} onto all ${pages.length} pages. Click any page to check it — a box that fits page 1 may not fit page 4.`,
+      `Copied ${plural(src.length, "box")} onto all ${pages.length} pages. Check each page, because a box that fits page 1 may not fit page 4.`,
     );
     renderStrip();
   });

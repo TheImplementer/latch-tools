@@ -20,7 +20,7 @@ const structuredData = {
       "name": "How to redact a PDF",
       "description": "Black out text in a PDF so it is removed rather than covered: every page is rebuilt with the bars burned into its pixels, so no text remains to copy or extract.",
       "step": [
-        { "@type": "HowToStep", "name": "Open your PDF", "text": "Drag your PDF onto the editor, or click Browse to pick it from your device. It is opened in your browser — nothing is uploaded." },
+        { "@type": "HowToStep", "name": "Open your PDF", "text": "Drag your PDF onto the editor, or click Browse to pick it from your device." },
         { "@type": "HowToStep", "name": "Draw over what to hide", "text": "Drag a box over each name, number or clause you want gone. You can move, resize or delete any box before you export." },
         { "@type": "HowToStep", "name": "Check every page", "text": "Use the page strip to review each page. If the same detail sits in the same place throughout, draw it once and use Copy boxes to all pages." },
         { "@type": "HowToStep", "name": "Redact and download", "text": "Press Redact and download. Every page is rebuilt with the bars baked into the pixels, so the text underneath is gone rather than covered." }
@@ -32,7 +32,7 @@ const structuredData = {
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Black out text in a PDF so it cannot be copied back out. Every page is rebuilt with the bars baked into the pixels, in your browser — the document is never uploaded.",
+      "description": "Black out text in a PDF so it cannot be copied back out. Every page is rebuilt in your browser with the bars baked into the pixels, and the document is never uploaded.",
       "url": "https://latchtools.com/redact-pdf/"
     },
     {
@@ -61,27 +61,27 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Why can't I select the text in the redacted file?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Because that is exactly what makes it safe. The whole page becomes an image, so no text remains anywhere in the document, not only under the bars. It is an honest trade: a redacted PDF you can still search is a redacted PDF that still contains its words." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Because that is what makes it safe. The whole page becomes an image, so no text remains anywhere in the document, including outside the bars. If you could still search a redacted PDF, its words would still be in the file." }
         },
         {
           "@type": "Question",
           "name": "Does the redacted file get bigger?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Usually, yes. A page of text stored as text is very compact; the same page stored as an image is not. Standard quality renders at 150 DPI and suits most documents. High renders at 300 DPI and is sharper but larger — worth it if the result will be printed or zoomed into." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Usually, yes. A page of text stored as text is very compact; the same page stored as an image is not. Standard quality renders at 150 DPI and suits most documents. High renders at 300 DPI and is sharper but larger, so choose it if the result will be printed or zoomed into." }
         },
         {
           "@type": "Question",
           "name": "Does it work on scanned PDFs?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes, and a scan is the simplest case: the page is already an image, so nothing is lost by rebuilding it. Worth knowing that a scan often carries an invisible OCR text layer added by the scanner or by Acrobat — that text is searchable and copyable, and rebuilding the page removes it too." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, and a scan is the simplest case. The page is already an image, so nothing is lost by rebuilding it. Scans often carry an invisible OCR text layer added by the scanner or by Acrobat. That text is searchable and copyable, and rebuilding the page removes it too." }
         },
         {
           "@type": "Question",
           "name": "Can I redact a password-protected PDF?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes, if you know the password. You will be asked for it when you open the file. It is used in your browser to unlock the document, so the password never leaves your device any more than the file does. The redacted copy is saved without a password." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, if you know the password. You will be asked for it when you open the file. It is used in your browser to unlock the document and is not sent anywhere. The redacted copy is saved without a password." }
         },
         {
           "@type": "Question",
           "name": "Can I redact several pages at once?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every page keeps its own boxes and the page strip shows which pages you have marked. When the same detail appears in the same position throughout — a letterhead, a footer, an address block — draw it once and use Copy boxes to all pages, then check each page, because a box that fits page one may not fit page four." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every page keeps its own boxes and the page strip shows which pages you have marked. When the same detail appears in the same position throughout, such as a letterhead, a footer or an address block, draw it once and use Copy boxes to all pages, then check each page, because a box that fits page one may not fit page four." }
         },
         {
           "@type": "Question",
@@ -113,7 +113,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">Redact PDF</span>
         </nav>
         <h1>How to redact a PDF</h1>
-        <p>Draw a box over each name, number or clause, then download. Every page is rebuilt with the bars burned into its pixels, so the text underneath is removed, not just covered — there's nothing left to copy back out.</p>
+        <p>Draw a box over each name, number or clause, then download. Every page is rebuilt with the bars burned into its pixels. The text underneath is removed rather than covered, so there's nothing left to copy back out.</p>
         <TrustPill />
       </div>
 
@@ -134,7 +134,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">1</div>
           <h4>Open your PDF</h4>
-          <p>Drag your PDF onto the editor, or click Browse. It's opened in your browser — nothing is uploaded.</p>
+          <p>Drag your PDF onto the editor, or click Browse to pick it from your device.</p>
         </div>
         <div class="howto-step">
           <div class="n">2</div>
@@ -164,34 +164,34 @@ const structuredData = {
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        A PDF isn't a picture of a document — it's a list of instructions for drawing one. Draw a black rectangle over a name in a PDF editor and you haven't removed the name; you've added one more instruction that says "paint this area black", to be carried out after the one that says "write this name here". Both are still in the file. Select the area and copy it, run the file through a text extractor, or open it in a different viewer, and the words come back out intact.
+        A PDF stores a document as a list of instructions for drawing it. Draw a black rectangle over a name in a PDF editor and the name stays where it was. The editor adds one more instruction, "paint this area black", which runs after the one that says "write this name here". Both are still in the file. Select the area and copy it, run the file through a text extractor, or open it in a different viewer, and the words come back out intact.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        This is the single most common way redactions fail, and it fails quietly: on screen the document looks perfectly redacted, so nobody notices until someone thinks to check. It has caught out courts, government departments and law firms often enough that "redacted PDF leaks its own text" is a recognised genre of story. The bar was never the problem — what was underneath it was.
+        This is the most common way redactions fail, and nothing warns you when it happens. On screen the document looks redacted, so nobody notices until someone thinks to check. It has caught out courts, government departments and law firms often enough that "redacted PDF leaks its own text" is a recognised genre of story. In those stories the bar looked fine. The leak came from the text still sitting underneath it.
       </p>
       <h3 style="font-size:17px;margin-top:26px">The two traps people fall into most</h3>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
-        <strong style="color:var(--text)">A rectangle drawn in a free PDF reader.</strong> Free readers let you draw a filled shape, but a shape is an annotation sitting on top of the page — the text is untouched beneath it. In Adobe's lineup, real redaction is part of Acrobat Pro; the free Reader can't do it.
+        <strong style="color:var(--text)">A rectangle drawn in a free PDF reader.</strong> Free readers let you draw a filled shape, but a shape is an annotation sitting on top of the page, and the text beneath it is untouched. In Adobe's lineup, real redaction is part of Acrobat Pro; the free Reader can't do it.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        <strong style="color:var(--text)">Black highlighting in Word before exporting.</strong> Shading text black, or setting black text on a black background, changes how it looks, not what it is. Export that to PDF and the words go with it, perfectly selectable. If you still have the source document, delete the sensitive text there — or redact the exported PDF here.
+        <strong style="color:var(--text)">Black highlighting in Word before exporting.</strong> Shading text black, or setting black text on a black background, only changes how it looks. Export that to PDF and the words go with it, still selectable. If you still have the source document, delete the sensitive text there. Otherwise, redact the exported PDF here.
       </p>
       <h3 style="font-size:17px;margin-top:26px">What this tool does instead</h3>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
-        Every page is rendered to a canvas, the black bars are composited into those pixels, and a new PDF is assembled from the finished images. The text layer isn't hidden or covered — it is simply never carried across into the file you download. There is no instruction left that would draw those words, and no object to peel a rectangle away from, because the page is no longer built out of text at all.
+        Every page is rendered to a canvas, the black bars are composited into those pixels, and a new PDF is assembled from the finished images. The text layer is never carried across into the file you download. No instruction is left that would draw those words, and there is no object to peel a rectangle away from, because the page is no longer built out of text.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        Rebuilding rather than editing has a useful side effect: the hidden parts of the original don't come along either. Document metadata, annotations and comments, attachments, form-field values and earlier saved versions of a page are all things a PDF can carry without showing you, and all things that have leaked from documents that looked clean. The copy you download has none of them.
+        Rebuilding the file instead of editing it has a useful side effect. The hidden parts of the original don't come along either. A PDF can carry document metadata, annotations and comments, attachments, form-field values and earlier saved versions of a page without showing you any of them, and each of these has leaked from documents that looked clean. The copy you download has none of them.
       </p>
-      <h3 style="font-size:17px;margin-top:26px">The trade-off, stated plainly</h3>
+      <h3 style="font-size:17px;margin-top:26px">The trade-off</h3>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
-        Destroying the text layer destroys all of it, not just the parts under your bars. The redacted PDF is a stack of images: you can't select or search its text, a screen reader can't read it aloud, and it will usually be a larger file than the original. That is the cost of the guarantee, and there isn't a version of this that keeps both. If you need a searchable document, redact this one and keep it as the shareable copy — don't try to have it both ways in a single file.
+        Destroying the text layer destroys all of it, including the text outside your bars. The redacted PDF is a stack of images. You can't select or search its text, a screen reader can't read it aloud, and it will usually be a larger file than the original. A file can't keep its text and also guarantee the text is gone. If you also need a searchable document, keep that one separately and use the redacted file as the copy you share.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        And if nothing actually needs to be hidden — you just want the document to stop being editable, with its form fields locked and its annotations merged in — that's a different job with a cheaper answer. <a href="/flatten-pdf/" style="color:var(--accent-text);font-weight:600">Flatten it instead</a>, which can do that while leaving the text sharp and searchable.
+        If nothing needs to be hidden and you only want the document to stop being editable, with its form fields locked and its annotations merged in, that's a different job with a cheaper answer. <a href="/flatten-pdf/" style="color:var(--accent-text);font-weight:600">Flatten it instead</a>, which can do that while leaving the text sharp and searchable.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        One thing the tool can't do for you is decide what to cover. Check every page before you export, including headers, footers, page margins and anything that repeats — and remember that a document can identify someone through context as easily as through a name.
+        The tool can't decide for you what to cover. Check every page before you export, including headers, footers, page margins and anything that repeats. Remember too that a document can identify someone through context as easily as through a name.
       </p>
     </div>
   </section>
@@ -205,10 +205,10 @@ const structuredData = {
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        Whoever made the file — this tool, Acrobat, or a colleague — these checks take a couple of minutes and catch the failures above. Run them on the exact copy you're about to send, not the one you were editing.
+        Whoever made the file (this tool, Acrobat or a colleague), these checks take a couple of minutes and catch the failures above. Run them on the exact copy you're about to send rather than the one you were editing.
       </p>
       <ol class="check-list">
-        <li><strong>Copy across a bar.</strong> Drag-select over a blacked-out area, copy, and paste into a plain text editor. If words appear, the bar is a cover, not a redaction.</li>
+        <li><strong>Copy across a bar.</strong> Drag-select over a blacked-out area, copy, and paste into a plain text editor. If words appear, the bar is only covering the text.</li>
         <li><strong>Search for what you removed.</strong> Search the document (Ctrl+F, or ⌘F on a Mac) for a name or number you blacked out. Any match means the text is still in the file.</li>
         <li><strong>Read the document properties.</strong> File → Properties shows the title, author, subject and keywords. These often hold a client's name or the original filename.</li>
         <li><strong>Open the side panels.</strong> Look through the comments, attachments and bookmarks panels. Each can hold text that never appears on a page.</li>
@@ -228,7 +228,7 @@ const structuredData = {
       <div class="faq">
         <details class="faq-item" open>
           <summary class="faq-q">Can redacted PDF text be recovered?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Not from a file redacted here. This tool doesn't draw a box over your text — it renders every page to an image with the blacked-out areas already burned into the pixels, then rebuilds the PDF from those images, and the original text layer is not carried across. There's nothing under the bar to select, copy or extract, because the page is no longer made of text. That's the difference between this and a black rectangle drawn in a PDF editor, where the words are still in the file and come straight back out with copy and paste. <a href="/unredact-pdf/" style="color:var(--accent-text);font-weight:600">Why redacted PDFs leak, with real cases</a>.</p>
+          <p class="faq-a">Not from a file redacted here. This tool doesn't draw a box over your text. It renders every page to an image with the blacked-out areas already burned into the pixels, then rebuilds the PDF from those images, and the original text layer is not carried across. There's nothing under the bar to select, copy or extract, because the page is no longer made of text. That's the difference between this and a black rectangle drawn in a PDF editor, where the words are still in the file and come straight back out with copy and paste. <a href="/unredact-pdf/" style="color:var(--accent-text);font-weight:600">Why redacted PDFs leak, with real cases</a>.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Is my PDF uploaded anywhere?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
@@ -244,23 +244,23 @@ const structuredData = {
         </details>
         <details class="faq-item">
           <summary class="faq-q">Why can't I select the text in the redacted file?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Because that's exactly what makes it safe. The whole page becomes an image, so no text remains anywhere in the document — not only under the bars. It's an honest trade: a redacted PDF you can still search is a redacted PDF that still contains its words.</p>
+          <p class="faq-a">Because that's what makes it safe. The whole page becomes an image, so no text remains anywhere in the document, including outside the bars. If you could still search a redacted PDF, its words would still be in the file.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Does the redacted file get bigger?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Usually, yes. A page of text stored as text is very compact; the same page stored as an image is not. Standard quality renders at 150 DPI and suits most documents. High renders at 300 DPI and is sharper but larger — worth it if the result will be printed or zoomed into.</p>
+          <p class="faq-a">Usually, yes. A page of text stored as text is very compact; the same page stored as an image is not. Standard quality renders at 150 DPI and suits most documents. High renders at 300 DPI and is sharper but larger, so choose it if the result will be printed or zoomed into.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Does it work on scanned PDFs?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes, and a scan is the simplest case: the page is already an image, so nothing is lost by rebuilding it. Worth knowing that a scan often carries an invisible OCR text layer added by the scanner or by Acrobat — that text is searchable and copyable, and rebuilding the page removes it too.</p>
+          <p class="faq-a">Yes, and a scan is the simplest case. The page is already an image, so nothing is lost by rebuilding it. Scans often carry an invisible OCR text layer added by the scanner or by Acrobat. That text is searchable and copyable, and rebuilding the page removes it too.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I redact a password-protected PDF?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes, if you know the password. You'll be asked for it when you open the file. It's used in your browser to unlock the document, so the password never leaves your device any more than the file does. The redacted copy is saved without a password.</p>
+          <p class="faq-a">Yes, if you know the password. You'll be asked for it when you open the file. It's used in your browser to unlock the document and isn't sent anywhere. The redacted copy is saved without a password.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I redact several pages at once?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Every page keeps its own boxes, and the page strip shows which pages you've marked. When the same detail appears in the same position throughout — a letterhead, a footer, an address block — draw it once and use <em>Copy boxes to all pages</em>, then check each page, because a box that fits page one may not fit page four.</p>
+          <p class="faq-a">Yes. Every page keeps its own boxes, and the page strip shows which pages you've marked. When the same detail appears in the same position throughout, such as a letterhead, a footer or an address block, draw it once and use <em>Copy boxes to all pages</em>, then check each page, because a box that fits page one may not fit page four.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">What happens to the rest of the document?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>

@@ -261,14 +261,14 @@ export function initFlattenPdfWidget(root: HTMLElement): void {
     if (!isPdf(file)) {
       showError(
         "That isn't a PDF",
-        "Please choose a PDF file. This tool flattens PDF documents — it isn't for images.",
+        "Please choose a PDF file. This tool flattens PDF documents, not images.",
       );
       return;
     }
     if (file.size > MAX_SIZE_BYTES) {
       showError(
         "That PDF is too large",
-        `${file.name} is ${formatBytes(file.size)}. This tool handles files up to ${MAX_SIZE_MB} MB — everything runs in your browser's memory, so there is a real ceiling.`,
+        `${file.name} is ${formatBytes(file.size)}. This tool handles files up to ${MAX_SIZE_MB} MB, because the whole document has to fit in your browser's memory.`,
       );
       return;
     }
@@ -286,7 +286,7 @@ export function initFlattenPdfWidget(root: HTMLElement): void {
   async function openAndInspect(password?: string) {
     if (!sourceFile) return;
     procTitle.textContent = "Opening your PDF";
-    procSub.textContent = "Reading it in your browser — nothing is uploaded";
+    procSub.textContent = "Opening your PDF…";
     procMeter.hidden = true;
     cancelRow.hidden = true;
     widgetTitle.textContent = "Opening…";
@@ -338,7 +338,7 @@ export function initFlattenPdfWidget(root: HTMLElement): void {
       pwMessage.textContent =
         reason === "wrong-password"
           ? "That password didn't work. Check it and try again."
-          : "This PDF is password-protected. Enter its password to open it — the password stays in your browser, like the file itself.";
+          : "This PDF is password-protected. Enter its password to open it. The password stays in your browser, like the file.";
       pwInput.value = "";
       widgetTitle.textContent = "Password needed";
       showPanel("password");
@@ -451,7 +451,7 @@ export function initFlattenPdfWidget(root: HTMLElement): void {
     }
 
     if (!out.ok) {
-      backToOptions("Stopped — nothing was saved. Your original is untouched.");
+      backToOptions("Stopped. Nothing was saved, and your original is unchanged.");
       return;
     }
 
@@ -461,8 +461,8 @@ export function initFlattenPdfWidget(root: HTMLElement): void {
     };
     showDone(
       out.firstPage,
-      `Done — ${plural(total, "page")} flattened`,
-      `${formatBytes(result.blob.size)} · every page is an image now, so there are no layers, fields or hidden content left — and none of it left your device`,
+      `Done: ${plural(total, "page")} flattened`,
+      `${formatBytes(result.blob.size)} · every page is now an image, with no layers, fields or hidden content left`,
     );
   }
 
@@ -510,7 +510,7 @@ export function initFlattenPdfWidget(root: HTMLElement): void {
     } catch (e) {
       console.error("[flatten-pdf] form flatten failed", e);
       backToOptions(
-        "We couldn't bake this form's fields into the page, so nothing was saved. This happens with unusual or damaged form fields — rasterising will flatten it.",
+        "We couldn't bake this form's fields into the page, so nothing was saved. This happens with unusual or damaged form fields. Rasterising will still flatten it.",
       );
       return;
     }
@@ -521,8 +521,8 @@ export function initFlattenPdfWidget(root: HTMLElement): void {
     };
     showDone(
       await previewOf(bytes),
-      `Done — ${plural(flattened, "form field")} baked in`,
-      `${formatBytes(result.blob.size)} · the values are part of the page now and the text is still selectable — and none of it left your device`,
+      `Done: ${plural(flattened, "form field")} baked in`,
+      `${formatBytes(result.blob.size)} · the values are now part of the page, and the text is still selectable`,
     );
   }
 

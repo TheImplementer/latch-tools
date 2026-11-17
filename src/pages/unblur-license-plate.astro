@@ -19,7 +19,7 @@ const structuredData = {
     {
       "@type": "TechArticle",
       "headline": "Can you unblur a license plate?",
-      "description": "Whether a blurred or pixelated number plate can be read again: why blurring averages pixels rather than deleting them, why plates are unusually easy to narrow down, what AI unblur tools actually produce, and why a solid blackout is the only irreversible option.",
+      "description": "Whether a blurred or pixelated number plate can be read again: why blurring averages pixels rather than deleting them, why plates are unusually easy to narrow down, what AI unblur tools produce, and why a solid blackout is the only irreversible option.",
       "about": { "@type": "Thing", "name": "Image redaction" },
       "url": "https://latchtools.com/unblur-license-plate/"
     },
@@ -29,37 +29,37 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Can a blurred license plate be recovered?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sometimes — but not by the free 'deblur' tools that advertise it. The realistic attack is to render every plausible plate, apply the same blur to each one, and see which result matches the blurred image. A light blur or a pixelated plate can fall to that. A heavy blur is far more resistant, and a solid black bar cannot be reversed at all because the original pixels are gone." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Sometimes, but not by the free 'deblur' tools that advertise it. The realistic attack is to render every plausible plate, apply the same blur to each one, and see which result matches the blurred image. A light blur or a pixelated plate can fall to that. A heavy blur is far more resistant, and a solid black bar cannot be reversed at all because the original pixels are gone." }
         },
         {
           "@type": "Question",
           "name": "Is there a free online tool to deblur a license plate?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No reliable one. Free 'deblur' and 'unblur' sites run generic sharpening or a generative upscaler, and neither recovers characters that the blur averaged away — the plate they hand back is a guess. The attack that can work on a light blur needs the exact plate format, font and blur settings, which is specialist work, not an upload. If you need a plate for an incident, give the original, unedited footage to the police or your insurer: the original file holds more detail than any screenshot or re-upload." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No reliable one. Free 'deblur' and 'unblur' sites run generic sharpening or a generative upscaler, and neither recovers characters that the blur averaged away. The plate they hand back is a guess. The attack that can work on a light blur needs the exact plate format, font and blur settings, which makes it specialist work rather than something a website can do from an upload. If you need a plate for an incident, give the original, unedited footage to the police or your insurer. The original file holds more detail than any screenshot or re-upload." }
         },
         {
           "@type": "Question",
           "name": "Do AI unblur tools work on number plates?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Not in the way people expect. Generative upscalers do not recover the original characters — they synthesise sharp detail that is merely consistent with the blur. You get plausible, confidently rendered characters that are frequently wrong. That output is a guess, not the plate, and it should never be treated as evidence." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Not in the way people expect. Instead of recovering the original characters, generative upscalers synthesise sharp detail that is merely consistent with the blur. You get plausible, confidently rendered characters that are frequently wrong. That output is the model's guess, and it should never be treated as evidence of what the plate says." }
         },
         {
           "@type": "Question",
           "name": "Is pixelating a plate safer than blurring it?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Generally no — for a number plate it tends to be worse. A mosaic replaces each block with one average colour on a regular grid, and those block values are a direct, reproducible summary of what was underneath. That makes it well suited to matching candidates against. Pixelation is a recognisable censorship look, not a strong lock." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Generally no. For a number plate it tends to be worse. A mosaic replaces each block with one average colour on a regular grid, and those block values are a direct, reproducible summary of what was underneath. That makes it well suited to matching candidates against. Pixelation gives a recognisable censorship look, but as protection it is weak." }
         },
         {
           "@type": "Question",
           "name": "Can I unblur a photo I blurred myself?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. If you exported a blurred copy and no longer have the original, the detail is genuinely gone from that file. Blurring is a one-way reduction of the pixels — there is no undo hiding inside the image, and no tool can restore what was never saved." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. If you exported a blurred copy and no longer have the original, the detail is gone from that file. Blurring is a one-way reduction of the pixels. There is no undo hiding inside the image, and no tool can restore what was never saved." }
         },
         {
           "@type": "Question",
           "name": "What is the safest way to hide a number plate in a photo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Cover it with a solid block of colour, baked into the pixels of the exported image, and cover generously — the whole plate plus a margin, so no partial characters survive at the edges. A solid fill replaces the original pixels outright, so there is nothing left to reconstruct and nothing to peel off." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Cover it with a solid block of colour, baked into the pixels of the exported image. Cover generously, taking in the whole plate plus a margin, so no partial characters survive at the edges. A solid fill replaces the original pixels outright, so there is nothing left to reconstruct and nothing to peel off." }
         },
         {
           "@type": "Question",
           "name": "Why do people blur license plates?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A number plate is a unique identifier tied to a registered keeper, so a photo showing one can connect a car — and often an address — to a named person. Cars turn up in the background of marketplace listings, dashcam clips, property photos and holiday snaps, usually without the photographer thinking about it. In the UK and EU a plate counts as personal data whenever it can identify someone, which is why dealers, letting agents and street-mapping services blur them by default. The motive is ordinary: publish the photo without publishing the person." }
+          "acceptedAnswer": { "@type": "Answer", "text": "A number plate is a unique identifier tied to a registered keeper, so a photo showing one can connect a car, and often an address, to a named person. Cars turn up in the background of marketplace listings, dashcam clips, property photos and holiday snaps, usually without the photographer thinking about it. In the UK and EU a plate counts as personal data whenever it can identify someone, which is why dealers, letting agents and street-mapping services blur them by default. The motive is ordinary: people want to share the photo without identifying the person behind the plate." }
         },
         {
           "@type": "Question",
@@ -73,7 +73,7 @@ const structuredData = {
 ---
 <Layout
   title="Can You Unblur a License Plate? Why Deblur Tools Fail · Latch Tools"
-  description="Free online deblur sites can't recover a blurred number plate — they invent one. When a blur really can be reversed, and what hides a plate for good."
+  description="Free online deblur sites can't recover a blurred number plate. They invent one. When a blur really can be reversed, and what hides a plate for good."
   ogImage="/og/unblur-license-plate.png"
 >
   <Fragment slot="head">
@@ -95,10 +95,10 @@ const structuredData = {
           Can you <span style="color: var(--accent)">unblur</span> a license plate?
         </h1>
         <p style="font-size: clamp(16px, 2.2vw, 18px); color: var(--text-2); max-width: 40em; margin: 20px 0 0; line-height: 1.7; text-wrap: pretty;">
-          Not the way the free "deblur" sites promise — but also not never. Blurring a number
-          plate reduces the pixels rather than deleting them, and a plate is one of the worst
-          things to trust a blur with. Here's what survives, what an AI upscaler is really doing
-          when it hands you a crisp plate, and the one method that genuinely can't be undone.
+          Not the way the free "deblur" sites promise, though sometimes it can be done. Blurring a
+          number plate reduces the pixels rather than deleting them, and a plate is one of the
+          worst things to trust a blur with. This page covers what survives a blur, what an AI
+          upscaler is doing when it hands you a crisp plate, and the one method that can't be undone.
         </p>
       </div>
     </section>
@@ -123,16 +123,16 @@ const structuredData = {
     <!-- BLUR ISN'T DELETION -->
     <section class="section">
       <div class="wrap" style="max-width: 780px">
-        <h2 class="sec-title" style="margin-bottom: 16px">Blurring doesn't delete — it averages</h2>
+        <h2 class="sec-title" style="margin-bottom: 16px">Blurring averages pixels instead of deleting them</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           A blur replaces each pixel with a weighted average of its neighbours. Pixelation
           replaces each block of pixels with a single average colour. Both are ordinary,
-          repeatable arithmetic performed <em>on</em> the original pixels — not an eraser.
+          repeatable arithmetic performed <em>on</em> the original pixels. Neither one erases anything.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
-          That distinction is the whole story. Information is <strong>reduced</strong>, not
-          removed, and the only question that matters is whether enough of it survives to narrow
-          the original down to one answer. For a photo of a landscape, plenty is lost and nobody
+          That difference matters more than anything else here. Information is <strong>reduced</strong>
+          rather than removed, so the question is whether enough of it survives to narrow the
+          original down to one answer. For a photo of a landscape, plenty is lost and nobody
           cares. For six characters on a number plate, "reduced" can still be far too much.
         </p>
       </div>
@@ -144,21 +144,21 @@ const structuredData = {
         <h2 class="sec-title" style="margin-bottom: 16px">Why a number plate is the worst thing to blur</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           A blurred face is hard to recover because the set of possible faces is effectively
-          unlimited. A plate is the exact opposite — the set of possible answers is small and
+          unlimited. A plate is the opposite case. The set of possible answers is small and
           fully known:
         </p>
         <ul style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px; padding-left: 1.1em;">
-          <li>a fixed alphabet — letters and digits, nothing else;</li>
+          <li>a fixed alphabet of letters and digits, nothing else;</li>
           <li>a fixed length and layout for the country it's registered in;</li>
           <li>a standardised typeface (UK plates are legally required to use one);</li>
           <li>often a format you can check a guess against.</li>
         </ul>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          Put that together with the fact that blurring is <em>deterministic</em> and the attack
-          writes itself. You don't need to invert the blur at all. You render a candidate plate in
-          the right font, apply the same blur, and compare it against the blurred region. Repeat.
-          The candidate whose blur matches best is the plate. It's a search, not a miracle — and
-          the search space is small enough to walk through.
+          Blurring is also <em>deterministic</em>: the same plate and settings always give the
+          same result. With so few possible answers, that makes the attack straightforward. You don't need to invert the blur at all. You render a
+          candidate plate in the right font, apply the same blur, compare it against the blurred
+          region, and repeat. The candidate whose blur matches best is the plate. The attacker is
+          searching through possibilities, and for plates there are few enough to work through.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
           This is the same principle behind the published attacks on pixelated <em>text</em>, which
@@ -174,16 +174,17 @@ const structuredData = {
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 16px">Pixelation is the weakest of the three</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          A mosaic feels destructive — a whole block of detail collapsing into one flat colour.
-          But the grid is regular and each block's colour is a clean, reproducible summary of
-          exactly what sat underneath it. That's close to ideal for the matching attack above: a
+          A mosaic feels destructive, because a whole block of detail collapses into one flat colour.
+          But the grid is regular, and each block's colour is a reproducible summary of exactly
+          what sat underneath it. That is close to ideal for the matching attack above, since a
           candidate plate either produces the same grid of averages or it doesn't.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
-          Pixelation is a good <em>look</em> for censorship — it reads instantly as "hidden" — and
-          a poor lock. If you like the aesthetic, keep it for things that don't matter, and see
+          Pixelation is a good <em>look</em> for censorship, because anyone can see at a glance
+          that something has been hidden. As a lock it is poor. If you like the aesthetic, keep it
+          for things that don't matter, and see
           <a href="/pixelate-image/" style="color:var(--accent)">pixelate an image</a> for that.
-          For a plate, choose otherwise.
+          For a plate, use something else.
         </p>
       </div>
     </section>
@@ -193,26 +194,25 @@ const structuredData = {
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 16px">Where blur does hold up: strength</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          Blur isn't useless. The variable that decides everything is how wide the blur is
+          Blur still has a place. What decides whether it holds up is how wide the blur is
           relative to the characters. Once the radius is a large fraction of the plate's height,
-          stroke-level detail really is gone and candidate matching stops resolving to a single
+          stroke-level detail is gone and candidate matching stops resolving to a single
           answer.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          The dangerous case is the gentle blur — the one where you can still make out the shape
-          and rhythm of the characters. That's also the one people ship, because it looks tidier
+          The dangerous case is the gentle blur, where you can still make out the shape and
+          rhythm of the characters. It is also the one people tend to use, because it looks tidier
           and still "obviously" hides the plate. If you do blur,
           <a href="/blur-license-plate/" style="color:var(--accent)">blur hard</a> and check the
           result at full size rather than at thumbnail size.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
-          Worth knowing: plates are a well-studied recovery target for an unrelated reason.
-          Automatic plate recognition has to cope with plates smeared by camera and vehicle
-          motion, so there is a whole research literature — and trained models, and datasets —
-          aimed at reading motion-blurred plates. Recovering a plate blurred at capture is a
-          different problem from reversing a blur you applied on purpose, but it does mean the
-          expertise and the tooling for "read this smeared plate" already exist. Three
-          representative examples:
+          Plates are also a well-studied recovery target, for an unrelated reason. Automatic
+          plate recognition has to cope with plates smeared by camera and vehicle motion, so there
+          is a research literature, along with trained models and datasets, aimed at reading
+          motion-blurred plates. Recovering a plate blurred at capture is a different problem from
+          reversing a blur you applied on purpose. Even so, the expertise and the tooling for
+          reading a smeared plate already exist. Three representative examples:
         </p>
         <ul style="list-style:none;margin:18px 0 0;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;">
           <li style="color:var(--text-3);font-size:13.5px;line-height:1.6;margin:0 0 9px;">
@@ -226,7 +226,7 @@ const structuredData = {
           <li style="color:var(--text-3);font-size:13.5px;line-height:1.6;margin:0;">
             Gong et al. (2024).
             <a href="https://arxiv.org/abs/2404.13677" rel="noopener" target="_blank" style="color:var(--accent-text)">A Dataset and Model for Realistic License Plate Deblurring</a>
-            — introduces the LPBlur dataset and the LPDGAN model.
+            (introduces the LPBlur dataset and the LPDGAN model)
           </li>
         </ul>
       </div>
@@ -235,24 +235,24 @@ const structuredData = {
     <!-- AI UPSCALERS -->
     <section class="band section">
       <div class="wrap" style="max-width: 780px">
-        <h2 class="sec-title" style="margin-bottom: 16px">What "AI unblur" actually gives you</h2>
+        <h2 class="sec-title" style="margin-bottom: 16px">What "AI unblur" gives you</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          Generative models don't recover detail. They <strong>synthesise</strong> it. Handed a
+          Generative models <strong>synthesise</strong> detail instead of recovering it. Given a
           blurry plate, an upscaler produces something sharp that is merely <em>consistent</em>
-          with the blur it was given — plausible characters, rendered with total confidence, and
-          frequently wrong.
+          with the blur it was given. The characters are plausible and rendered with total
+          confidence, and they are frequently wrong.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           So if you run a blurred plate through one and get a clean registration back, you are
-          looking at the model's guess, not the plate. It has the visual authority of evidence and
-          none of the substance. Nothing built this way should be relied on to identify a vehicle,
+          looking at the model's guess at the plate. It can look as convincing as evidence while
+          telling you nothing reliable about the real registration. Nothing built this way should be relied on to identify a vehicle,
           a person, or anything else.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
-          And this cuts both ways. Yes, it's why the free deblur sites can't read the plate in
-          someone's photo. No, it isn't a reason to feel safe — a targeted candidate search
-          against a lightly blurred plate is a completely different and much stronger attack than
-          an off-the-shelf upscaler.
+          This cuts both ways. It explains why the free deblur sites can't read the plate in
+          someone's photo, but it is no reason to feel safe. A targeted candidate search against a
+          lightly blurred plate is a different and much stronger attack than an off-the-shelf
+          upscaler.
         </p>
       </div>
     </section>
@@ -260,18 +260,18 @@ const structuredData = {
     <!-- COMPARISON -->
     <section class="section">
       <div class="wrap" style="max-width: 780px">
-        <h2 class="sec-title" style="margin-bottom: 16px">How the methods really compare</h2>
+        <h2 class="sec-title" style="margin-bottom: 16px">How the methods compare</h2>
         <div class="table-scroll">
           <table class="cmp">
             <thead>
               <tr><th>Method</th><th>What it does to the pixels</th><th>Reversible?</th><th>Use it for</th></tr>
             </thead>
             <tbody>
-              <tr><th>Solid blackout</th><td data-label="What it does">Replaces them with one flat colour</td><td data-label="Reversible?">No — nothing survives to reconstruct</td><td data-label="Use it for">Anything that actually matters</td></tr>
+              <tr><th>Solid blackout</th><td data-label="What it does">Replaces them with one flat colour</td><td data-label="Reversible?">No. Nothing survives to reconstruct</td><td data-label="Use it for">Anything that matters</td></tr>
               <tr><th>Heavy blur</th><td data-label="What it does">Wide average; stroke detail gone</td><td data-label="Reversible?">Unlikely</td><td data-label="Use it for">A softer look on low-stakes detail</td></tr>
               <tr><th>Light blur</th><td data-label="What it does">Narrow average; character shapes survive</td><td data-label="Reversible?">Plausibly</td><td data-label="Use it for">Aesthetics only</td></tr>
               <tr><th>Pixelation</th><td data-label="What it does">Block averages on a regular grid</td><td data-label="Reversible?">Plausibly</td><td data-label="Use it for">The censorship look</td></tr>
-              <tr><th>Shape drawn on top</th><td data-label="What it does">Nothing — pixels intact underneath</td><td data-label="Reversible?">Trivially</td><td data-label="Use it for">Nothing. See below</td></tr>
+              <tr><th>Shape drawn on top</th><td data-label="What it does">Nothing (pixels intact underneath)</td><td data-label="Reversible?">Trivially</td><td data-label="Use it for">Nothing. See below</td></tr>
             </tbody>
           </table>
         </div>
@@ -281,12 +281,12 @@ const structuredData = {
     <!-- WHAT WORKS -->
     <section class="band section">
       <div class="wrap" style="max-width: 780px">
-        <h2 class="sec-title" style="margin-bottom: 16px">What actually hides a plate</h2>
+        <h2 class="sec-title" style="margin-bottom: 16px">What hides a plate</h2>
         <ol style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 24px; padding-left: 1.2em;">
           <li style="margin-bottom: 8px"><strong>Use a solid block, not a blur.</strong> A flat fill replaces the original pixels outright. There is no residue to match against.</li>
-          <li style="margin-bottom: 8px"><strong>Cover generously.</strong> The whole plate plus a margin, so no half-characters survive at the edges — partial characters narrow the search too.</li>
-          <li style="margin-bottom: 8px"><strong>Make sure it's baked into the image.</strong> Not a layer, not a shape, not an annotation.</li>
-          <li style="margin-bottom: 8px"><strong>Check the exported file, not the preview.</strong> Open the file you're about to send and look at the actual pixels.</li>
+          <li style="margin-bottom: 8px"><strong>Cover generously.</strong> Include the whole plate plus a margin so no half-characters survive at the edges, since partial characters narrow the search too.</li>
+          <li style="margin-bottom: 8px"><strong>Make sure it's baked into the image.</strong> It shouldn't sit on top as a separate layer, shape or annotation.</li>
+          <li style="margin-bottom: 8px"><strong>Check the exported file rather than the preview.</strong> Open the file you're about to send and look at the pixels themselves.</li>
           <li><strong>Strip the metadata as well.</strong> A flawless blackout doesn't help if the file still says where and when the photo was taken.</li>
         </ol>
         <a href="/redact-image/" class="btn btn-primary btn-lg">
@@ -294,8 +294,8 @@ const structuredData = {
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
         <p style="color:var(--text-3);font-size:14px;line-height:1.6;margin:16px 0 0;">
-          Runs in your browser — the photo is never uploaded, so there's no copy of the
-          un-redacted original anywhere but your own device.
+          Runs in your browser. The photo is never uploaded, so the only copy of the
+          un-redacted original stays on your own device.
         </p>
       </div>
     </section>
@@ -307,26 +307,26 @@ const structuredData = {
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           The most common redaction failure has nothing to do with blur strength. Draw a black
           rectangle over a plate in a PDF, a Word document, or a design tool and you usually
-          haven't changed the image at all — you've added an object that sits on top of it. The
+          haven't changed the image at all. You've added an object that sits on top of it. The
           original is still in the file, and anything that reads the document's structure instead
-          of its rendered appearance can move that rectangle, delete it, or simply read straight
+          of its rendered appearance can move that rectangle, delete it, or read straight
           past it.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          Real redaction changes the underlying data. That's why the
+          Real redaction changes the underlying data. The
           <a href="/redact-image/" style="color:var(--accent)">redaction tool here</a> re-encodes
-          the image with the black bars written into the pixels and hands you a new file: there is
-          no layer to peel off, because there is no layer.
+          the image with the black bars written into the pixels and hands you a new file, so there
+          is no separate layer for anyone to peel off.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
           PDFs are where this bites hardest, because a PDF page is a list of drawing instructions
-          rather than a picture: the rectangle is one instruction and the text underneath is
+          rather than a picture. The rectangle is one instruction and the text underneath is
           another, and both survive into the file. Copy the area, or run the document through a
-          text extractor, and the words come straight back out —
-          <a href="/unredact-pdf/" style="color:var(--accent)">it has caught out courts and governments</a>.
+          text extractor, and the words come straight back out.
+          <a href="/unredact-pdf/" style="color:var(--accent)">It has caught out courts and governments</a>.
           <a href="/redact-pdf/" style="color:var(--accent)">Redacting a PDF</a> therefore has to
-          rebuild each page from its rendered pixels, so the text layer is never carried across —
-          same principle, applied to a format that hides the evidence better.
+          rebuild each page from its rendered pixels so the text layer is never carried across.
+          It is the same principle, applied to a format that hides the evidence better.
         </p>
       </div>
     </section>
@@ -336,12 +336,12 @@ const structuredData = {
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 16px">Don't forget what's outside the picture</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
-          A perfectly blacked-out plate protects nothing if the photo still carries the GPS
+          A fully blacked-out plate protects nothing if the photo still carries the GPS
           coordinates of the driveway it was parked in, plus a timestamp and the camera it was
           shot on. Most phone photos do. Run the finished file through
           <a href="/remove-exif/" style="color:var(--accent)">remove photo metadata</a> before you
-          publish it — and note that saving a redacted copy with our tools already drops the
-          original metadata as a side effect of re-encoding.
+          publish it. Saving a redacted copy with our tools already drops the original metadata,
+          as a side effect of re-encoding.
         </p>
       </div>
     </section>
@@ -356,7 +356,7 @@ const structuredData = {
             Can a blurred license plate be recovered?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">Sometimes — but not by the free "deblur" tools that advertise it. The realistic attack is to render every plausible plate, apply the same blur to each, and see which result matches. A light blur or a pixelated plate can fall to that. A heavy blur is far more resistant, and a <a href="/redact-image/" style="color:var(--accent)">solid black bar</a> can't be reversed at all, because the original pixels are gone.</p>
+          <p class="faq-a">Sometimes, but not by the free "deblur" tools that advertise it. The realistic attack is to render every plausible plate, apply the same blur to each, and see which result matches. A light blur or a pixelated plate can fall to that. A heavy blur is far more resistant, and a <a href="/redact-image/" style="color:var(--accent)">solid black bar</a> can't be reversed at all, because the original pixels are gone.</p>
         </details>
 
         <details class="faq-item">
@@ -364,7 +364,7 @@ const structuredData = {
             Is there a free online tool to deblur a license plate?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">No reliable one. Free "deblur" and "unblur" sites run generic sharpening or a generative upscaler, and neither recovers characters the blur averaged away — the plate they hand back is a guess. The attack that can work on a light blur needs the exact plate format, font and blur settings, which is specialist work, not an upload. If you need a plate for an incident, give the original, unedited footage to the police or your insurer: the original file holds more detail than any screenshot or re-upload.</p>
+          <p class="faq-a">No reliable one. Free "deblur" and "unblur" sites run generic sharpening or a generative upscaler, and neither recovers characters the blur averaged away. The plate they hand back is a guess. The attack that can work on a light blur needs the exact plate format, font and blur settings, which makes it specialist work rather than something a website can do from an upload. If you need a plate for an incident, give the original, unedited footage to the police or your insurer. The original file holds more detail than any screenshot or re-upload.</p>
         </details>
 
         <details class="faq-item">
@@ -372,7 +372,7 @@ const structuredData = {
             Do AI unblur tools work on number plates?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">Not in the way people expect. Generative upscalers don't recover the original characters — they synthesise sharp detail that's merely consistent with the blur. You get plausible, confidently rendered characters that are frequently wrong. That output is a guess, not the plate, and it should never be treated as evidence.</p>
+          <p class="faq-a">Not in the way people expect. Instead of recovering the original characters, generative upscalers synthesise sharp detail that's merely consistent with the blur. You get plausible, confidently rendered characters that are frequently wrong. That output is the model's guess, and it should never be treated as evidence of what the plate says.</p>
         </details>
 
         <details class="faq-item">
@@ -380,7 +380,7 @@ const structuredData = {
             Is pixelating a plate safer than blurring it?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">Generally no — for a plate it tends to be worse. A mosaic replaces each block with one average colour on a regular grid, and those values are a clean, reproducible summary of what was underneath, which is well suited to matching candidates against. Pixelation is a recognisable censorship look, not a strong lock.</p>
+          <p class="faq-a">Generally no. For a plate it tends to be worse. A mosaic replaces each block with one average colour on a regular grid, and those values are a clean, reproducible summary of what was underneath, which is well suited to matching candidates against. Pixelation gives a recognisable censorship look, but as protection it is weak.</p>
         </details>
 
         <details class="faq-item">
@@ -388,7 +388,7 @@ const structuredData = {
             Can I unblur a photo I blurred myself?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">No. If you exported a blurred copy and no longer have the original, the detail is genuinely gone from that file. Blurring is a one-way reduction of the pixels — there's no undo hidden inside the image, and no tool can restore what was never saved.</p>
+          <p class="faq-a">No. If you exported a blurred copy and no longer have the original, the detail is gone from that file. Blurring is a one-way reduction of the pixels. There's no undo hidden inside the image, and no tool can restore what was never saved.</p>
         </details>
 
         <details class="faq-item">
@@ -396,7 +396,7 @@ const structuredData = {
             What's the safest way to hide a number plate in a photo?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">Cover it with a solid block of colour, baked into the pixels of the exported image, and cover generously — the whole plate plus a margin, so no partial characters survive at the edges. A solid fill replaces the original pixels outright, so there's nothing left to reconstruct and nothing to peel off.</p>
+          <p class="faq-a">Cover it with a solid block of colour, baked into the pixels of the exported image. Cover generously, taking in the whole plate plus a margin, so no partial characters survive at the edges. A solid fill replaces the original pixels outright, so there's nothing left to reconstruct and nothing to peel off.</p>
         </details>
 
         <details class="faq-item">
@@ -404,7 +404,7 @@ const structuredData = {
             Why do people blur license plates?
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
-          <p class="faq-a">A number plate is a unique identifier tied to a registered keeper, so a photo showing one can connect a car — and often an address — to a named person. Cars turn up in the background of marketplace listings, dashcam clips, property photos and holiday snaps, usually without the photographer thinking about it. In the UK and EU a plate counts as personal data whenever it can identify someone, which is why dealers, letting agents and street-mapping services blur them by default. The motive is ordinary: publish the photo without publishing the person.</p>
+          <p class="faq-a">A number plate is a unique identifier tied to a registered keeper, so a photo showing one can connect a car, and often an address, to a named person. Cars turn up in the background of marketplace listings, dashcam clips, property photos and holiday snaps, usually without the photographer thinking about it. In the UK and EU a plate counts as personal data whenever it can identify someone, which is why dealers, letting agents and street-mapping services blur them by default. The motive is ordinary: people want to share the photo without identifying the person behind the plate.</p>
         </details>
 
         <details class="faq-item">
@@ -431,7 +431,7 @@ const structuredData = {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.2"/><rect x="6.5" y="9" width="11" height="3.2" rx="1" fill="currentColor" stroke="none"/><path d="M6.5 15.5h7"/></svg>
             </div>
             <div class="tool-name">Redact an image</div>
-            <div class="tool-desc">Solid black bars baked into the pixels — the only irreversible option.</div>
+            <div class="tool-desc">Solid black bars baked into the pixels, the only irreversible option.</div>
             <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
           </a>
           <a href="/blur-license-plate/" class="tool-card">
@@ -439,7 +439,7 @@ const structuredData = {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="1.8"/><path d="M6 11.5h1.5M9.5 11.5H11M13.5 11.5H15M17 11.5h1"/><path d="M6 13.5h12" opacity=".45"/></svg>
             </div>
             <div class="tool-name">Blur a license plate</div>
-            <div class="tool-desc">If you'd rather blur, blur hard — up to 30 photos at a time.</div>
+            <div class="tool-desc">If you'd rather blur, blur hard. Works on up to 30 photos at a time.</div>
             <svg class="tool-arrow" width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h10M10 5l4 4-4 4"/></svg>
           </a>
           <a href="/pixelate-image/" class="tool-card">

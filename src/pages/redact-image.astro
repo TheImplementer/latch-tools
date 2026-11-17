@@ -30,7 +30,7 @@ const structuredData = {
       "step": [
         { "@type": "HowToStep", "name": "Add your image", "text": "Drag the document, screenshot, or photo onto the editor, or click Browse to select it." },
         { "@type": "HowToStep", "name": "Draw over each detail", "text": "Drag a black bar over every name, number, or line you want to hide. Add as many as you need." },
-        { "@type": "HowToStep", "name": "Check the coverage", "text": "Make sure each bar fully covers the detail. Blackout is the strongest option — the covered pixels are replaced entirely." },
+        { "@type": "HowToStep", "name": "Check the coverage", "text": "Make sure each bar fully covers the detail. Blackout is the strongest option, since the covered pixels are replaced entirely." },
         { "@type": "HowToStep", "name": "Download the redacted image", "text": "Save the result. The bars are flattened into the pixels, so nothing sensitive remains in the file." }
       ]
     },
@@ -45,22 +45,22 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Can the blacked-out content be recovered?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. A blackout bar replaces the covered pixels with solid colour and is flattened into the exported image — there is no original detail left underneath to recover. It is the strongest of the three options: blur and pixelation obscure detail and can occasionally be reversed if applied too lightly, whereas a solid bar removes it outright." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. A blackout bar replaces the covered pixels with solid colour and is flattened into the exported image, so no original detail is left underneath to recover. It is the strongest of the three options. Blur and pixelation obscure detail and can occasionally be reversed if applied too lightly, whereas a solid bar removes it outright." }
         },
         {
           "@type": "Question",
-          "name": "I've heard black-box redactions can be undone — is this safe?",
-          "acceptedAnswer": { "@type": "Answer", "text": "That well-known failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. To redact a PDF safely you must flatten or rasterise it, because drawing a box in a PDF editor is not enough — the Redact PDF tool does exactly that, rebuilding each page so the text under the bar is gone rather than covered." }
+          "name": "I've heard black-box redactions can be undone. Is this safe?",
+          "acceptedAnswer": { "@type": "Answer", "text": "That well-known failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. To redact a PDF safely you must flatten or rasterise it, because drawing a box in a PDF editor is not enough. The Redact PDF tool does that for you, rebuilding each page so the text under the bar is removed from the file instead of being covered." }
         },
         {
           "@type": "Question",
           "name": "Can I redact several things at once?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a separate bar over each detail — there is no limit. You can move, resize, or delete any bar before you export." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. There is no limit, so draw a separate bar over each detail. You can move, resize, or delete any bar before you export." }
         },
         {
           "@type": "Question",
           "name": "Should I use blackout, blur, or pixelate?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Use blackout when the goal is certainty — an account number, an address, a name on an ID. If you'd rather show that something is present but hidden, such as a face in a photo, the Blur and Pixelate tools do that with a softer look." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Use blackout when you need certainty, for example with an account number, an address or a name on an ID. If you'd rather show that something is present but hidden, such as a face in a photo, the Blur and Pixelate tools do that with a softer look." }
         }
       ]
     }
@@ -69,7 +69,7 @@ const structuredData = {
 ---
 <Layout
   title="Redact Image — Black Out Sensitive Info · Latch Tools"
-  description="Black out names, numbers and sensitive details in an image or screenshot — bars baked into the pixels. Runs in your browser, nothing uploaded."
+  description="Black out names, numbers and sensitive details in an image or screenshot, with bars baked into the pixels. Runs in your browser, nothing uploaded."
   ogImage="/og/redact-image.png"
 >
   <Fragment slot="head">
@@ -87,7 +87,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">Redact Image</span>
         </nav>
         <h1>Redact sensitive details in an image</h1>
-        <p>Black out names, account numbers, addresses, or signatures on a document, statement, ID, or screenshot. Draw a bar over each detail — the covered pixels are replaced for good, with nothing left underneath.</p>
+        <p>Black out names, account numbers, addresses, or signatures on a document, statement, ID, or screenshot. Draw a bar over each detail and the covered pixels are permanently replaced, leaving nothing underneath.</p>
         <TrustPill />
       </div>
 
@@ -117,7 +117,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">3</div>
           <h4>Check the coverage</h4>
-          <p>Make sure each bar fully covers the detail. Blackout replaces the covered pixels entirely — the strongest option.</p>
+          <p>Make sure each bar fully covers the detail. Blackout is the strongest option, since the covered pixels are replaced entirely.</p>
         </div>
         <div class="howto-step">
           <div class="n">4</div>
@@ -133,14 +133,14 @@ const structuredData = {
     <div class="wrap" style="max-width:780px">
       <div class="sec-head">
         <div>
-          <h2 class="sec-title" style="font-size:22px">Are black bars actually safe?</h2>
+          <h2 class="sec-title" style="font-size:22px">Are black bars safe?</h2>
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        You may have heard of redactions being undone — a black box lifted off a document to reveal the text beneath. That happens with <strong>PDFs and other layered documents</strong>, where drawing a box only adds a graphic on top while the original text stays in the file, ready to be copied out. It's a real and common mistake.
+        You may have heard of redactions being undone, with a black box lifted off a document to reveal the text beneath. That happens with <strong>PDFs and other layered documents</strong>, where drawing a box only adds a graphic on top while the original text stays in the file, ready to be copied out. It is a common mistake.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        This tool avoids it by working on <strong>pixels, not layers</strong>. When you export, the bar's pixels overwrite the originals and the whole image is flattened — there is no text, no layer, and no original detail hiding underneath. And because it all happens in your browser, the sensitive image is never uploaded. If you need to redact a PDF specifically, remember it must be flattened or rasterised first; a box drawn in a PDF editor is not enough.
+        This tool avoids it by working on <strong>pixels, not layers</strong>. When you export, the bar's pixels overwrite the originals and the whole image is flattened, so no text, layer or original detail is left underneath. A PDF is different: it has to be flattened or rasterised before it can be redacted safely, because a box drawn in a PDF editor is not enough.
       </p>
     </div>
   </section>
@@ -160,19 +160,19 @@ const structuredData = {
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can the blacked-out content be recovered?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. A blackout bar replaces the covered pixels with solid colour and is flattened into the exported image — there is no original detail left underneath. It's the strongest of the three options: blur and pixelation obscure detail and can occasionally be reversed if applied too lightly, whereas a solid bar removes it outright.</p>
+          <p class="faq-a">No. A blackout bar replaces the covered pixels with solid colour and is flattened into the exported image, so no original detail is left underneath to recover. It's the strongest of the three options. Blur and pixelation obscure detail and can occasionally be reversed if applied too lightly, whereas a solid bar removes it outright.</p>
         </details>
         <details class="faq-item">
-          <summary class="faq-q">I've heard black-box redactions can be undone — is this safe?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">That failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. To redact a PDF safely you must flatten or rasterise it — drawing a box in a PDF editor is not enough, which is exactly what <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">Redact PDF</a> does for you.</p>
+          <summary class="faq-q">I've heard black-box redactions can be undone. Is this safe?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
+          <p class="faq-a">That failure happens with black boxes drawn over text in PDFs or other documents, where the text layer still exists underneath the graphic and can be copied out. This tool exports a flat raster image: the pixels themselves are overwritten, so there is no hidden text or layer beneath the bar. To redact a PDF safely you must flatten or rasterise it, because drawing a box in a PDF editor is not enough. <a href="/redact-pdf/" style="color:var(--accent-text);font-weight:600">Redact PDF</a> does that step for you.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I redact several things at once?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Draw a separate bar over each detail — there is no limit. You can move, resize, or delete any bar before you export.</p>
+          <p class="faq-a">Yes. There is no limit, so draw a separate bar over each detail. You can move, resize, or delete any bar before you export.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Should I use blackout, blur, or pixelate?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Use blackout when the goal is certainty — an account number, an address, a name on an ID. If you'd rather show that something is present but hidden, such as a face in a photo, the <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">blur</a> and <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">pixelate</a> tools do that with a softer look.</p>
+          <p class="faq-a">Use blackout when you need certainty, for example with an account number, an address or a name on an ID. If you'd rather show that something is present but hidden, such as a face in a photo, the <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">blur</a> and <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">pixelate</a> tools do that with a softer look.</p>
         </details>
       </div>
 
@@ -181,7 +181,7 @@ const structuredData = {
       </p>
 
       <p class="muted" style="font-size:14px;margin-top:12px">
-        Why a black bar and not a blur? See <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">how blurred and pixelated details get narrowed back down</a>.
+        For the reasons to choose a black bar over a blur, see <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">how blurred and pixelated details get narrowed back down</a>.
       </p>
     </div>
   </section>

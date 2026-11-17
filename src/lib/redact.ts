@@ -428,9 +428,9 @@ export function initRedactWidget(root: HTMLElement): void {
         ? (e as { reason: string }).reason
         : "run";
     if (reason === "fetch")
-      return `Couldn't load the ${detectOne} finder — you may be offline. You can still draw boxes by hand.`;
+      return `Couldn't load the ${detectOne} finder. You may be offline. You can still draw boxes by hand.`;
     if (reason === "unsupported" || reason === "init")
-      return `The ${detectOne} finder can't run in this browser. Draw boxes by hand instead — everything else works.`;
+      return `The ${detectOne} finder can't run in this browser. Draw boxes by hand instead; everything else works.`;
     return `The ${detectOne} finder ran into a problem. Draw boxes by hand instead.`;
   }
 
@@ -456,8 +456,8 @@ export function initRedactWidget(root: HTMLElement): void {
     }
     const where =
       items.length > 1
-        ? ` across ${imagesHit} of ${items.length} images — click each thumbnail to check`
-        : " — check the boxes";
+        ? ` across ${imagesHit} of ${items.length} images. Click each thumbnail to check them`
+        : ". Check the boxes";
     return `Found ${plural(added, detectOne)}${where}, and add any the finder missed.${tail}`;
   }
 
@@ -501,7 +501,7 @@ export function initRedactWidget(root: HTMLElement): void {
       // Batch: same shape as apply() — processing panel, meter, yield a frame
       // between items so progress actually paints.
       procTitle.textContent = `Looking for ${detectNoun} in ${plural(items.length, "image")}`;
-      procSub.textContent = "Running on your device — nothing is uploaded";
+      procSub.textContent = "Running on your device";
       procMeter.hidden = false;
       if (detectCancelRow) detectCancelRow.hidden = false;
       setProgress(0, items.length, `0 of ${items.length}`);
@@ -643,7 +643,7 @@ export function initRedactWidget(root: HTMLElement): void {
     if (imgs.length === 0) {
       showError(
         "Unsupported file type",
-        "Please choose image files — JPEG, PNG, or WebP.",
+        "Please choose JPEG, PNG or WebP images.",
       );
       return;
     }
@@ -664,7 +664,7 @@ export function initRedactWidget(root: HTMLElement): void {
     if (showLoader) {
       procTitle.textContent = "Loading your images";
       procSub.textContent =
-        "Reading them in your browser — nothing is uploaded";
+        "Reading your images…";
       procMeter.hidden = false;
       setProgress(0, chosen.length, `0 of ${chosen.length}`);
       widgetTitle.textContent = "Loading…";
@@ -827,11 +827,11 @@ export function initRedactWidget(root: HTMLElement): void {
     const areas = results.reduce((n, r) => n + r.areas, 0);
     const bytes = results.reduce((n, r) => n + r.blob.size, 0);
     if (results.length > 1) {
-      doneTitle.textContent = `Done — ${plural(results.length, "image")}, ${plural(areas, "area")} ${verb}`;
+      doneTitle.textContent = `Done: ${plural(results.length, "image")}, ${plural(areas, "area")} ${verb}`;
       doneSub.textContent = `${formatBytes(bytes)} total · baked in for good, and none of it left your device`;
       downloadLabelEl.textContent = "Download all (.zip)";
     } else {
-      doneTitle.textContent = `Done — ${plural(areas, "area")} ${verb}`;
+      doneTitle.textContent = `Done: ${plural(areas, "area")} ${verb}`;
       doneSub.textContent = `${formatBytes(bytes)} · baked in for good, and it never left your device`;
       downloadLabelEl.textContent = "Download";
     }

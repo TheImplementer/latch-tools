@@ -21,7 +21,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Blur faces in a photo directly in your browser to protect identities before you share. No upload — the image never leaves your device.",
+      "description": "Blur faces in a photo directly in your browser to protect identities before you share. There is no upload, and the image stays on your device.",
       "url": "https://latchtools.com/blur-face/"
     },
     {
@@ -40,32 +40,32 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Are my photos uploaded anywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server — that includes the face finder, which downloads once and then runs on your own device. Editing and export keep working even if you go offline after loading the page." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server, and that includes the face finder, which downloads once and then runs on your own device. Editing and export keep working even if you go offline after loading the page." }
         },
         {
           "@type": "Question",
           "name": "Does it find every face?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The finder is a helper, not a guarantee. It does a first pass and is good at faces that are reasonably large and facing the camera, but it can miss faces that are small, turned away, in deep shadow, or partly covered. Always check the result and draw a box over anything it missed before you share the image." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Treat the finder as a helper for a first pass. It is good at faces that are reasonably large and facing the camera, but it can miss faces that are small, turned away, in deep shadow, or partly covered. Always check the result and draw a box over anything it missed before you share the image." }
         },
         {
           "@type": "Question",
           "name": "Does the face detection run on a server?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The detection model is downloaded to your browser the first time you use it and runs entirely on your device. Most tools that offer automatic face blurring upload your photo to do the detection; this one never does." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The detection model is downloaded to your browser the first time you use it and runs entirely on your device. Most tools that offer automatic face blurring upload your photo to a server to do the detection. This one never does." }
         },
         {
           "@type": "Question",
           "name": "Can the blurred face be recovered later?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The blur is rendered into the actual pixels of the exported image at full resolution — it is not a layer or overlay sitting on top. Once you download and share the result, there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The blur is rendered into the pixels of the exported image at full resolution, rather than sitting on top as a separate layer or overlay. Once you download and share the result, there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain." }
         },
         {
           "@type": "Question",
           "name": "How much should I blur a face?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Turn the strength up until no facial features are recognisable — for a small or low-resolution face, use the strongest setting. If you'd prefer mosaic blocks or a solid bar instead of a soft blur, the Pixelate and Redact tools do the same job with a different look." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Turn the strength up until no facial features are recognisable. For a small or low-resolution face, use the strongest setting. If you'd prefer mosaic blocks or a solid bar to a soft blur, the Pixelate and Redact tools do the same job with a different look." }
         },
         {
           "@type": "Question",
           "name": "Can I blur more than one face?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a separate box over each face — there is no limit. You can move, resize, or delete any box before you export." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a separate box over each face. There is no limit on how many. You can move, resize, or delete any box before you export." }
         },
         {
           "@type": "Question",
@@ -79,7 +79,7 @@ const structuredData = {
 ---
 <Layout
   title="Blur Faces in Photos — Free & Private · Latch Tools"
-  description="Blur faces in a photo to protect identities before sharing. Runs entirely in your browser — the photo is never uploaded."
+  description="Blur faces in a photo to protect identities before sharing. Runs entirely in your browser, so the photo is never uploaded."
   ogImage="/og/blur-face.png"
 >
   <Fragment slot="head">
@@ -97,7 +97,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">Blur Face</span>
         </nav>
         <h1>Blur faces in a photo</h1>
-        <p>Hide faces before you post — protect bystanders, children, or anyone who didn't agree to be shared. Find the faces automatically, check the boxes, and download. The detection runs on your device too, so the photo never leaves it.</p>
+        <p>Hide faces before you post, whether they belong to bystanders, children, or anyone who didn't agree to be shared. Find the faces automatically, check the boxes, and download. The face detection runs on your device too.</p>
         <TrustPill />
       </div>
 
@@ -127,7 +127,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">3</div>
           <h4>Set the strength</h4>
-          <p>Raise the strength until no facial features remain — use the strongest setting for small or distant faces.</p>
+          <p>Raise the strength until no facial features remain. Small or distant faces need the strongest setting.</p>
         </div>
         <div class="howto-step">
           <div class="n">4</div>
@@ -147,20 +147,20 @@ const structuredData = {
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        Blurring a face is usually about privacy — a stranger in the background, a child, a colleague, or a witness who shouldn't be identifiable. It makes little sense to hand that same photo to a remote server just to hide it. Latch does the whole job in your browser: the image is decoded, edited, and re-encoded on your own device, and no copy is ever sent anywhere.
+        Blurring a face is usually about privacy. The face might belong to a stranger in the background, a child, a colleague, or a witness who shouldn't be identifiable. Sending that same photo to a remote server just to hide it makes little sense, so Latch does the whole job in your browser. The image is decoded, edited, and re-encoded on your own device, and no copy is sent anywhere.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        The result matters too. Some tools draw a blur as a separate layer that can be peeled back from the file. Here the blur is composited straight into the exported pixels at full resolution, so once you share the image there's no sharp original hiding underneath. For anything sensitive, turn the strength up until the face is completely unreadable.
+        How the blur is saved matters too. Some tools draw it as a separate layer that can be peeled back from the file. Here it is composited into the exported pixels at full resolution, so the image you share has no sharp original underneath. For anything sensitive, turn the strength up until the face can't be read at all.
       </p>
-      <h3 style="font-size:17px;margin-top:26px">The detection runs on your device, not ours</h3>
+      <h3 style="font-size:17px;margin-top:26px">Face detection happens on your device</h3>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
-        Automatic face detection normally means an upload: you hand the photo to a server, it finds the faces, and it sends coordinates back. That's a strange trade for a privacy tool — you've disclosed the very image you were trying to protect, to a company whose retention policy you have to take on trust.
+        Automatic face detection normally means an upload. You send the photo to a server, it finds the faces, and it sends coordinates back. For a privacy tool that is an odd arrangement, because you have disclosed the image you were trying to protect to a company whose retention policy you have to take on trust.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        This page does it differently. Clicking <em>Find faces</em> downloads a small open-source detection model (<a href="https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet" rel="noopener" style="color:var(--accent-text);font-weight:600">YuNet</a>, from the OpenCV Zoo) into your browser once, and every photo after that is scanned locally. Nothing about the image — not the pixels, not the coordinates, not a thumbnail — is transmitted. It works across a whole batch too, so 30 photos are scanned one after another without any of them leaving your device.
+        On this page, clicking <em>Find faces</em> downloads a small open-source detection model (<a href="https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet" rel="noopener" style="color:var(--accent-text);font-weight:600">YuNet</a>, from the OpenCV Zoo) into your browser once, and every photo after that is scanned locally. No pixels, face coordinates or thumbnails are transmitted. A batch works the same way, with 30 photos scanned one after another on the device.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        The honest caveat: on-device detection is a first pass, not a guarantee. It reliably finds faces that are reasonably large and facing the camera, and it will miss some that are small, turned away, or in shadow. Treat the boxes it draws as a starting point and check every photo before you share it — that's why each box stays editable, and why nothing is ever exported until you press the button yourself.
+        On-device detection has limits. It is a first pass and can't promise to catch every face. It reliably finds faces that are reasonably large and facing the camera, and it will miss some that are small, turned away, or in shadow. Treat the boxes it draws as a starting point and check every photo before you share it. Each box stays editable for that reason, and nothing is exported until you press the button yourself.
       </p>
     </div>
   </section>
@@ -176,27 +176,27 @@ const structuredData = {
       <div class="faq">
         <details class="faq-item" open>
           <summary class="faq-q">Are my photos uploaded anywhere?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server — that includes the face finder, which downloads once and then runs on your own device. Editing and export keep working even if you go offline after loading the page.</p>
+          <p class="faq-a">No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server, and that includes the face finder, which downloads once and then runs on your own device. Editing and export keep working even if you go offline after loading the page.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Does it find every face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No — and it's worth being clear about that. The finder is a helper, not a guarantee. It does a first pass and is good at faces that are reasonably large and facing the camera, but it can miss faces that are small, turned away, in deep shadow, or partly covered. Always check the result and draw a box over anything it missed before you share the image.</p>
+          <p class="faq-a">No. Treat the finder as a helper for a first pass. It is good at faces that are reasonably large and facing the camera, but it can miss faces that are small, turned away, in deep shadow, or partly covered. Always check the result and draw a box over anything it missed before you share the image.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Does the face detection run on a server?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. The detection model is downloaded to your browser the first time you use it, then runs entirely on your device. Most tools that offer automatic face blurring upload your photo to a server to do the detection — this one never does.</p>
+          <p class="faq-a">No. The detection model is downloaded to your browser the first time you use it, then runs entirely on your device. Most tools that offer automatic face blurring upload your photo to a server to do the detection. This one never does.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can the blurred face be recovered later?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. The blur is rendered into the actual pixels of the exported image at full resolution — it is not a layer sitting on top. Once you download and share the result there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain.</p>
+          <p class="faq-a">No. The blur is rendered into the pixels of the exported image at full resolution, rather than sitting on top as a separate layer or overlay. Once you download and share the result, there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">How much should I blur a face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Turn the strength up until no facial features are recognisable — for a small or low-resolution face, use the strongest setting. Prefer mosaic blocks or a solid bar instead of a soft blur? The <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">pixelate</a> and <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact</a> tools do the same job with a different look.</p>
+          <p class="faq-a">Turn the strength up until no facial features are recognisable. For a small or low-resolution face, use the strongest setting. If you'd prefer mosaic blocks or a solid bar to a soft blur, the <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">pixelate</a> and <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact</a> tools do the same job with a different look.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I blur more than one face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Draw a separate box over each face — there is no limit. You can move, resize, or delete any box before you export.</p>
+          <p class="faq-a">Yes. Draw a separate box over each face. There is no limit on how many. You can move, resize, or delete any box before you export.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Does it work on my phone?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
@@ -209,7 +209,7 @@ const structuredData = {
       </p>
 
       <p class="muted" style="font-size:14px;margin-top:12px">
-        How much blur is enough? <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">What a blur does and doesn't destroy</a> — strength is what decides it.
+        Strength decides how much blur is enough. See <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">What a blur does and doesn't destroy</a>.
       </p>
     </div>
   </section>

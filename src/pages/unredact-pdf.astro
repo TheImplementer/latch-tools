@@ -13,15 +13,15 @@ const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" view
 const faqs = [
   {
     q: "Can a redacted PDF be unredacted?",
-    a: "Only if the redaction failed. When the black bar was drawn on top of the text, the text is still in the file and comes back out with copy and paste, a search, or a text extractor. When the text was actually removed — by a real redaction tool, or by rebuilding the page as an image — there is nothing underneath to recover, and no software can put it back.",
+    a: "Only if the redaction failed. When the black bar was drawn on top of the text, the text is still in the file and comes back out with copy and paste, a search, or a text extractor. When the text was removed, either by a real redaction tool or by rebuilding the page as an image, there is nothing underneath to recover, and no software can put it back.",
   },
   {
     q: "Why can I copy text from under a black bar?",
-    a: "Because the bar and the text are separate things. A PDF page is a list of drawing instructions, and a black rectangle is just one more instruction painted on top. Selecting and copying reads the text instructions, not what the page looks like, so it picks the words up straight through the bar.",
+    a: "Because the bar and the text are separate things. A PDF page is a list of drawing instructions, and a black rectangle is one more instruction, painted on top. Selecting and copying reads the text instructions rather than what the page looks like, so it picks the words up straight through the bar.",
   },
   {
     q: "Does flattening a PDF remove the text under a redaction box?",
-    a: "Not by itself. Flattening merges annotations and form fields into the page, so a drawn box stops being a movable object — but the text instructions underneath it are still there and still copyable. The exception is flattening by rasterising, which rebuilds each page as an image; that does remove the text, along with all the other text on the page.",
+    a: "Not by itself. Flattening merges annotations and form fields into the page, so a drawn box stops being a movable object. The text instructions underneath it are still there, though, and still copyable. The exception is flattening by rasterising, which rebuilds each page as an image. That does remove the text, along with all the other text on the page.",
   },
   {
     q: "Does printing to PDF remove hidden text?",
@@ -29,11 +29,11 @@ const faqs = [
   },
   {
     q: "Is Adobe Acrobat's redaction safe?",
-    a: "Acrobat Pro's Redact tool does remove the marked text when you apply it, which a drawn rectangle does not — and it offers a separate step to remove hidden information such as metadata. The free Acrobat Reader has no redaction tool, only shapes. Be aware that a 2023 study found Acrobat, like most redaction tools it tested, still kept exact character-positioning data around redactions that could be used to narrow down short redacted words such as names.",
+    a: "Acrobat Pro's Redact tool does remove the marked text when you apply it, which a drawn rectangle does not, and it offers a separate step to remove hidden information such as metadata. The free Acrobat Reader has no redaction tool, only shapes. Be aware that a 2023 study found Acrobat, like most redaction tools it tested, still kept exact character-positioning data around redactions that could be used to narrow down short redacted words such as names.",
   },
   {
     q: "Can AI recover redacted text?",
-    a: "It can guess, not recover. A language model can suggest words that fit the surrounding sentence and the width of the bar, and for something short and predictable like a name or a date that guess can be uncomfortably close. That is why a good redaction covers the whole field or line, not just the word, when the length of the hidden text would give it away.",
+    a: "It can only guess. A language model can suggest words that fit the surrounding sentence and the width of the bar, and for something short and predictable like a name or a date that guess can be uncomfortably close. So when the length of the hidden text would give it away, a good redaction covers the whole field or line instead of only the word.",
   },
 ];
 
@@ -93,9 +93,10 @@ const structuredData = {
         </h1>
         <p style="font-size: clamp(16px, 2.2vw, 18px); color: var(--text-2); max-width: 40em; margin: 20px 0 0; line-height: 1.7; text-wrap: pretty;">
           A surprising number of "redacted" PDFs give their secrets up to anyone who selects the
-          black bar and presses copy. Others are genuinely sealed. The difference isn't how the
-          page looks — it's whether the text was removed or just painted over. Here's how to tell,
-          why it keeps happening to courts and governments, and how to redact so nothing comes back.
+          black bar and presses copy. In others the text is gone. The two can look identical on the
+          page; what matters is whether the text was removed or only painted over. This page shows
+          how to tell them apart, why the mistake keeps happening to courts and governments, and how
+          to redact so nothing comes back.
         </p>
       </div>
     </section>
@@ -108,8 +109,8 @@ const structuredData = {
           <dl class="answer-list">
             <dt>The bars were drawn on top of the text?</dt>
             <dd>Then it was never redacted. The words are still in the file, and any PDF viewer will hand them over.</dd>
-            <dt>The text was actually removed?</dt>
-            <dd>Then nothing brings it back. No tool reverses a real redaction — though the width of a bar can still hint at a short word.</dd>
+            <dt>The text was removed?</dt>
+            <dd>Then nothing brings it back. No tool reverses a real redaction, although the width of a bar can still hint at a short word.</dd>
             <dt>Worried about a PDF you redacted yourself?</dt>
             <dd><a href="/redact-pdf/#check" style="color:var(--accent)">Run the five checks</a> on the copy you sent. If it fails, <a href="/redact-pdf/" style="color:var(--accent)">redact it properly</a> and send that instead.</dd>
           </dl>
@@ -139,8 +140,8 @@ const structuredData = {
           <pre class="demo-out" id="demo-out" hidden></pre>
         </figure>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 18px 0 0;">
-          This is a web page, not a PDF, but the mechanism is identical: the bar changes how the
-          words look, not whether they exist. A screen reader would read them aloud, too.
+          This is a web page rather than a PDF, but the mechanism is the same. The bar only changes
+          how the words look, and the words are still there. A screen reader would read them aloud, too.
         </p>
       </div>
     </section>
@@ -150,7 +151,7 @@ const structuredData = {
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 16px">Why a black box in a PDF can hide nothing</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
-          A PDF page isn't a picture. It's a list of instructions for drawing one: <em>put this
+          A PDF page is stored as a list of instructions for drawing it: <em>put this
           text here, in this font</em>; <em>draw this line</em>; <em>fill this rectangle
           black</em>. A viewer carries them out in order, so a rectangle drawn after a line of
           text paints over it on screen. But the text instruction is still in the list.
@@ -158,9 +159,8 @@ const structuredData = {
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
           Anything that reads the instructions rather than the finished picture goes straight past
           the bar: selecting and copying, searching, a screen reader, a text extractor, or opening
-          the file in an editor and deleting the rectangle. Whether the box was added as a comment
-          annotation or drawn into the page itself makes no difference to the text underneath —
-          it survives either way.
+          the file in an editor and deleting the rectangle. The text underneath survives whether the box
+          was added as a comment annotation or drawn into the page itself.
         </p>
       </div>
     </section>
@@ -177,26 +177,26 @@ const structuredData = {
           </li>
           <li>
             <strong>Text blacked out in Word, then exported.</strong> Black highlighting or black
-            text on a black background changes the look, not the content. The export carries the
-            words into the PDF, fully selectable.
+            text on a black background only changes the look. The export carries the words into
+            the PDF, where they can still be selected.
           </li>
           <li>
             <strong>A box over a scanned page.</strong> A scan is a picture, but it rarely comes
             alone: scanners and Acrobat usually add an invisible OCR text layer so the page is
-            searchable. Cover the picture and the OCR text is still there — and the full,
+            searchable. Cover the picture and the OCR text is still there. The full,
             uncovered scan image is often still in the file too.
           </li>
           <li>
             <strong>The page is clean but the file isn't.</strong> A PDF can carry a title and
             author in its properties, comments, attachments, bookmarks, form-field values, and
             earlier versions of a page left behind by incremental saves. None of these show on
-            the page; all of them have leaked from documents that looked fine.
+            the page, and every one has leaked from documents that looked fine.
           </li>
           <li>
-            <strong>The text is gone, but its shape isn't.</strong> Even a real redaction leaves
+            <strong>The text is gone, but its shape remains.</strong> Even a real redaction leaves
             the bar's width, and the exact positions of the characters around it. In 2023,
             researchers at the University of Illinois showed that those positions can be measured
-            precisely enough to work out redacted names — and found the leak in 11 popular
+            precisely enough to work out redacted names. They found the leak in 11 popular
             redaction tools, Acrobat among them.
           </li>
         </ol>
@@ -226,7 +226,7 @@ const structuredData = {
             <div>
               <strong>The TSA's airport screening manual.</strong> A version of the screening
               procedures was posted on a federal contracting website with its most sensitive
-              passages blacked out — in a way that readers easily got past. Copies with the
+              passages blacked out, but in a way that readers easily got past. Copies with the
               redactions exposed spread across the web.
               <a href="https://abcnews.com/Blotter/massive-tsa-security-breach-agency-secrets/story?id=9280503" rel="noopener" target="_blank">ABC News</a>
             </div>
@@ -246,7 +246,7 @@ const structuredData = {
               <strong>Hundreds of properly removed redactions, narrowed back down.</strong>
               Bland, Iyer and Levchenko used character positions to recover first and last names
               from real redacted documents, including inspector-general reports and FOIA
-              responses — redactions where the text itself had been removed.
+              responses. In these documents the text itself had been removed.
               <a href="https://petsymposium.org/popets/2023/popets-2023-0069.php" rel="noopener" target="_blank">Proceedings on Privacy Enhancing Technologies</a>
             </div>
           </li>
@@ -260,15 +260,15 @@ const structuredData = {
         <h2 class="sec-title" style="margin-bottom: 16px">So, can you unredact a PDF?</h2>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           You can only "unredact" a redaction that didn't happen. If the words are still in the
-          file, the PDF will give them up — that's the whole failure. If they were removed, they're
-          gone: there's no hidden copy, no undo history inside a properly redacted file, and no
-          tool that can conjure the original back.
+          file, the PDF will give them up, and that is all a failed redaction is. If they were
+          removed, they're gone. A properly redacted file has no hidden copy and no undo history,
+          and no tool can conjure the original back.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 16px;">
           Sites and apps that promise to unredact any PDF are doing one of two things: reading text
           that was never removed, or guessing. A guess from the surrounding context and the width
-          of the bar can be plausible, especially for a short name, but it's a guess — not
-          evidence, and not the original.
+          of the bar can be plausible, especially for a short name, but it is still a guess. It
+          can't be treated as evidence or as the original text.
         </p>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0;">
           We don't make a tool for recovering other people's redactions, and won't. This page is
@@ -282,16 +282,16 @@ const structuredData = {
       <div class="wrap" style="max-width: 780px">
         <h2 class="sec-title" style="margin-bottom: 16px">How to redact a PDF so it can't be undone</h2>
         <ol style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 20px; padding-left: 1.2em;">
-          <li style="margin-bottom: 8px"><strong>Remove, don't cover.</strong> Use a tool that deletes the text under the bar, not one that paints on top of it.</li>
-          <li style="margin-bottom: 8px"><strong>Cover the whole field.</strong> If the length of a name or number would give it away, black out the full line or box, not just the word.</li>
+          <li style="margin-bottom: 8px"><strong>Remove, don't cover.</strong> Use a tool that deletes the text under the bar instead of painting on top of it.</li>
+          <li style="margin-bottom: 8px"><strong>Cover the whole field.</strong> If the length of a name or number would give it away, black out the full line or box around it.</li>
           <li style="margin-bottom: 8px"><strong>Strip what isn't on the page.</strong> Properties, comments, attachments and old versions need to go too.</li>
-          <li><strong>Check the file you send.</strong> Select across a bar, search for a word you removed, and look at the document properties — on the exported copy, not the one you edited.</li>
+          <li><strong>Check the file you send.</strong> Select across a bar, search for a word you removed, and look at the document properties. Do this on the exported copy rather than the one you edited.</li>
         </ol>
         <p style="color: var(--text-2); font-size: 16px; line-height: 1.7; margin: 0 0 24px;">
           <a href="/redact-pdf/" style="color:var(--accent)">Redact PDF</a> does all of that in one
           step by rebuilding the document rather than editing it: every page is rendered to an
           image, the bars are burned into the pixels, and a new PDF is assembled from those images.
-          No text layer is carried across — not under the bars and not anywhere else — so there are
+          No text layer is carried across, under the bars or anywhere else, so there are
           no character positions to measure and no hidden extras to forget. The code that does it
           is <a href="https://github.com/TheImplementer/latch-tools/blob/main/src/lib/pdfRaster.ts" rel="noopener" target="_blank" style="color:var(--accent)">open source</a>,
           so you don't have to take that on trust.

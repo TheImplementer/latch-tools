@@ -21,7 +21,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Pixelate part of an image to redact names, faces, and sensitive details in screenshots and photos. Runs in your browser — nothing is uploaded.",
+      "description": "Pixelate part of an image to redact names, faces, and sensitive details in screenshots and photos. Runs in your browser, and nothing is uploaded.",
       "url": "https://latchtools.com/pixelate-image/"
     },
     {
@@ -29,7 +29,7 @@ const structuredData = {
       "name": "How to pixelate part of an image",
       "step": [
         { "@type": "HowToStep", "name": "Add your image", "text": "Drag your image or screenshot onto the editor, or click Browse to select it." },
-        { "@type": "HowToStep", "name": "Draw over what to hide", "text": "Drag a box over each area you want to censor — a name, a face, an address, an account number." },
+        { "@type": "HowToStep", "name": "Draw over what to hide", "text": "Drag a box over each area you want to censor, such as a name, a face, an address or an account number." },
         { "@type": "HowToStep", "name": "Set the block size", "text": "Raise the strength for larger, more thorough blocks." },
         { "@type": "HowToStep", "name": "Download the result", "text": "Save the image. The pixelation is rendered into the pixels, so the hidden detail cannot be read back." }
       ]
@@ -45,17 +45,17 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Can pixelated text be recovered?",
-          "acceptedAnswer": { "@type": "Answer", "text": "With a coarse enough block size, no. The tool averages each block down and scales it back up, discarding the underlying detail — and it does this on the exported pixels, not as a removable overlay. Use a high strength for text: fine pixelation of short, predictable text can sometimes be reconstructed, so make the blocks large enough that nothing is legible." }
+          "acceptedAnswer": { "@type": "Answer", "text": "With a coarse enough block size, no. The tool averages each block down and scales it back up, discarding the underlying detail, and it does this on the exported pixels rather than as a removable overlay. Use a high strength for text. Fine pixelation of short, predictable strings can sometimes be reconstructed, so make the blocks large enough that nothing is legible." }
         },
         {
           "@type": "Question",
           "name": "Can I pixelate several areas at once?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a box over each area you want to hide — there is no limit. Every box uses the same effect and strength, and you can move, resize, or delete any of them before exporting." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a box over each area you want to hide, and add as many as you like. Every box uses the same effect and strength, and you can move, resize, or delete any of them before exporting." }
         },
         {
           "@type": "Question",
           "name": "What is the difference between pixelate, blur and blackout?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Pixelation replaces an area with large solid blocks, which reads clearly as a deliberate redaction. Blur softens an area instead, and a solid black bar removes it outright — for those, use the Blur tool or the Redact tool. Whichever you pick, use enough strength that the detail is completely hidden." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Pixelation replaces an area with large solid blocks, which reads clearly as a deliberate redaction. Blur softens an area instead, and a solid black bar removes it outright. For those two, use the Blur tool or the Redact tool. Whichever you pick, use enough strength that none of the detail shows." }
         },
         {
           "@type": "Question",
@@ -69,7 +69,7 @@ const structuredData = {
 ---
 <Layout
   title="Pixelate Image — Censor Photos, Screenshots · Latch Tools"
-  description="Pixelate part of an image to redact names, faces, and private details in screenshots and photos. Runs in your browser — nothing is uploaded."
+  description="Pixelate part of an image to redact names, faces, and private details in screenshots and photos. Runs in your browser, and nothing is uploaded."
   ogImage="/og/pixelate-image.png"
 >
   <Fragment slot="head">
@@ -117,7 +117,7 @@ const structuredData = {
         <div class="howto-step">
           <div class="n">3</div>
           <h4>Set the block size</h4>
-          <p>Raise the strength for larger, more thorough blocks — bigger blocks hide more.</p>
+          <p>Raise the strength for larger, more thorough blocks. The bigger the blocks, the more they hide.</p>
         </div>
         <div class="howto-step">
           <div class="n">4</div>
@@ -137,10 +137,10 @@ const structuredData = {
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        Most images people pixelate are screenshots — an order confirmation, a bank statement, a chat thread, a support ticket — and they're full of exactly the details you don't want on a server. Uploading such an image to a web tool just to hide part of it defeats the purpose. Latch pixelates it on your own device: the file is decoded, redacted, and re-saved in the browser, and nothing is transmitted.
+        Most images people pixelate are screenshots of things like an order confirmation, a bank statement, a chat thread or a support ticket. They're full of the details you don't want on a server. Uploading such an image to a web tool just to hide part of it defeats the purpose. Latch pixelates it on your own device: the file is decoded, redacted, and re-saved in the browser, and nothing is transmitted.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        The redaction is permanent. Each block is averaged down and rescaled so the original detail is discarded, and this is written into the exported pixels rather than layered on top. For text especially, use a coarse block size — very fine pixelation of short, predictable strings can occasionally be reconstructed, so make the blocks large enough that nothing is legible.
+        The redaction is permanent. Each block is averaged down and rescaled so the original detail is discarded, and this is written into the exported pixels rather than layered on top. For text especially, use a coarse block size. Very fine pixelation of short, predictable strings can occasionally be reconstructed, so the blocks need to be large enough that nothing is legible.
       </p>
     </div>
   </section>
@@ -160,15 +160,15 @@ const structuredData = {
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can pixelated text be recovered?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">With a coarse enough block size, no. The tool averages each block down and scales it back up, discarding the underlying detail — on the exported pixels, not as a removable overlay. Use a high strength for text: fine pixelation of short, predictable strings can sometimes be reconstructed, so make the blocks large enough that nothing is legible.</p>
+          <p class="faq-a">With a coarse enough block size, no. The tool averages each block down and scales it back up, discarding the underlying detail, and it does this on the exported pixels rather than as a removable overlay. Use a high strength for text. Fine pixelation of short, predictable strings can sometimes be reconstructed, so make the blocks large enough that nothing is legible.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I pixelate several areas at once?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Draw a box over each area you want to hide — there is no limit. Every box uses the same effect and strength, and you can move, resize, or delete any of them before exporting.</p>
+          <p class="faq-a">Yes. Draw a box over each area you want to hide, and add as many as you like. Every box uses the same effect and strength, and you can move, resize, or delete any of them before exporting.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">What is the difference between pixelate, blur and blackout?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Pixelation replaces an area with large solid blocks, which reads clearly as a deliberate redaction. Blur softens an area instead, and a solid black bar removes it outright — for those, use the <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">blur</a> or <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact</a> tool. Whichever you pick, use enough strength that the detail is completely hidden.</p>
+          <p class="faq-a">Pixelation replaces an area with large solid blocks, which reads clearly as a deliberate redaction. Blur softens an area instead, and a solid black bar removes it outright. For those two, use the <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">blur</a> or <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact</a> tool. Whichever you pick, use enough strength that none of the detail shows.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Does pixelating keep the rest of the image sharp?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
@@ -181,7 +181,7 @@ const structuredData = {
       </p>
 
       <p class="muted" style="font-size:14px;margin-top:12px">
-        A caveat worth knowing: <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">pixelation is the weakest of the three effects</a> — for anything that really matters, black it out instead.
+        One caveat: <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">pixelation is the weakest of the three effects</a>. For anything important, black it out instead.
       </p>
     </div>
   </section>

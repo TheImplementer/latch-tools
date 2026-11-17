@@ -21,7 +21,7 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Blur a license plate in a photo before selling a car or posting online. Runs in your browser — the photo is never uploaded.",
+      "description": "Blur a license plate in a photo before selling a car or posting online. Runs in your browser, so the photo is never uploaded.",
       "url": "https://latchtools.com/blur-license-plate/"
     },
     {
@@ -50,17 +50,17 @@ const structuredData = {
         {
           "@type": "Question",
           "name": "Can the plate number be recovered from the blurred image?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution, not added as a removable layer. Use a high strength so no characters are legible — a light blur over a few large characters can sometimes be reversed, so make sure the plate is completely unreadable. If the plate really matters, a solid blackout is the only option that cannot be reversed at all." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution. It is not a separate layer that could be removed. Use a high strength so no characters are legible. A light blur over a few large characters can sometimes be reversed, so check that every character on the plate is unreadable. If the plate matters, use a solid blackout. It is the only option that cannot be reversed at all." }
         },
         {
           "@type": "Question",
           "name": "Can I blur several plates in one photo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a box over each plate — there is no limit. You can also use it on faces, house numbers, or anything else in the same shot." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a box over each plate, as many as the photo needs. You can also use it on faces, house numbers, or anything else in the same shot." }
         },
         {
           "@type": "Question",
           "name": "Does it work on a phone?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The editor is touch-friendly, so you can draw and adjust the box with your finger — handy when you're photographing a car to sell." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The editor is touch-friendly, so you can draw and adjust the box with your finger. That's handy when you're photographing a car to sell." }
         }
       ]
     }
@@ -69,7 +69,7 @@ const structuredData = {
 ---
 <Layout
   title="Blur a License Plate — Free & Private · Latch Tools"
-  description="Blur a license plate before selling a car or posting a photo online. Runs entirely in your browser — the photo is never uploaded."
+  description="Blur a license plate before selling a car or posting a photo online. Runs entirely in your browser, and the photo is never uploaded."
   ogImage="/og/blur-license-plate.png"
 >
   <Fragment slot="head">
@@ -87,7 +87,7 @@ const structuredData = {
           <span style="color:var(--text-2)" aria-current="page">Blur License Plate</span>
         </nav>
         <h1>Blur a license plate</h1>
-        <p>Selling a car, sharing a dashcam still, or posting a street photo? Hide the number plate first. Draw a box over it and download — the plate never becomes public.</p>
+        <p>Hide the number plate before you sell a car, share a dashcam still, or post a street photo. Draw a box over it, download the copy, and post that one instead.</p>
         <TrustPill />
       </div>
 
@@ -137,10 +137,10 @@ const structuredData = {
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        A license plate is a unique identifier tied to a vehicle and, often, to a person. It turns up in the places we share most freely — a car for sale on a marketplace, a dashcam clip of a near-miss, a holiday photo with traffic in the background. Once that plate is public it can be used to look up or infer more than you'd like, which is why it's worth removing before you post rather than after.
+        A license plate is a unique identifier tied to a vehicle and, often, to a person. It turns up in the places we share most freely, such as a car for sale on a marketplace, a dashcam clip of a near-miss, or a holiday photo with traffic in the background. Once that plate is public it can be used to look up or infer more than you'd like, so take it out of the photo before you post.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        Because this runs in your browser, the photo of your car and wherever it was parked never touches a server. And the blur is permanent: it's composited into the exported pixels at full resolution, so there's no crisp original underneath. Plates are short and predictable, so use a strong setting — make sure not a single character is legible before you share.
+        Because this runs in your browser, the photo of your car and wherever it was parked never touches a server. And the blur is permanent: it's composited into the exported pixels at full resolution, so there's no crisp original underneath. Plates are short and predictable, so use a strong setting and check that not a single character is legible before you share.
       </p>
     </div>
   </section>
@@ -164,15 +164,15 @@ const structuredData = {
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can the plate number be recovered from the blurred image?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution, not added as a removable layer. Use a high strength so no characters are legible — a light blur over a few large characters can sometimes be reversed, so make sure the plate is completely unreadable. For the full picture, see <a href="/unblur-license-plate/" style="color:var(--accent)">can a blurred license plate be unblurred?</a></p>
+          <p class="faq-a">Not if you obscure it thoroughly. The blur is written into the exported pixels at full resolution. It is not a separate layer that could be removed. Use a high strength so no characters are legible. A light blur over a few large characters can sometimes be reversed, so check that every character on the plate is unreadable. For the full picture, see <a href="/unblur-license-plate/" style="color:var(--accent)">can a blurred license plate be unblurred?</a></p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Can I blur several plates in one photo?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Draw a box over each plate — there is no limit. You can also use it on faces, house numbers, or anything else in the same shot.</p>
+          <p class="faq-a">Yes. Draw a box over each plate, as many as the photo needs. You can also use it on faces, house numbers, or anything else in the same shot.</p>
         </details>
         <details class="faq-item">
           <summary class="faq-q">Does it work on a phone?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. The editor is touch-friendly, so you can draw and adjust the box with your finger — handy when you're photographing a car to sell.</p>
+          <p class="faq-a">Yes. The editor is touch-friendly, so you can draw and adjust the box with your finger. That's handy when you're photographing a car to sell.</p>
         </details>
       </div>
 
@@ -181,7 +181,7 @@ const structuredData = {
       </p>
 
       <p class="muted" style="font-size:14px;margin-top:12px">
-        Before you post it: <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">can a blurred license plate be unblurred?</a> — when a blur is too light to hold, and what to use instead.
+        Before you post it, read <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">can a blurred license plate be unblurred?</a> It explains when a blur is too light to hold and what to use instead.
       </p>
     </div>
   </section>
