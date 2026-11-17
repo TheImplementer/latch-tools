@@ -33,6 +33,11 @@ const structuredData = {
         },
         {
           "@type": "Question",
+          "name": "Is there a free online tool to deblur a license plate?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No reliable one. Free 'deblur' and 'unblur' sites run generic sharpening or a generative upscaler, and neither recovers characters that the blur averaged away — the plate they hand back is a guess. The attack that can work on a light blur needs the exact plate format, font and blur settings, which is specialist work, not an upload. If you need a plate for an incident, give the original, unedited footage to the police or your insurer: the original file holds more detail than any screenshot or re-upload." }
+        },
+        {
+          "@type": "Question",
           "name": "Do AI unblur tools work on number plates?",
           "acceptedAnswer": { "@type": "Answer", "text": "Not in the way people expect. Generative upscalers do not recover the original characters — they synthesise sharp detail that is merely consistent with the blur. You get plausible, confidently rendered characters that are frequently wrong. That output is a guess, not the plate, and it should never be treated as evidence." }
         },
@@ -67,8 +72,8 @@ const structuredData = {
 };
 ---
 <Layout
-  title="Can You Unblur a License Plate? · Latch Tools"
-  description="Can a blurred or pixelated number plate be read again? Sometimes — here's when blur fails, why AI unblur tools invent characters, and what hides a plate for good."
+  title="Can You Unblur a License Plate? Why Deblur Tools Fail · Latch Tools"
+  description="Free online deblur sites can't recover a blurred number plate — they invent one. When a blur really can be reversed, and what hides a plate for good."
   ogImage="/og/unblur-license-plate.png"
 >
   <Fragment slot="head">
@@ -107,7 +112,7 @@ const structuredData = {
             <dt>Trying to read a plate someone else blurred?</dt>
             <dd>No free tool will recover it. What they return is an invention that looks like a plate.</dd>
             <dt>Trying to hide your own plate?</dt>
-            <dd>Don't rely on a light blur or a mosaic. Both can be narrowed back down. Use a solid blackout.</dd>
+            <dd>Don't rely on a light blur or a mosaic. Both can be narrowed back down. <a href="/redact-image/" style="color:var(--accent)">Use a solid blackout</a>, or if it has to look blurred, <a href="/blur-license-plate/" style="color:var(--accent)">blur it hard</a>.</dd>
             <dt>Blurred your own photo and lost the original?</dt>
             <dd>The detail is gone from that file for good. There's nothing to restore.</dd>
           </dl>
@@ -351,6 +356,14 @@ const structuredData = {
             <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
           </summary>
           <p class="faq-a">Sometimes — but not by the free "deblur" tools that advertise it. The realistic attack is to render every plausible plate, apply the same blur to each, and see which result matches. A light blur or a pixelated plate can fall to that. A heavy blur is far more resistant, and a <a href="/redact-image/" style="color:var(--accent)">solid black bar</a> can't be reversed at all, because the original pixels are gone.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Is there a free online tool to deblur a license plate?
+            <span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span>
+          </summary>
+          <p class="faq-a">No reliable one. Free "deblur" and "unblur" sites run generic sharpening or a generative upscaler, and neither recovers characters the blur averaged away — the plate they hand back is a guess. The attack that can work on a light blur needs the exact plate format, font and blur settings, which is specialist work, not an upload. If you need a plate for an incident, give the original, unedited footage to the police or your insurer: the original file holds more detail than any screenshot or re-upload.</p>
         </details>
 
         <details class="faq-item">
