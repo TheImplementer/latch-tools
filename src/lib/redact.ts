@@ -5,7 +5,7 @@
 // image files out".
 //
 // The user drops one or more images, drags rectangles over the areas to hide,
-// and picks an effect (blur or pixelate) + strength. The effect is rendered
+// and picks an effect (blur, pixelate or blackout) + strength. The effect is rendered
 // live on a stage canvas at preview resolution, then re-applied at each
 // image's FULL resolution on export so the obscured pixels are baked in
 // irreversibly — there is no overlay to peel off. Everything runs on the
@@ -39,6 +39,7 @@ import {
   plural,
   raf,
   releaseCanvas,
+  setFocus,
   THUMB,
   type Effect,
   type Rect,
@@ -95,10 +96,15 @@ export function initRedactWidget(root: HTMLElement): void {
   const browseBtn = q('[data-el="browse-btn"]');
   const dzTitle = q('[data-el="dz-title"]');
   const stage = q<HTMLCanvasElement>('[data-el="stage"]');
-  // Strength only renders on blur/pixelate pages (blackout ignores it) — may be absent.
+  // Hidden while the effect is blackout, which ignores strength.
   const strengthInput = root.querySelector<HTMLInputElement>(
     '[data-el="strength"]',
   );
+  const strengthRow = root.querySelector<HTMLElement>(
+    '[data-el="strength-row"]',
+  );
+  const effectSeg = root.querySelector<HTMLElement>('[data-el="effect-seg"]');
+  const pillTo = root.querySelector<HTMLElement>('[data-el="pill-to"]');
   // Optional like strengthInput — q() would hand back a null typed as
   // HTMLElement on the pages that don't render these.
   const detectBtn = root.querySelector<HTMLButtonElement>(
@@ -144,8 +150,13 @@ export function initRedactWidget(root: HTMLElement): void {
   let items: Item[] = [];
   let active = -1;
   let stageImg: HTMLCanvasElement | null = null; // active item, at stage resolution
-  const effect: Effect = defaultEffect; // fixed per page — no in-widget switching
-  let strength = 3;
+  let effect: Effect = defaultEffect; // each page's default; switchable in place
+  const defaultStrength = clamp(
+    parseInt(root.dataset.defaultStrength ?? "", 10) || 3,
+    1,
+    5,
+  );
+  let strength = defaultStrength;
   let results: Result[] = [];
   let doneUrl: string | null = null;
   let detectBusy = false;
@@ -165,8 +176,9 @@ export function initRedactWidget(root: HTMLElement): void {
     return items.filter((it) => it.regions.length > 0);
   }
 
-  function showPanel(name: Panel) {
+  function showPanel(name: Panel, scroll = false) {
     for (const [k, el] of Object.entries(panels)) el.hidden = k !== name;
+    setFocus(root, name === "editor", scroll);
   }
 
   // Drawing, hit-testing and the pointer/keyboard bindings all live in
@@ -275,9 +287,26 @@ export function initRedactWidget(root: HTMLElement): void {
     });
   }
 
-  // ---- Strength control (blur/pixelate only; blackout omits it) ----
+  // ---- Strength control (hidden for blackout, which ignores it) ----
   strengthInput?.addEventListener("input", () => {
-    strength = parseInt(strengthInput.value, 10) || 3;
+    strength = parseInt(strengthInput.value, 10) || defaultStrength;
+    editor.draw();
+  });
+
+  // ---- Effect switch ----
+  const PILL: Record<Effect, string> = {
+    blur: "BLURRED",
+    pixelate: "PIXELATED",
+    blackout: "REDACTED",
+  };
+  effectSeg?.addEventListener("change", (e) => {
+    const input = e.target as HTMLInputElement;
+    const v = input.value;
+    effect = v === "pixelate" ? "pixelate" : v === "blackout" ? "blackout" : "blur";
+    if (strengthRow) strengthRow.hidden = effect === "blackout";
+    if (pillTo) pillTo.textContent = PILL[effect];
+    if (input.dataset.apply) applyLabelEl.dataset.base = input.dataset.apply;
+    updateHint();
     editor.draw();
   });
 
@@ -696,7 +725,7 @@ export function initRedactWidget(root: HTMLElement): void {
 
     if (strengthInput) strengthInput.value = String(strength);
     await setActive(append ? items.length - accepted.length : 0);
-    showPanel("editor");
+    showPanel("editor", !append);
 
     // Non-fatal: some files were left out. Say so without losing the good ones.
     const notes: string[] = [];

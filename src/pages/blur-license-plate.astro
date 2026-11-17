@@ -30,7 +30,7 @@ const structuredData = {
       "step": [
         { "@type": "HowToStep", "name": "Add your photo", "text": "Drag the vehicle photo onto the editor, or click Browse to select it." },
         { "@type": "HowToStep", "name": "Draw over the plate", "text": "Drag a box over the number plate. Add more boxes for any other plates in the shot." },
-        { "@type": "HowToStep", "name": "Set the strength", "text": "Raise the blur strength until the plate is completely unreadable." },
+        { "@type": "HowToStep", "name": "Check the strength", "text": "The blur starts at full strength because plates are short and easy to guess. Check that no character is legible before you download." },
         { "@type": "HowToStep", "name": "Download the result", "text": "Save the image. The plate is obscured in the exported pixels and cannot be read back." }
       ]
     },
@@ -92,7 +92,7 @@ const structuredData = {
         <p class="quick-details">JPEG, PNG, WebP · up to 30 images at once · 50 MB each</p>
       </div>
 
-      <RedactWidget heading="Blur a license plate" defaultEffect="blur" applyLabel="Blur & download" />
+      <RedactWidget heading="Blur a license plate" defaultEffect="blur" applyLabel="Blur & download" defaultStrength={5} />
     </div>
   </section>
 
@@ -118,8 +118,8 @@ const structuredData = {
         </div>
         <div class="howto-step">
           <div class="n">3</div>
-          <h4>Set the strength</h4>
-          <p>Raise the strength until the plate is completely unreadable — plates are short, so lean strong.</p>
+          <h4>Check the strength</h4>
+          <p>The blur starts at full strength, because plates are short and easy to guess. Make sure no character is legible.</p>
         </div>
         <div class="howto-step">
           <div class="n">4</div>

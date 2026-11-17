@@ -18,28 +18,33 @@ export interface Props {
   // 'pdf' swaps the file queue for a page queue: one document in, one document
   // out, with a page strip, a DPI control and a password prompt.
   mode?: 'image' | 'pdf';
+  // Starting slider position, 1–5. Plates are short and predictable, so the
+  // plate page starts at the top of the range instead of the middle.
+  defaultStrength?: number;
 }
-const { heading, defaultEffect, applyLabel, detect = null, mode = 'image' } = Astro.props;
+const { heading, defaultEffect, applyLabel, detect = null, mode = 'image', defaultStrength = 3 } = Astro.props;
 const isPdf = mode === 'pdf';
 const detectLabel = detect === 'plate' ? 'Find plates' : 'Find faces';
 const detectNoun = detect === 'plate' ? 'plates' : 'faces';
 const PILL: Record<string, string> = { blur: 'BLURRED', pixelate: 'PIXELATED', blackout: 'REDACTED' };
 const pillTo = PILL[defaultEffect] ?? 'BLURRED';
 
-// This tool does one effect; link to the other two canonical effect tools.
-const EFFECT_TOOLS = {
-  blur: { label: 'Blur', href: '/blur-image/' },
-  pixelate: { label: 'Pixelate', href: '/pixelate-image/' },
-  blackout: { label: 'Black out', href: '/redact-image/' },
-} as const;
-const otherEffects = (['blur', 'pixelate', 'blackout'] as const).filter((e) => e !== defaultEffect).map((e) => EFFECT_TOOLS[e]);
+// Each page opens on its own effect, but the image tools can switch in place:
+// sending someone to another page mid-edit threw away the photo and its boxes.
+// The PDF tool stays blackout-only — a blurred PDF still carries its text.
+const EFFECTS = [
+  { value: 'blur', label: 'Blur', apply: 'Blur & download' },
+  { value: 'pixelate', label: 'Pixelate', apply: 'Pixelate & download' },
+  { value: 'blackout', label: 'Black out', apply: 'Redact & download' },
+] as const;
 // Strength is meaningless for a solid bar, so that slot carries output DPI on
-// the PDF tool and nothing at all on /redact-image/.
-const showStrength = !isPdf && defaultEffect !== 'blackout';
+// the PDF tool and is hidden while the image tools are on Black out.
+const showStrength = !isPdf;
+const strengthHidden = defaultEffect === 'blackout';
 const noun = isPdf ? 'PDF' : 'images';
 ---
 
-<div class="widget redact-widget" data-mode={mode} data-default-effect={defaultEffect} data-detect={detect ?? undefined} data-detect-noun={detect ? detectNoun : undefined} role="region" aria-label={heading}>
+<div class="widget redact-widget" data-mode={mode} data-default-effect={defaultEffect} data-default-strength={defaultStrength} data-detect={detect ?? undefined} data-detect-noun={detect ? detectNoun : undefined} role="region" aria-label={heading}>
   <div class="widget-head">
     <span
       class="wt"
@@ -94,75 +99,83 @@ const noun = isPdf ? 'PDF' : 'images';
     </div>
   )}
 
-  <!-- STATE: editor -->
+  <!-- STATE: editor
+       Two blocks so the focused layout (see .is-focus below) can put the
+       picture and the controls side by side; narrow screens just stack them. -->
   <div data-panel="editor" class="widget-state" hidden>
-    <div class="redact-stage-wrap">
-      <canvas class="redact-stage" data-el="stage" tabindex="0" role="application" aria-label="Redaction editor. Drag to draw a box over an area to hide. Use arrow keys to nudge the selected box and Delete to remove it."></canvas>
-    </div>
-    <div class="filmstrip" data-el="filmstrip" role="group" aria-label={isPdf ? 'Pages in this document' : 'Images in this batch'} hidden>
-      {!isPdf && (
-        <button class="strip-add" type="button" data-el="strip-add" aria-label="Add more images">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-        </button>
-      )}
-    </div>
-    <p class="redact-hint" data-el="editor-hint" aria-live="polite"></p>
-    <div class="redact-toolbar">
-      {showStrength && (
-        <div class="opt" data-el="strength-row">
-          <label for="redact-strength">Strength</label>
-          <input class="slider" type="range" id="redact-strength" data-el="strength" min="1" max="5" step="1" value="3" aria-label="Redaction strength, 1 to 5" />
-        </div>
-      )}
-      {isPdf && (
-        <div class="opt" data-el="quality-row">
-          <label for="redact-quality">Quality</label>
-          <select class="qsel" id="redact-quality" data-el="quality">
-            <option value="standard" selected>Standard · 150 DPI</option>
-            <option value="high">High · 300 DPI</option>
-          </select>
-        </div>
-      )}
-      <div class="redact-tool-actions">
-        {detect && (
-          <button class="btn-icon-text is-detect" type="button" data-el="detect-btn" disabled hidden>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M21 16v3a2 2 0 0 1-2 2h-3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><circle cx="12" cy="12" r="3.2"></circle></svg>
-            <span class="detect-spin" data-el="detect-spin" hidden aria-hidden="true"></span>
-            <span data-el="detect-label" data-base={detectLabel}>{detectLabel}</span>
+    <div class="redact-main">
+      <div class="redact-stage-wrap">
+        <canvas class="redact-stage" data-el="stage" tabindex="0" role="application" aria-label="Redaction editor. Drag to draw a box over an area to hide. Use arrow keys to nudge the selected box and Delete to remove it."></canvas>
+      </div>
+      <div class="filmstrip" data-el="filmstrip" role="group" aria-label={isPdf ? 'Pages in this document' : 'Images in this batch'} hidden>
+        {!isPdf && (
+          <button class="strip-add" type="button" data-el="strip-add" aria-label="Add more images">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
           </button>
         )}
-        <button class="btn-icon-text" type="button" data-el="apply-all-btn" disabled hidden>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M4 16V6a2 2 0 0 1 2-2h10"></path></svg>
-          {isPdf ? 'Copy boxes to all pages' : 'Copy boxes to all'}
-        </button>
-        <button class="btn-icon-text" type="button" data-el="undo-btn" disabled>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"></path><path d="M4 9h11a5 5 0 0 1 0 10h-1"></path></svg>
-          Undo
-        </button>
-        <button class="btn-icon-text" type="button" data-el="clear-btn" disabled>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg>
-          Clear
-        </button>
       </div>
     </div>
-    <p class="redact-switch">
-      {isPdf ? (
-        <Fragment>Redacting a photo or a screenshot instead? <a href="/redact-image/">Redact an image</a></Fragment>
-      ) : (
-        <Fragment>
-          Need a different effect?
-          {otherEffects.map((t, i) => (
-            <Fragment>{i > 0 && <span aria-hidden="true"> · </span>}<a href={t.href}>{t.label}</a></Fragment>
+    <div class="redact-side">
+      <p class="redact-hint" data-el="editor-hint" aria-live="polite"></p>
+      {!isPdf && (
+        <fieldset class="effect-seg" data-el="effect-seg">
+          <legend class="sr-only">Effect</legend>
+          {EFFECTS.map((e) => (
+            <label class="seg">
+              <input type="radio" name="redact-effect" value={e.value} data-apply={e.apply} checked={e.value === defaultEffect} />
+              <span>{e.label}</span>
+            </label>
           ))}
-        </Fragment>
+        </fieldset>
       )}
-    </p>
-    <div class="actions">
-      <button class="btn btn-ghost" type="button" data-el="try-another-btn">Start over</button>
-      <button class="btn btn-primary grow" type="button" data-el="apply-btn" disabled>
-        <span data-el="apply-label" data-base={applyLabel}>{applyLabel}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"></path><path d="M5 19h14"></path></svg>
-      </button>
+      <div class="redact-toolbar">
+        {showStrength && (
+          <div class="opt" data-el="strength-row" hidden={strengthHidden}>
+            <label for="redact-strength">Strength</label>
+            <input class="slider" type="range" id="redact-strength" data-el="strength" min="1" max="5" step="1" value={defaultStrength} aria-label="Redaction strength, 1 to 5" />
+          </div>
+        )}
+        {isPdf && (
+          <div class="opt" data-el="quality-row">
+            <label for="redact-quality">Quality</label>
+            <select class="qsel" id="redact-quality" data-el="quality">
+              <option value="standard" selected>Standard · 150 DPI</option>
+              <option value="high">High · 300 DPI</option>
+            </select>
+          </div>
+        )}
+        <div class="redact-tool-actions">
+          {detect && (
+            <button class="btn-icon-text is-detect" type="button" data-el="detect-btn" disabled hidden>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M21 16v3a2 2 0 0 1-2 2h-3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><circle cx="12" cy="12" r="3.2"></circle></svg>
+              <span class="detect-spin" data-el="detect-spin" hidden aria-hidden="true"></span>
+              <span data-el="detect-label" data-base={detectLabel}>{detectLabel}</span>
+            </button>
+          )}
+          <button class="btn-icon-text" type="button" data-el="apply-all-btn" disabled hidden>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M4 16V6a2 2 0 0 1 2-2h10"></path></svg>
+            {isPdf ? 'Copy boxes to all pages' : 'Copy boxes to all'}
+          </button>
+          <button class="btn-icon-text" type="button" data-el="undo-btn" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"></path><path d="M4 9h11a5 5 0 0 1 0 10h-1"></path></svg>
+            Undo
+          </button>
+          <button class="btn-icon-text" type="button" data-el="clear-btn" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+            Clear
+          </button>
+        </div>
+      </div>
+      {isPdf && (
+        <p class="redact-switch">Redacting a photo or a screenshot instead? <a href="/redact-image/">Redact an image</a></p>
+      )}
+      <div class="actions redact-actions">
+        <button class="btn btn-ghost" type="button" data-el="try-another-btn">Start over</button>
+        <button class="btn btn-primary grow" type="button" data-el="apply-btn" disabled>
+          <span data-el="apply-label" data-base={applyLabel}>{applyLabel}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"></path><path d="M5 19h14"></path></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -268,9 +281,13 @@ const noun = isPdf ? 'PDF' : 'images';
       9px -9px,
       -9px 0;
   }
+  /* Sized by its own aspect ratio inside both limits, so the element box is
+     the picture: a portrait PDF page no longer sits in a wide white sheet. */
   .redact-stage {
     display: block;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
     height: auto;
     max-height: 460px;
     object-fit: contain;
@@ -371,7 +388,7 @@ const noun = isPdf ? 'PDF' : 'images';
     box-shadow: 0 0 0 3px var(--ring);
   }
 
-  /* Switch-effect cross-links (this tool is single-effect) */
+  /* PDF → image cross-link */
   .redact-switch {
     margin: 12px 4px 0;
     font-size: 13px;
@@ -383,6 +400,145 @@ const noun = isPdf ? 'PDF' : 'images';
   }
   .redact-switch a:hover {
     text-decoration: underline;
+  }
+
+  /* Effect switch — a radio group styled as a segmented control, so arrow
+     keys and screen readers get native radio behaviour for free. */
+  .effect-seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin: 12px 0 0;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    min-width: 0;
+  }
+  .seg {
+    position: relative;
+  }
+  .seg input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .seg span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    border-radius: calc(var(--r-md) - 3px);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .seg input:hover + span {
+    color: var(--text);
+  }
+  .seg input:checked + span {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--border-strong);
+  }
+  .seg input:focus-visible + span {
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* ---- Focused editing ----
+     Once a file is loaded the widget is the whole job, so it breaks out of the
+     620px tool column (the page itself is untouched — the copy below stays
+     where search engines and readers expect it) and the picture gets the
+     height of the screen instead of a fixed 460px. The class is toggled by the
+     controllers via setFocus() in src/lib/regions.ts. */
+  .redact-widget.is-focus {
+    max-width: none;
+    width: min(1180px, calc(100vw - 32px));
+    margin-inline: calc(50% - min(590px, 50vw - 16px));
+    scroll-margin-top: 76px; /* clear the sticky header */
+  }
+  .redact-widget.is-focus .redact-stage {
+    max-height: max(300px, calc(100svh - 300px));
+  }
+  /* The action bar stays reachable however tall the picture is. */
+  .redact-widget.is-focus .redact-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin-inline: -4px;
+    padding: 12px 4px;
+    background: var(--surface);
+  }
+  @media (max-width: 640px) {
+    /* Two 58px stacked buttons would eat a phone screen once pinned. */
+    .redact-widget.is-focus .redact-actions {
+      flex-direction: row;
+    }
+    .redact-widget.is-focus .redact-actions .btn {
+      width: auto;
+      min-width: 0;
+    }
+    .redact-widget.is-focus .redact-actions .btn-ghost {
+      flex: 0 0 auto;
+      padding-inline: 16px;
+    }
+  }
+  @media (min-width: 960px) {
+    .redact-widget.is-focus [data-panel='editor']:not([hidden]) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 24px;
+      align-items: start;
+    }
+    .redact-widget.is-focus .redact-stage {
+      max-height: max(360px, calc(100svh - 260px));
+    }
+    .redact-widget.is-focus .redact-side {
+      position: sticky;
+      top: 76px;
+      display: flex;
+      flex-direction: column;
+    }
+    .redact-widget.is-focus .redact-hint {
+      margin-top: 0;
+    }
+    .redact-widget.is-focus .redact-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .redact-widget.is-focus .redact-toolbar .opt {
+      justify-content: space-between;
+    }
+    .redact-widget.is-focus .redact-tool-actions {
+      margin-left: 0;
+      justify-content: flex-start;
+    }
+    .redact-widget.is-focus .redact-actions {
+      position: static;
+      flex-direction: column-reverse;
+      gap: 8px;
+      padding: 0;
+      margin: 20px 0 0;
+    }
+    /* .grow means flex: 1, which in a column collapses the button's height. */
+    .redact-widget.is-focus .redact-actions .btn {
+      flex: 0 0 auto;
+      width: 100%;
+    }
   }
 
   /* Batch filmstrip — only rendered when more than one image is queued. */
@@ -492,7 +648,8 @@ const noun = isPdf ? 'PDF' : 'images';
 
   @media (prefers-reduced-motion: reduce) {
     .filmstrip :global(.strip-item),
-    .strip-add {
+    .strip-add,
+    .seg span {
       transition: none;
     }
     .detect-spin {

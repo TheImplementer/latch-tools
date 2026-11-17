@@ -96,6 +96,21 @@ export function plural(n: number, word: string): string {
   return `${n} ${word}${n === 1 ? "" : "s"}`;
 }
 
+/**
+ * Toggle the widget's focused editing layout (styles in RedactWidget.astro).
+ * `scroll` brings it to the top of the screen — only on the way in from the
+ * drop zone, never when returning to the editor from a detect or export
+ * pass, where the user is already looking at it.
+ *
+ * Instant, not smooth: the layout already jumps when the widget widens, and a
+ * smooth scroll keeps moving the canvas under a drag that starts during it, so
+ * the first box lands somewhere other than where it was drawn.
+ */
+export function setFocus(root: HTMLElement, on: boolean, scroll = false): void {
+  root.classList.toggle("is-focus", on);
+  if (on && scroll) root.scrollIntoView({ block: "start" });
+}
+
 // ---- Effect maths (resolution-independent: scaled to region size) ----
 function blurRadius(minSidePx: number, strength: number): number {
   const frac = 0.045 * strength + 0.035; // strength 1 → 0.08 … 5 → 0.26 of the shorter side

@@ -47,6 +47,7 @@ import {
   plural,
   raf,
   releaseCanvas,
+  setFocus,
   type Rect,
 } from "./regions";
 
@@ -144,8 +145,9 @@ export function initPdfRedactWidget(root: HTMLElement): void {
   function markedPages(): number {
     return pages.filter((p) => p.regions.length > 0).length;
   }
-  function showPanel(name: Panel) {
+  function showPanel(name: Panel, scroll = false) {
     for (const [k, el] of Object.entries(panels)) el.hidden = k !== name;
+    setFocus(root, name === "editor", scroll);
   }
   function dpi(): number {
     return qualityInput.value === "high" ? DPI_HIGH : DPI_STANDARD;
@@ -324,7 +326,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
       return;
     }
     await setActive(0);
-    showPanel("editor");
+    showPanel("editor", true);
   }
 
   function handleOpenFailure(e: unknown) {
