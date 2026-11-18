@@ -1,0 +1,254 @@
+---
+// "Find and black out" — the PDF redaction editor's search box and auto-find
+// options. Rendered by RedactWidget in pdf mode only; driven by
+// src/lib/pdfRedact.ts through the [data-el="find-*"] hooks.
+//
+// Owns its markup and styles, like MetadataOptions.astro. The results list is
+// built at runtime, so its rules use :global under a scoped parent.
+import { PATTERN_KINDS, type PatternKind } from '../lib/findPatterns';
+
+export interface Props {
+  /** Auto-find options ticked when the page loads. */
+  defaults?: PatternKind[];
+}
+const { defaults = [] } = Astro.props;
+---
+
+<section class="find" data-el="find" aria-labelledby="find-heading">
+  <h3 class="find-h" id="find-heading">Find and black out</h3>
+  <form class="find-form" data-el="find-form" role="search">
+    <label class="sr-only" for="find-input">Text to find</label>
+    <input
+      class="find-input"
+      id="find-input"
+      data-el="find-input"
+      type="search"
+      placeholder="A name, number or phrase"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      enterkeyhint="search"
+    />
+  </form>
+  <fieldset class="find-kinds">
+    <legend class="find-legend">Also find</legend>
+    {PATTERN_KINDS.map((p) => (
+      <label class="find-kind">
+        <input type="checkbox" data-find-kind={p.kind} checked={defaults.includes(p.kind)} />
+        <span>{p.label}</span>
+      </label>
+    ))}
+  </fieldset>
+  <button class="btn btn-secondary find-go" type="button" data-el="find-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M20 20l-4.2-4.2"></path></svg>
+    <span data-el="find-label">Find &amp; black out</span>
+  </button>
+  <p class="find-status" data-el="find-status" role="status" aria-live="polite" hidden></p>
+  <p class="find-warn" data-el="find-warn" hidden></p>
+  <ul class="find-list" data-el="find-list" aria-label="What was found" hidden></ul>
+  <button class="find-clear" type="button" data-el="find-clear" hidden>Remove all found boxes</button>
+</section>
+
+<style>
+  /* RedactWidget's copy is scoped to its own markup, so this needs its own. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .find {
+    margin: 10px 0 4px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+  }
+  .find-h {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .find-input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+  }
+  .find-input:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  .find-kinds {
+    margin: 12px 0 0;
+    padding: 0;
+    border: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .find-legend {
+    padding: 0;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .find-kind {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    font-size: 12.5px;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+  }
+  .find-kind:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .find-kind:has(input:focus-visible) {
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .find-kind input {
+    margin: 0;
+    width: 14px;
+    height: 14px;
+    accent-color: var(--accent);
+  }
+
+  .find-go {
+    margin-top: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .find-status {
+    margin: 10px 2px 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-2);
+  }
+  .find-warn {
+    margin: 10px 0 0;
+    padding: 9px 11px;
+    border-radius: var(--r-sm);
+    background: var(--danger-soft);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .find-status[hidden],
+  .find-warn[hidden],
+  .find-list[hidden],
+  .find-clear[hidden] {
+    display: none;
+  }
+
+  .find-list {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+  }
+  .find-list :global(li) {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-top: 1px solid var(--border);
+  }
+  .find-list :global(li:first-child) {
+    border-top: 0;
+  }
+  .find-list :global(.find-jump) {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 8px 10px;
+    border: 0;
+    background: none;
+    text-align: left;
+    font: inherit;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .find-list :global(.find-jump:hover) {
+    background: var(--surface-2);
+  }
+  .find-list :global(.find-text) {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .find-list :global(.find-meta) {
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  .find-list :global(.find-x) {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    margin-right: 4px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: var(--r-sm);
+    background: none;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .find-list :global(.find-x:hover) {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  .find-list :global(.find-jump:focus-visible),
+  .find-list :global(.find-x:focus-visible) {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ring);
+  }
+
+  .find-clear {
+    margin: 8px 0 0;
+    padding: 4px 2px;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-text);
+    cursor: pointer;
+  }
+  .find-clear:hover {
+    text-decoration: underline;
+  }
+  .find-clear:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+    border-radius: 4px;
+  }
+</style>

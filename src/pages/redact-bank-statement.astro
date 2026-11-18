@@ -13,8 +13,8 @@ const steps = [
     text: "Drag the PDF onto the editor or click Browse. If your bank locked it with a password, you'll be asked for it.",
   },
   {
-    name: 'Draw over what to hide',
-    text: "Drag a box over each account number, sort code, card number and transaction you don't want to show. Click a box to move, resize or delete it.",
+    name: 'Find the numbers, then box the rest',
+    text: "Press Find & black out to box every sort code, account number, card number and IBAN on the statement. Then drag a box over each transaction you don't want to show. Click any box to move, resize or delete it.",
   },
   {
     name: 'Check every page',
@@ -51,6 +51,12 @@ const faqs: { q: string; a: Seg[] }[] = [
     a: [
       "Not from a file redacted here. Each page is rendered to an image with your boxes already burned into the pixels, and the new PDF is built from those images, so the original text isn't in the file at all. A black rectangle drawn in an ordinary PDF editor is different: the numbers stay underneath and copy and paste brings them back. Two things can still give hints: a box cut tight around a short value, and a running balance that lets someone work out a hidden amount. Cover whole fields and the balance column to avoid both. For how other redactions fail, see ",
       { href: '/unredact-pdf/', text: 'Can redacted PDF text be recovered?' },
+    ],
+  },
+  {
+    q: 'Can it find my account number and sort code for me?',
+    a: [
+      "Yes, on a statement downloaded from online banking. Those PDFs still contain their text, so Find & black out can search it for sort codes, account numbers, card numbers and IBANs. To keep dates and reference numbers from being caught by mistake, a sort code or account number only counts when it's labelled or the two appear together. Card numbers and IBANs are checked against their check digits. You can also type a name or a payee to black out every mention of it. A scanned paper statement is just a picture, so there's nothing to search. Draw those boxes by hand, and check every page either way.",
     ],
   },
   {
@@ -145,7 +151,7 @@ const PM = '<span class="pm" aria-hidden="true"><svg width="18" height="18" view
         <TrustPill />
       </div>
 
-      <RedactWidget heading="Redact your statement" defaultEffect="blackout" applyLabel="Redact statement &amp; download" mode="pdf" />
+      <RedactWidget heading="Redact your statement" defaultEffect="blackout" applyLabel="Redact statement &amp; download" mode="pdf" findDefaults={['bank', 'iban', 'card']} />
     </div>
   </section>
 

@@ -7,6 +7,9 @@
 // `image` runs src/lib/redact.ts over a queue of image files; `pdf` runs
 // src/lib/pdfRedact.ts over the pages of one document. Both drive the same
 // [data-el] contract and both delegate the drawing to src/lib/regions.ts.
+import FindPanel from './FindPanel.astro';
+import type { PatternKind } from '../lib/findPatterns';
+
 export interface Props {
   heading: string; // widget-header title, e.g. "Blur a face"
   defaultEffect: 'blur' | 'pixelate' | 'blackout';
@@ -21,8 +24,10 @@ export interface Props {
   // Starting slider position, 1–5. Plates are short and predictable, so the
   // plate page starts at the top of the range instead of the middle.
   defaultStrength?: number;
+  // PDF mode: which "Find and black out" options start ticked.
+  findDefaults?: PatternKind[];
 }
-const { heading, defaultEffect, applyLabel, detect = null, mode = 'image', defaultStrength = 3 } = Astro.props;
+const { heading, defaultEffect, applyLabel, detect = null, mode = 'image', defaultStrength = 3, findDefaults = [] } = Astro.props;
 const isPdf = mode === 'pdf';
 const detectLabel = detect === 'plate' ? 'Find plates' : 'Find faces';
 const detectNoun = detect === 'plate' ? 'plates' : 'faces';
@@ -117,6 +122,7 @@ const noun = isPdf ? 'PDF' : 'images';
     </div>
     <div class="redact-side">
       <p class="redact-hint" data-el="editor-hint" aria-live="polite"></p>
+      {isPdf && <FindPanel defaults={findDefaults} />}
       {!isPdf && (
         <fieldset class="effect-seg" data-el="effect-seg">
           <legend class="sr-only">Effect</legend>
@@ -488,12 +494,28 @@ const noun = isPdf ? 'PDF' : 'images';
       flex-direction: row;
     }
     .redact-widget.is-focus .redact-actions .btn {
+      /* The global phone rule gives .actions buttons flex: 0 0 58px, a
+         height for its column layout. In this row it would be a width, and
+         squeezed the main button to 58px. */
+      flex: 1 1 auto;
       width: auto;
       min-width: 0;
     }
     .redact-widget.is-focus .redact-actions .btn-ghost {
       flex: 0 0 auto;
       padding-inline: 16px;
+    }
+    /* "Redact statement & download (3/4)" is wider than what's left beside
+       Start over on a phone; let it take two lines instead of clipping. */
+    .redact-widget.is-focus .redact-actions .btn-primary {
+      white-space: normal;
+      line-height: 1.2;
+      text-align: center;
+      padding-inline: 12px;
+      font-size: 15px;
+    }
+    .redact-widget.is-focus .redact-actions .btn-primary svg {
+      display: none;
     }
   }
   @media (min-width: 960px) {

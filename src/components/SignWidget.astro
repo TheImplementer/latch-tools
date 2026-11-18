@@ -629,6 +629,10 @@ const STYLES = ['Flowing', 'Casual', 'Formal'];
       flex-direction: row;
     }
     .sign-widget.is-focus .sign-actions .btn {
+      /* The global phone rule gives .actions buttons flex: 0 0 58px, a
+         height for its column layout. In this row it would be a width, and
+         squeezed the main button to 58px. */
+      flex: 1 1 auto;
       width: auto;
       min-width: 0;
     }

@@ -1087,3 +1087,213 @@ export async function permissionsOf(
   await task.destroy();
   return p ? [...p].sort((a, b) => a - b) : null;
 }
+
+// ---- Find-and-redact fixtures ------------------------------------------
+//
+// The question these answer is "did every character of every match end up
+// under a bar?", and text extraction can't answer it: the output has no text
+// at all, matched or not. So every target is printed in a saturated red that
+// nothing else on the page uses, and the test counts red pixels in the
+// exported rasters. Zero means every target was fully covered; any red left
+// is a target character still readable. One red word is deliberately NOT a
+// target (FIND_CONTROL_RED), which proves the export keeps colour, so zero red
+// can't come from a bug that greys out the whole page.
+//
+// The rest of each line sits right up against the targets, the way a label
+// sits next to its value on a real statement. In makeFindPdf it's blue, so a
+// test can count how much of it the boxes covered.
+// -----------------------------------------------------------------------
+
+export const FIND = {
+  name: "Jane Example",
+  sortCode: "20-45-67",
+  account: "41234567",
+  email: "jane.example@example.co.uk",
+  phone: "+44 20 7946 0958",
+  card: "4111 1111 1111 1111",
+  nino: "AB 12 34 56 C",
+  iban: "GB33 BUKB 2045 6741 2345 67",
+} as const;
+
+/** Printed in red but never searched for: must survive the export. */
+export const FIND_CONTROL_RED = "KEEP-THIS-RED";
+
+/** Saturated red: the only colour the red-pixel count looks for. */
+const TARGET_RED = [0.93, 0.1, 0.1] as const;
+
+/** makeFindPdf's non-target text, which no box should cover. */
+const LABEL_BLUE = [0.1, 0.2, 0.8] as const;
+
+/**
+ * Four pages:
+ * 1. Helvetica on white. A name that wraps across a line break. The control.
+ * 2. Times, one line on a grey table row, one white-on-navy line whose target
+ *    is a lighter red so it still reads as ink against the dark background.
+ * 3. Courier, on a page with /Rotate 90.
+ * 4. A picture of text and nothing else, which search must report as
+ *    unreadable rather than silently pass over.
+ */
+export async function makeFindPdf(): Promise<Uint8Array> {
+  const { PDFDocument, StandardFonts, rgb, degrees } = await import("pdf-lib");
+  const doc = await PDFDocument.create();
+  const red = rgb(...TARGET_RED);
+  // Everything that isn't a target is blue, so a test can also count what a
+  // box covered that it shouldn't have: the label right next to a number.
+  const black = rgb(...LABEL_BLUE);
+
+  type Seg = [text: string, target: boolean];
+  const lines: Seg[][] = [
+    [["Sort code: ", false], [FIND.sortCode, true], ["  Account number: ", false], [FIND.account, true]],
+    [["Contact ", false], [FIND.email, true], [" or call ", false], [FIND.phone, true], [" today.", false]],
+    [["Card ", false], [FIND.card, true], ["  NI number ", false], [FIND.nino, true]],
+    [["IBAN: ", false], [FIND.iban, true], [" BIC BUKBGB22", false]],
+    [["Dear ", false], ["Jane", true]],
+    [["Example", true], [", thank you for your letter. ", false], [FIND_CONTROL_RED, false]],
+  ];
+
+  const draw = async (
+    page: import("pdf-lib").PDFPage,
+    fontName: (typeof StandardFonts)[keyof typeof StandardFonts],
+    size: number,
+    startY: number,
+    opts: { shadeLine?: number; darkLine?: number } = {},
+  ) => {
+    const font = await doc.embedFont(fontName);
+    let y = startY;
+    lines.forEach((ln, i) => {
+      const width = ln.reduce((w, [t]) => w + font.widthOfTextAtSize(t, size), 0);
+      if (i === opts.shadeLine)
+        page.drawRectangle({ x: 44, y: y - size * 0.35, width: width + 12, height: size * 1.4, color: rgb(0.9, 0.91, 0.93) });
+      if (i === opts.darkLine)
+        page.drawRectangle({ x: 44, y: y - size * 0.35, width: width + 12, height: size * 1.4, color: rgb(0.1, 0.14, 0.3) });
+      let x = 50;
+      for (const [t, target] of ln) {
+        const isControl = t === FIND_CONTROL_RED;
+        const color = target || isControl
+          ? i === opts.darkLine ? rgb(1, 0.38, 0.38) : red
+          : i === opts.darkLine ? rgb(1, 1, 1) : black;
+        page.drawText(t, { x, y, size, font, color });
+        x += font.widthOfTextAtSize(t, size);
+      }
+      y -= size * 2;
+    });
+  };
+
+  await draw(doc.addPage([PAGE_W, PAGE_H]), StandardFonts.Helvetica, 11, 760);
+  await draw(doc.addPage([PAGE_W, PAGE_H]), StandardFonts.TimesRoman, 12, 760, { shadeLine: 1, darkLine: 3 });
+  const rotated = doc.addPage([PAGE_W, PAGE_H]);
+  rotated.setRotation(degrees(90));
+  await draw(rotated, StandardFonts.Courier, 10, 760);
+
+  const scan = doc.addPage([PAGE_W, PAGE_H]);
+  const png = await doc.embedPng(makeTestPng(400, 500));
+  scan.drawImage(png, { x: 60, y: 200, width: 400, height: 500 });
+
+  return doc.save();
+}
+
+/**
+ * The same kind of statement, printed to PDF by Chromium from HTML: a table
+ * with zebra rows, a justified paragraph, the browser's own text layout and
+ * font embedding. This is what "Save as PDF" from a bank's website produces.
+ *
+ * `font` matters more than it looks: pdf.js only reports an embedded font's
+ * generic family, so the find code estimates positions with the browser's own
+ * sans-serif. A condensed face like Impact or a wide one like Verdana makes
+ * that estimate wrong by whole characters, which only the ink step corrects.
+ */
+export async function makeChromeStatementPdf(
+  font = "Arial, Helvetica, sans-serif",
+): Promise<Uint8Array> {
+  const { chromium } = await import("@playwright/test");
+  const t = (s: string) => `<span style="color:#ee1a1a">${s}</span>`;
+  const html = `<!doctype html><html><body style="font-family:${font};font-size:11px;padding:28px;color:#111">
+<h2>Northwind Bank plc · Current account statement</h2>
+<p>Statement period 01-10-24 to 31-10-24 · Page 1 of 1</p>
+<p>Sort code: ${t(FIND.sortCode)} &nbsp; Account number: ${t(FIND.account)} &nbsp; IBAN: ${t(FIND.iban)}</p>
+<p>Questions? Email ${t(FIND.email)} or call ${t(FIND.phone)}.</p>
+<table style="border-collapse:collapse;width:100%">
+<tr style="background:#e8eaee"><th align=left>Date</th><th align=left>Description</th><th align=right>Out</th><th align=right>Balance</th></tr>
+<tr><td>01-10-24</td><td>Card payment ${t(FIND.card)} TESCO 2231</td><td align=right>45.20</td><td align=right>1,204.80</td></tr>
+<tr style="background:#f1f3f6"><td>02-10-24</td><td>Transfer to J SMITH ${t("40-11-22")} ${t("87654321")}</td><td align=right>300.00</td><td align=right>904.80</td></tr>
+<tr><td>03-10-24</td><td>Reference 20241003 SALARY ACME LTD</td><td align=right></td><td align=right>3,354.80</td></tr>
+</table>
+<p style="text-align:justify;width:320px">This statement is addressed to ${t("Jane")} ${t("Example")} at the address we hold. Keep it safe. ${FIND_CONTROL_RED.replace(/.+/, (s) => t(s))}</p>
+</body></html>`;
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html);
+    return new Uint8Array(await page.pdf({ format: "A4", printBackground: true }));
+  } finally {
+    await browser.close();
+  }
+}
+
+/**
+ * A scanned statement with an OCR text layer, the way a scanner app or
+ * Acrobat's "Recognise text" leaves one: the page is a picture, and over it
+ * sits invisible text, one word at a time, roughly where the OCR thought each
+ * word was. Roughly is the point. The layer here is deliberately a little off
+ * (shifted right, squeezed narrower), so a box placed from the text alone
+ * misses the picture's real letters, and only fitting to the ink covers them.
+ *
+ * Built from a Chromium screenshot so it runs anywhere the suite does.
+ */
+export async function makeOcrScanPdf(): Promise<Uint8Array> {
+  const { chromium } = await import("@playwright/test");
+  const { PDFDocument, StandardFonts } = await import("pdf-lib");
+  const lines = [
+    `Sort code: [${FIND.sortCode}] Account number: [${FIND.account}]`,
+    `Email [${FIND.email}] or call [${FIND.phone}]`,
+    `Card [${FIND.card}] IBAN [${FIND.iban}]`,
+    `Addressed to [Jane] [Example] at the address we hold. [${FIND_CONTROL_RED}]`,
+  ];
+  // Every word its own span, so its box can be measured; [targets] in red.
+  const html = `<!doctype html><html><body style="margin:0;padding:40px;width:780px;background:#f6f5f1;font:20px Arial,Helvetica,sans-serif;color:#151515">
+${lines
+  .map(
+    (l) =>
+      `<p style="margin:0 0 26px">${l
+        .replace(/\[([^\]]+)\]/g, (_, t: string) => t.split(" ").map((w) => `<w style="color:#ee1a1a">${w}</w>`).join(" "))
+        .split(/ (?![^<]*>)/)
+        .map((w) => (w.startsWith("<w") ? w : `<w>${w}</w>`))
+        .join(" ")}</p>`,
+  )
+  .join("\n")}</body></html>`;
+
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage({ viewport: { width: 860, height: 1100 }, deviceScaleFactor: 2 });
+    await page.setContent(html);
+    const words = await page.$$eval("w", (els) =>
+      els.map((e) => {
+        const r = e.getBoundingClientRect();
+        return { t: e.textContent ?? "", x: r.left, y: r.top, w: r.width, h: r.height };
+      }),
+    );
+    const png = await page.screenshot({ type: "png" });
+
+    // 1 CSS px = 0.75 pt, so the 860×1100 page is 645×825 pt.
+    const doc = await PDFDocument.create();
+    const font = await doc.embedFont(StandardFonts.Helvetica);
+    const pg = doc.addPage([645, 825]);
+    pg.drawImage(await doc.embedPng(png), { x: 0, y: 0, width: 645, height: 825 });
+    for (const wd of words) {
+      if (!wd.t.trim()) continue;
+      const pt = { x: wd.x * 0.75, y: wd.y * 0.75, w: wd.w * 0.75, h: wd.h * 0.75 };
+      // Off the way OCR is off: 6% late, 8% narrow.
+      const size = (pt.w * 0.92) / font.widthOfTextAtSize(wd.t, 1);
+      pg.drawText(wd.t, {
+        x: pt.x + pt.w * 0.06,
+        y: 825 - (pt.y + pt.h * 0.8),
+        size,
+        font,
+        opacity: 0,
+      });
+    }
+    return doc.save();
+  } finally {
+    await browser.close();
+  }
+}

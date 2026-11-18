@@ -29,6 +29,12 @@ export interface Rect {
   y: number;
   w: number;
   h: number;
+  /**
+   * Set on a box that /redact-pdf/'s find placed: the match's group key (see
+   * findPatterns.groupKey). Survives moving and resizing, so removing a group
+   * from the results list also removes a found box the user adjusted.
+   */
+  found?: string;
 }
 
 type Mode = "idle" | "creating" | "moving" | "resizing";
@@ -85,6 +91,7 @@ export function releaseCanvas(canvas: HTMLCanvasElement): void {
 /** Normalise a rect so width/height are positive (top-left origin). */
 export function normalise(r: Rect): Rect {
   return {
+    ...r,
     x: r.w < 0 ? r.x + r.w : r.x,
     y: r.h < 0 ? r.y + r.h : r.y,
     w: Math.abs(r.w),
@@ -480,6 +487,7 @@ export function createRegionEditor(opts: RegionEditorOptions): RegionEditor {
       const dx = p.x - dragStart.x;
       const dy = p.y - dragStart.y;
       rs[selected] = {
+        ...dragOrigin,
         x: clamp(dragOrigin.x + dx, 0, 1 - dragOrigin.w),
         y: clamp(dragOrigin.y + dy, 0, 1 - dragOrigin.h),
         w: dragOrigin.w,
@@ -491,16 +499,17 @@ export function createRegionEditor(opts: RegionEditorOptions): RegionEditor {
       const bottom = y + h;
       if (activeCorner === "nw")
         rs[selected] = normalise({
+          ...dragOrigin,
           x: p.x,
           y: p.y,
           w: right - p.x,
           h: bottom - p.y,
         });
       else if (activeCorner === "ne")
-        rs[selected] = normalise({ x, y: p.y, w: p.x - x, h: bottom - p.y });
+        rs[selected] = normalise({ ...dragOrigin, y: p.y, w: p.x - x, h: bottom - p.y });
       else if (activeCorner === "se")
-        rs[selected] = normalise({ x, y, w: p.x - x, h: p.y - y });
-      else rs[selected] = normalise({ x: p.x, y, w: right - p.x, h: p.y - y });
+        rs[selected] = normalise({ ...dragOrigin, w: p.x - x, h: p.y - y });
+      else rs[selected] = normalise({ ...dragOrigin, x: p.x, w: right - p.x, h: p.y - y });
     }
     draw();
   }

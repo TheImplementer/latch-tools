@@ -50,6 +50,14 @@ import {
   setFocus,
   type Rect,
 } from "./regions";
+import {
+  PATTERN_KINDS,
+  findMatches,
+  groupKey,
+  type FindKind,
+  type PatternKind,
+} from "./findPatterns";
+import { boxesFor, hasInk, inkOf, readPageText, type PageText } from "./pdfFind";
 
 /** One page of the loaded document. Holds no full-resolution pixels. */
 interface Page {
@@ -70,6 +78,10 @@ const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 // download, so this is a real ceiling rather than a guess. Stated up front in
 // the drop-zone copy so nobody discovers it after a two-minute wait.
 const MAX_PAGES = 150;
+
+/** plural() for words that don't just take an "s" ("box" → "boxes"). */
+const pl = (n: number, one: string, many: string) =>
+  `${n} ${n === 1 ? one : many}`;
 
 function formatBytes(b: number): string {
   if (b < 1024) return b + " B";
@@ -128,6 +140,17 @@ export function initPdfRedactWidget(root: HTMLElement): void {
   const tryAnotherBtns = root.querySelectorAll<HTMLButtonElement>(
     '[data-el="try-another-btn"]',
   );
+  const findForm = q<HTMLFormElement>('[data-el="find-form"]');
+  const findInput = q<HTMLInputElement>('[data-el="find-input"]');
+  const findBtn = q<HTMLButtonElement>('[data-el="find-btn"]');
+  const findLabel = q('[data-el="find-label"]');
+  const findStatus = q('[data-el="find-status"]');
+  const findWarn = q('[data-el="find-warn"]');
+  const findList = q('[data-el="find-list"]');
+  const findClear = q<HTMLButtonElement>('[data-el="find-clear"]');
+  const kindBoxes = Array.from(
+    root.querySelectorAll<HTMLInputElement>("[data-find-kind]"),
+  );
 
   // ---- State ----
   let opened: OpenedPdf | null = null;
@@ -139,6 +162,14 @@ export function initPdfRedactWidget(root: HTMLElement): void {
   let doneUrl: string | null = null;
   let cancelled = false;
   let busy = false;
+  // Find: each page's text is read once per document and kept, so a second
+  // search doesn't re-parse every page. `docGen` changes whenever the document
+  // goes away, which is how a search still running notices and stops.
+  let textCache: (PageText | null)[] = [];
+  let foundInfo = new Map<string, { kind: FindKind; text: string }>();
+  let finding = false;
+  let stopFind = false;
+  let docGen = 0;
 
   function regions(): Rect[] {
     return active >= 0 && pages[active] ? pages[active].regions : [];
@@ -167,7 +198,10 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     getStrength: () => 1,
     onEdit: (kind) => {
       updateHint();
-      if (kind === "commit") renderStrip();
+      if (kind === "commit") {
+        renderStrip();
+        renderFindList();
+      }
     },
   });
 
@@ -196,7 +230,7 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     applyAllBtn.hidden = pages.length < 2;
 
     const total = totalRegions();
-    applyBtn.disabled = total === 0 || busy;
+    applyBtn.disabled = total === 0 || busy || finding;
     const base = applyLabelEl.dataset.base ?? "Redact & download";
     const marked = markedPages();
     applyLabelEl.textContent =
@@ -540,8 +574,267 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   }
 
+  // ---- Find and black out ----
+  //
+  // Search every page's text (and form-field values) for what the user typed
+  // and the patterns they ticked, and put a box over each match. The boxes are
+  // ordinary regions, so they can be moved, resized, deleted and undone like
+  // drawn ones; each carries its match's group key, which is what the results
+  // list counts and what its remove buttons act on.
+  //
+  // Search is an aid, not a guarantee, and the copy says so every time: it
+  // can't see text inside images, and a page whose text can't be read is
+  // reported by number rather than silently skipped.
+
+  function chosenKinds(): PatternKind[] {
+    return kindBoxes
+      .filter((b) => b.checked)
+      .map((b) => b.dataset.findKind as PatternKind);
+  }
+
+  function resetFindUi() {
+    finding = false;
+    findLabel.textContent = "Find & black out";
+    findStatus.hidden = true;
+    findStatus.textContent = "";
+    findWarn.hidden = true;
+    findWarn.textContent = "";
+    findList.hidden = true;
+    findList.replaceChildren();
+    findClear.hidden = true;
+  }
+
+  function setFindStatus(text: string) {
+    findStatus.textContent = text;
+    findStatus.hidden = !text;
+  }
+
+  function listPages(ns: number[]): string {
+    if (ns.length === 1) return `page ${ns[0]}`;
+    const head = ns.slice(0, -1).join(", ");
+    return `pages ${head} and ${ns[ns.length - 1]}`;
+  }
+
+  function nounFor(kind: FindKind, n: number): string {
+    if (kind === "text") return n === 1 ? "match" : "matches";
+    const p = PATTERN_KINDS.find((k) => k.kind === kind)!;
+    return n === 1 ? p.noun[0] : p.noun[1];
+  }
+
+  /** Rebuild the results list from the boxes as they are now. */
+  function renderFindList() {
+    const groups = new Map<string, { boxes: number; pages: number[] }>();
+    pages.forEach((pg, i) => {
+      for (const r of pg.regions) {
+        if (!r.found) continue;
+        const g = groups.get(r.found) ?? { boxes: 0, pages: [] };
+        g.boxes++;
+        if (g.pages[g.pages.length - 1] !== i + 1) g.pages.push(i + 1);
+        groups.set(r.found, g);
+      }
+    });
+    findList.replaceChildren();
+    findList.hidden = groups.size === 0;
+    findClear.hidden = groups.size === 0;
+    for (const [key, g] of groups) {
+      const info = foundInfo.get(key);
+      if (!info) continue;
+      const li = document.createElement("li");
+      const jump = document.createElement("button");
+      jump.type = "button";
+      jump.className = "find-jump";
+      const where =
+        pages.length > 1 ? `, ${listPages(g.pages)}` : "";
+      const label =
+        info.kind === "text"
+          ? "Your search"
+          : nounFor(info.kind, 1).replace(/^./, (c) => c.toUpperCase());
+      const t = document.createElement("span");
+      t.className = "find-text";
+      t.textContent = info.text.replace(/\s+/g, " ");
+      const meta = document.createElement("span");
+      meta.className = "find-meta";
+      meta.textContent = `${label} · ${pl(g.boxes, "box", "boxes")}${where}`;
+      jump.append(t, meta);
+      jump.setAttribute(
+        "aria-label",
+        `${info.text.replace(/\s+/g, " ")}: ${meta.textContent}. Show ${pages.length > 1 ? `page ${g.pages[0]}` : "it"}`,
+      );
+      jump.addEventListener("click", () => {
+        const i = g.pages[0] - 1;
+        if (i !== active) void setActive(i);
+      });
+      const x = document.createElement("button");
+      x.type = "button";
+      x.className = "find-x";
+      x.setAttribute("aria-label", `Remove the boxes over ${info.text.replace(/\s+/g, " ")}`);
+      x.innerHTML =
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>';
+      x.addEventListener("click", () => removeFound((k) => k === key));
+      li.append(jump, x);
+      findList.appendChild(li);
+    }
+  }
+
+  function removeFound(which: (key: string) => boolean) {
+    if (!editor.isIdle()) return;
+    for (const pg of pages) {
+      pg.regions = pg.regions.filter((r) => !(r.found && which(r.found)));
+    }
+    editor.setSelected(-1);
+    renderFindList();
+    renderStrip();
+    updateHint();
+    editor.draw();
+  }
+
+  /** Is an image-only page (probably a scan) or a genuinely blank one? */
+  async function pageHasInk(i: number): Promise<boolean> {
+    const pg = pages[i];
+    const page = await opened!.doc.getPage(pg.n);
+    try {
+      const c = await renderPage(page, fitScale(pg.ptW, pg.ptH, 200, 1));
+      const inked = hasInk(c);
+      releaseCanvas(c);
+      return inked;
+    } finally {
+      page.cleanup();
+    }
+  }
+
+  async function runFind() {
+    if (finding) {
+      stopFind = true;
+      return;
+    }
+    if (!opened || busy || !pages.length) return;
+    const query = findInput.value.trim();
+    const kinds = chosenKinds();
+    if (!kinds.length && query.length < 2) {
+      setFindStatus(
+        query
+          ? "Type at least two characters to search for."
+          : "Type a name, number or phrase, or tick one of the options.",
+      );
+      return;
+    }
+
+    const gen = docGen;
+    const doc = opened.doc;
+    finding = true;
+    stopFind = false;
+    findLabel.textContent = "Stop searching";
+    findWarn.hidden = true;
+    syncControls();
+
+    const added: { page: number; rects: Rect[] }[] = [];
+    const keys = new Set<string>();
+    const unreadable: number[] = [];
+    let matches = 0;
+    let searched = 0;
+    let failed = false;
+
+    try {
+      for (let i = 0; i < pages.length; i++) {
+        if (stopFind || gen !== docGen) break;
+        if (pages.length > 1) setFindStatus(`Searching page ${i + 1} of ${pages.length}…`);
+        await raf();
+        const pg = pages[i];
+        const page = await doc.getPage(pg.n);
+        try {
+          const pt = (textCache[i] ??= await readPageText(page));
+          if (gen !== docGen) break;
+          if (pt.readable === "garbled" || (pt.readable === "none" && (await pageHasInk(i))))
+            unreadable.push(i + 1);
+          const found = findMatches(pt.text, query, kinds);
+          if (found.length) {
+            // Boxes are fitted to the ink at twice the editor's resolution:
+            // at 1×, a word space in a tight face is only a pixel or two
+            // wider than the gap between letters, too close to tell apart.
+            const scale = fitScale(pg.ptW, pg.ptH, MAX_STAGE * 2);
+            const canvas = await renderPage(page, scale);
+            const ink = inkOf(canvas);
+            releaseCanvas(canvas);
+            const vp = page.getViewport({ scale });
+            const rects: Rect[] = [];
+            for (const m of found) {
+              const key = groupKey(m);
+              keys.add(key);
+              if (!foundInfo.has(key)) foundInfo.set(key, { kind: m.kind, text: m.text });
+              for (const r of boxesFor(pt, m, vp, ink)) {
+                if (r.w > 0 && r.h > 0) rects.push({ ...r, found: key });
+              }
+              matches++;
+            }
+            added.push({ page: i, rects });
+          }
+        } finally {
+          page.cleanup();
+        }
+        searched = i + 1;
+      }
+    } catch (e) {
+      console.error("[redact-pdf] find failed", e);
+      failed = true;
+    }
+
+    if (gen !== docGen) return; // the document went away mid-search
+
+    // Mutating a page's regions mid-drag would corrupt the editor's indices.
+    while (!editor.isIdle()) await raf();
+
+    // Searching again for the same thing re-finds it rather than doubling up.
+    for (const pg of pages) {
+      pg.regions = pg.regions.filter((r) => !(r.found && keys.has(r.found)));
+    }
+    for (const { page, rects } of added) pages[page].regions.push(...rects);
+
+    finding = false;
+    stopFind = false;
+    findLabel.textContent = "Find & black out";
+    editor.setSelected(-1);
+    renderStrip();
+    renderFindList();
+    updateHint();
+    editor.draw();
+
+    const stoppedEarly = searched < pages.length;
+    const what = query && !kinds.length ? `“${query}”` : "anything";
+    let status: string;
+    if (failed) {
+      status = `Something went wrong while searching${searched ? ` after page ${searched}` : ""}. Any boxes added so far are on the pages. Draw the rest by hand.`;
+    } else if (!matches) {
+      status = stoppedEarly
+        ? `Stopped after ${plural(searched, "page")}. Nothing found so far.`
+        : `Didn't find ${what}${pages.length > 1 ? ` in ${plural(pages.length, "page")}` : ""}.`;
+    } else {
+      const onPages = added.length;
+      status =
+        `Blacked out ${pl(matches, "match", "matches")}` +
+        (pages.length > 1 ? ` on ${plural(onPages, "page")}` : "") +
+        (stoppedEarly ? `, then stopped after page ${searched}` : "") +
+        ". Check every page before you download: search can't see text inside pictures, and a pattern can miss a number written an unusual way.";
+    }
+    setFindStatus(status);
+
+    if (unreadable.length) {
+      const one = unreadable.length === 1;
+      findWarn.textContent =
+        pages.length === 1
+          ? "This page has no text the tool can read, so search can't see what's on it. If it's a scan, draw boxes over it by hand."
+          : `${listPages(unreadable).replace(/^p/, "P")} ${one ? "has" : "have"} no text the tool can read, so search can't see what's on ${one ? "it" : "them"}. If ${one ? "it's a scan" : "they're scans"}, draw boxes by hand.`;
+      findWarn.hidden = false;
+    }
+    syncControls();
+  }
+
   // ---- Reset ----
   async function releaseDoc() {
+    docGen++;
+    stopFind = true;
+    textCache = [];
+    foundInfo = new Map();
+    resetFindUi();
     for (const p of pages) if (p.thumbUrl) URL.revokeObjectURL(p.thumbUrl);
     pages = [];
     if (stageImg) {
@@ -606,15 +899,24 @@ export function initPdfRedactWidget(root: HTMLElement): void {
     if (!src.length) return;
     pages.forEach((pg, i) => {
       if (i === active) return;
-      pg.regions = src.map((r) => ({ ...r }));
+      // A copy is the user's box, not a match: it shouldn't vanish when they
+      // remove a found group, or count towards one.
+      pg.regions = src.map(({ found: _found, ...r }) => ({ ...r }));
     });
+    renderFindList();
     updateHint(
-      `Copied ${plural(src.length, "box")} onto all ${pages.length} pages. Check each page, because a box that fits page 1 may not fit page 4.`,
+      `Copied ${pl(src.length, "box", "boxes")} onto all ${pages.length} pages. Check each page, because a box that fits page 1 may not fit page 4.`,
     );
     renderStrip();
   });
 
   applyBtn.addEventListener("click", () => void exportPdf());
+  findBtn.addEventListener("click", () => void runFind());
+  findForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!finding) void runFind();
+  });
+  findClear.addEventListener("click", () => removeFound(() => true));
   cancelBtn?.addEventListener("click", () => {
     cancelled = true;
   });
