@@ -1,0 +1,20 @@
+---
+// The numbered how-to row on a tool page. Pair with howToSchema() from
+// src/lib/guide.ts, fed the same array.
+import type { Step } from '../lib/guide';
+
+export interface Props {
+  steps: Step[];
+}
+const { steps } = Astro.props;
+---
+
+<div class="howto">
+  {steps.map((s, i) => (
+    <div class="howto-step">
+      <div class="n">{i + 1}</div>
+      <h4>{s.name}</h4>
+      <p set:html={s.text} />
+    </div>
+  ))}
+</div>

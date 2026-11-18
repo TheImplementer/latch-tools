@@ -4,6 +4,45 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import TrustPill from '../components/TrustPill.astro';
 import RedactWidget from '../components/RedactWidget.astro';
+import HowToSteps from '../components/HowToSteps.astro';
+import FaqList from '../components/FaqList.astro';
+import { howToSchema, faqSchema, type Step, type Faq } from '../lib/guide';
+
+// The hub of the image redaction pages, and a tool in its own right. Each
+// page below it has one job: blur-face finds faces, blur-license-plate does a
+// car listing in one batch, pixelate-image is for screenshots, redact-image
+// for documents and IDs. This one covers blur itself, softening as much as
+// hiding, and says which of the three effects to use. Keep a topic on one
+// page; link to it from the others rather than repeating it.
+const steps: Step[] = [
+  { name: 'Add your image', text: 'Drag it onto the editor, or click Browse. JPEG, PNG and WebP are accepted, up to 30 images at a time.' },
+  { name: 'Draw over each area', text: 'Drag a box over each area to blur. Everything outside the boxes stays sharp.' },
+  { name: 'Choose the strength for the job', text: 'A low strength softens a cluttered background or a logo. Anything that identifies someone needs the top setting.' },
+  { name: 'Download', text: 'Save the image, or a zip for a batch. The blur is part of the saved pixels.' },
+];
+
+const faqs: Faq[] = [
+  {
+    q: 'Is my image uploaded anywhere?',
+    a: 'No. The image is decoded, blurred and saved in your browser, and nothing is sent to a server. Once the page has loaded, it keeps working offline.',
+  },
+  {
+    q: 'Can I blur the background of a photo?',
+    a: 'You can blur any area you draw a box over, so a background can be covered with a few boxes. It can\'t trace round a person to blur everything behind them, the way a phone\'s portrait mode does. For that look, use portrait mode when you take the photo.',
+  },
+  {
+    q: 'Can the blur be reversed?',
+    a: 'There is no sharp copy underneath: the blur is part of the saved pixels, not a layer on top. But a blur keeps an average of what was there, and a light blur over short, predictable text such as a number can be matched back to it. For anything that matters, use the top strength or a solid bar. <a href="/unblur-license-plate/">Can a blurred image be unblurred?</a> explains how.',
+  },
+  {
+    q: 'Can I blur several images at once?',
+    a: 'Yes, up to 30. Each image keeps its own boxes, <em>Copy boxes to all</em> repeats one image\'s boxes on the rest, and a batch downloads as one zip.',
+  },
+  {
+    q: 'Does blurring lower the quality of the rest of the image?',
+    a: 'Only the boxed areas change, and the image is saved at its original size. A PNG stays a lossless PNG. A JPEG is saved as a high-quality JPEG, which re-compresses it once, as any editor would.',
+  },
+];
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -21,55 +60,17 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Blur part of an image, such as a face, a background, text or a logo, directly in your browser. Draw a box and download. Nothing is uploaded.",
+      "description": "Blur part of an image, such as a background, a logo, a face or a line of text, in your browser. The image is never uploaded.",
       "url": "https://latchtools.com/blur-image/"
     },
-    {
-      "@type": "HowTo",
-      "name": "How to blur part of an image",
-      "step": [
-        { "@type": "HowToStep", "name": "Add your image", "text": "Drag your image onto the editor, or click Browse to pick it from your device." },
-        { "@type": "HowToStep", "name": "Draw over what to blur", "text": "Drag a box over each area you want to blur. Add as many boxes as you need." },
-        { "@type": "HowToStep", "name": "Set the strength", "text": "Raise the strength until the area is as soft as you want. To be sure it's unreadable, use the strongest setting." },
-        { "@type": "HowToStep", "name": "Download the result", "text": "Save the image. The blur is baked into the pixels, so it stays blurred wherever you share it." }
-      ]
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is my image uploaded anywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The image is decoded, blurred, and re-saved entirely in your browser with the Canvas API. Nothing is sent to a server, and the tool keeps working offline once the page has loaded." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I blur just one part of an image instead of the whole thing?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a box over each area you want to blur (a face, a sign, a window, a logo) and the rest of the image stays sharp. There is no limit on how many areas you blur." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I blur a background, a logo, or text?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Anything you draw a box over is blurred, whether that's a busy background, a brand logo, or a line of text. For text you want to be certain is unreadable, use a higher strength, or use the Redact tool to cover it with a solid bar." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can the blur be reversed?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The blur is rendered into the exported pixels at full resolution instead of being added as a removable layer, so there is no sharp original underneath. A very light blur over predictable content can sometimes be reconstructed, though. For anything sensitive, use a strong blur or the Redact tool, which removes the pixels entirely." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between blur, pixelate and blackout?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Blur softens an area so it reads as out of focus. Pixelate replaces it with large blocks. Blackout covers it with a solid bar, replacing the pixels outright, which makes it the most thorough of the three. This page blurs, and the Pixelate and Redact tools handle the other two." }
-        }
-      ]
-    }
+    howToSchema('How to blur part of an image', steps),
+    faqSchema(faqs),
   ]
 };
 ---
 <Layout
   title="Blur Image — Blur Part of a Photo · Latch Tools"
-  description="Blur part of an image, like a face, a background, text or a logo, right in your browser. Draw a box, then download. Nothing is uploaded."
+  description="Blur part of an image, like a face, a background or a logo, in your browser, and see when to pixelate or black out instead. Nothing is uploaded."
   ogImage="/og/blur-image.png"
 >
   <Fragment slot="head">
@@ -103,49 +104,36 @@ const structuredData = {
           <h2 class="sec-title" style="font-size:26px">How to blur part of an image</h2>
         </div>
       </div>
-      <div class="howto">
-        <div class="howto-step">
-          <div class="n">1</div>
-          <h4>Add your image</h4>
-          <p>Drag your image onto the editor, or click Browse. JPEG, PNG, and WebP are all accepted.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">2</div>
-          <h4>Draw over what to blur</h4>
-          <p>Drag a box over each area you want to blur. Add as many as you like; move or resize any box afterwards.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">3</div>
-          <h4>Set the strength</h4>
-          <p>Raise the strength until the area is soft enough. If it has to be unreadable, go to the strongest setting.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">4</div>
-          <h4>Download</h4>
-          <p>Save the result. The blur is baked into the pixels, so it stays blurred wherever you share it.</p>
-        </div>
-      </div>
+      <HowToSteps steps={steps} />
     </div>
   </section>
 
-  <!-- WHY / PRIVACY -->
+  <!-- WHAT BLUR IS FOR -->
   <section class="section" style="padding-top:0">
     <div class="wrap" style="max-width:780px">
       <div class="sec-head">
         <div>
-          <h2 class="sec-title" style="font-size:22px">Why blur an image in your browser?</h2>
+          <h2 class="sec-title" style="font-size:22px">What blur is for, and what it isn't</h2>
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        People blur an image to keep something out of view: a face in the background, a house number, an email address in a screenshot, a logo you don't have the rights to show. Sending that picture to a remote server just to hide part of it exposes the very thing you meant to hide. Latch decodes, blurs, and re-encodes the image in the browser on your own device, and no copy is uploaded.
+        Blur is the gentlest of the three effects. It keeps the colour and rough shape of what is underneath, so a blurred area still looks like part of the photo rather than a hole in it. That makes it the right choice for things you want to tone down: a messy background in a product photo, a brand logo you don't have permission to show, a spoiler in a screenshot, a stranger at the edge of the frame.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        The blur is also permanent. Rather than sitting on top as a layer that can be peeled back, it's composited into the exported pixels at full resolution, so the file you share has no sharp original underneath. For anything sensitive, turn the strength up until nothing in the area can be read.
+        It is the wrong choice for text that matters. A blur averages neighbouring pixels, and short, predictable text such as an account number can be matched against that average by trying candidates. So the effect to use depends on what you are hiding:
+      </p>
+      <ul class="check-list">
+        <li><strong>Blur</strong> to soften: backgrounds, logos, faces where you want the photo to stay natural-looking. At the top strength it hides a face well.</li>
+        <li><strong><a class="prose-link" href="/pixelate-image/">Pixelate</a></strong> when it should be obvious that something was censored, as in a screenshot you are sharing.</li>
+        <li><strong><a class="prose-link" href="/redact-image/">Black out</a></strong> anything that must not be recoverable: account numbers, ID details, addresses, passwords.</li>
+      </ul>
+      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
+        <a class="prose-link" href="/unblur-license-plate/">Can a blurred image be unblurred?</a> goes through why, with the worst case: a license plate.
       </p>
     </div>
   </section>
 
-  <!-- CLUSTER HUB -->
+  <!-- HUB -->
   <section class="section" style="padding-top:0">
     <div class="wrap">
       <div class="sec-head">
@@ -163,7 +151,7 @@ const structuredData = {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
           </span>
           <h3 class="tool-name">Blur a face</h3>
-          <p class="tool-desc">Blur any number of faces at once to protect identities before you share.</p>
+          <p class="tool-desc">Finds the faces for you, with detection that runs on your device.</p>
           <div class="tool-tags"><span class="chip">faces</span><span class="chip">privacy</span></div>
         </a>
 
@@ -175,7 +163,7 @@ const structuredData = {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
           </span>
           <h3 class="tool-name">Blur a license plate</h3>
-          <p class="tool-desc">Hide a number plate before selling a car or posting a photo online.</p>
+          <p class="tool-desc">Box the plate once and copy it to every photo in a car listing.</p>
           <div class="tool-tags"><span class="chip">plates</span><span class="chip">privacy</span></div>
         </a>
 
@@ -187,7 +175,7 @@ const structuredData = {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
           </span>
           <h3 class="tool-name">Pixelate an image</h3>
-          <p class="tool-desc">Censor names, faces and details in screenshots with blocks or blur.</p>
+          <p class="tool-desc">Censor screenshots with blocks, and see how big they need to be for text.</p>
           <div class="tool-tags"><span class="chip">redact</span><span class="chip">screenshots</span></div>
         </a>
 
@@ -199,7 +187,7 @@ const structuredData = {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"/></svg>
           </span>
           <h3 class="tool-name">Redact an image</h3>
-          <p class="tool-desc">Black out names and numbers on documents. This is the strongest option, and it is permanent.</p>
+          <p class="tool-desc">Solid bars for documents and IDs, including the details they print twice.</p>
           <div class="tool-tags"><span class="chip">blackout</span><span class="chip">documents</span></div>
         </a>
       </div>
@@ -214,35 +202,10 @@ const structuredData = {
           <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
         </div>
       </div>
-      <div class="faq">
-        <details class="faq-item" open>
-          <summary class="faq-q">Is my image uploaded anywhere?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. The image is decoded, blurred, and re-saved entirely in your browser with the Canvas API. Nothing is sent to a server, and the tool keeps working offline once the page has loaded.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Can I blur just one part of an image instead of the whole thing?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Draw a box over each area you want to blur (a face, a sign, a window, a logo) and the rest of the image stays sharp. There is no limit on how many areas you blur.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Can I blur a background, a logo, or text?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Anything you draw a box over is blurred, whether that's a busy background, a brand logo, or a line of text. For text you want to be certain is unreadable, use a higher strength, or use the <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact tool</a> to cover it with a solid bar.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Can the blur be reversed?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">The blur is rendered into the exported pixels at full resolution instead of being added as a removable layer, so there's no sharp original underneath. A very light blur over predictable content can sometimes be reconstructed, though. For anything sensitive, use a strong blur or the <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact tool</a>, which removes the pixels entirely.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">What is the difference between blur, pixelate and blackout?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Blur softens an area so it reads as out of focus. Pixelate replaces it with large blocks. Blackout covers it with a solid bar, replacing the pixels outright, which makes it the most thorough of the three. This page blurs, and the <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">pixelate</a> and <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact</a> tools handle the other two.</p>
-        </details>
-      </div>
+      <FaqList faqs={faqs} />
 
       <p class="muted" style="font-size:14px;margin-top:30px">
         Related privacy tools: <a href="/blur-face/" style="color:var(--accent-text);font-weight:600">Blur a face</a> · <a href="/blur-license-plate/" style="color:var(--accent-text);font-weight:600">Blur a license plate</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
-      </p>
-
-      <p class="muted" style="font-size:14px;margin-top:12px">
-        Further reading: <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">can a blurred image be unblurred?</a> covers what survives a blur and when to use a solid blackout instead.
       </p>
     </div>
   </section>

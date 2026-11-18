@@ -4,6 +4,42 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import TrustPill from '../components/TrustPill.astro';
 import RedactWidget from '../components/RedactWidget.astro';
+import HowToSteps from '../components/HowToSteps.astro';
+import FaqList from '../components/FaqList.astro';
+import { howToSchema, faqSchema, type Step, type Faq } from '../lib/guide';
+
+// This page's job: people in photos. It is the only image page that finds
+// what to hide by itself (on-device face detection), so that leads, followed
+// by what identifies someone besides their face.
+const steps: Step[] = [
+  { name: 'Add your photos', text: 'Drag your images onto the editor, or click Browse. JPEG, PNG and WebP are accepted, up to 30 at a time.' },
+  { name: 'Find the faces', text: 'Click <em>Find faces</em> to detect them across every photo, on your device.' },
+  { name: 'Check what it missed', text: 'Look for small, turned or shadowed faces and draw a box over each. Move, resize or delete any box you don\'t want.' },
+  { name: 'Set the strength and download', text: 'Raise the strength until no features remain, then download. A batch saves as one zip.' },
+];
+
+const faqs: Faq[] = [
+  {
+    q: 'Does it find every face?',
+    a: 'No. Treat the finder as a first pass. It is good at faces that are reasonably large and facing the camera, and it can miss faces that are small, turned away, in deep shadow or partly covered. Check every photo and draw a box over anything it missed before you share it.',
+  },
+  {
+    q: 'Does the face detection run on a server?',
+    a: 'No. The detection model downloads to your browser the first time you click <em>Find faces</em>, then runs on your device. The photo, the faces it finds and their positions never leave it. Most tools that blur faces automatically upload the photo to do the detection.',
+  },
+  {
+    q: 'Can a blurred face be unblurred?',
+    a: 'Not the way a license plate can. A plate can be recovered by trying every possible plate, because the list of candidates is short. A face cannot be listed like that. Two things do work against a light blur, though. AI "unblur" tools paint in a plausible face, which is invented rather than recovered but can still look like the person. And researchers have shown that face recognition trained on blurred photos can match a lightly blurred face to a known person. Use the top strength on anyone who must not be recognised.',
+  },
+  {
+    q: 'How much should I blur a face?',
+    a: 'Turn the strength up until no features are recognisable. Small or low-resolution faces need the strongest setting. If you would rather use blocks or a solid bar than a soft blur, <a href="/pixelate-image/">Pixelate image</a> and <a href="/redact-image/">Redact image</a> do the same job with a different look.',
+  },
+  {
+    q: 'Can I blur faces in a whole batch of photos?',
+    a: 'Yes, up to 30 at once. <em>Find faces</em> scans each photo in turn, and the thumbnail strip shows how many boxes each one got, so a photo where it found nothing stands out for a closer look.',
+  },
+];
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -21,65 +57,17 @@ const structuredData = {
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "description": "Blur faces in a photo directly in your browser to protect identities before you share. There is no upload, and the image stays on your device.",
+      "description": "Find and blur faces in photos with face detection that runs on your device. The photo is never uploaded.",
       "url": "https://latchtools.com/blur-face/"
     },
-    {
-      "@type": "HowTo",
-      "name": "How to blur a face in a photo",
-      "step": [
-        { "@type": "HowToStep", "name": "Add your photos", "text": "Drag your images onto the editor, or click Browse to pick them from your device. You can add up to 30 at once." },
-        { "@type": "HowToStep", "name": "Find the faces", "text": "Click Find faces to detect them automatically, on your device. Then check the result: drag a box over anything it missed, and move, resize or delete any box you don't want." },
-        { "@type": "HowToStep", "name": "Set the strength", "text": "Turn the blur strength up until the face is fully unrecognisable." },
-        { "@type": "HowToStep", "name": "Download the result", "text": "Save the image. The blur is baked into the pixels, so the hidden face cannot be recovered." }
-      ]
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Are my photos uploaded anywhere?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server, and that includes the face finder, which downloads once and then runs on your own device. Editing and export keep working even if you go offline after loading the page." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does it find every face?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Treat the finder as a helper for a first pass. It is good at faces that are reasonably large and facing the camera, but it can miss faces that are small, turned away, in deep shadow, or partly covered. Always check the result and draw a box over anything it missed before you share the image." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does the face detection run on a server?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The detection model is downloaded to your browser the first time you use it and runs entirely on your device. Most tools that offer automatic face blurring upload your photo to a server to do the detection. This one never does." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can the blurred face be recovered later?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The blur is rendered into the pixels of the exported image at full resolution, rather than sitting on top as a separate layer or overlay. Once you download and share the result, there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain." }
-        },
-        {
-          "@type": "Question",
-          "name": "How much should I blur a face?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Turn the strength up until no facial features are recognisable. For a small or low-resolution face, use the strongest setting. If you'd prefer mosaic blocks or a solid bar to a soft blur, the Pixelate and Redact tools do the same job with a different look." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I blur more than one face?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Draw a separate box over each face. There is no limit on how many. You can move, resize, or delete any box before you export." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does it work on my phone?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The editor supports touch, so you can draw and adjust boxes with your finger on a phone or tablet just as you would with a mouse." }
-        }
-      ]
-    }
+    howToSchema('How to blur faces in a photo', steps),
+    faqSchema(faqs),
   ]
 };
 ---
 <Layout
   title="Blur Faces in Photos — Free & Private · Latch Tools"
-  description="Blur faces in a photo to protect identities before sharing. Runs entirely in your browser, so the photo is never uploaded."
+  description="Find and blur faces in your photos automatically, with face detection that runs on your device. Check what it found, then download. Nothing is uploaded."
   ogImage="/og/blur-face.png"
 >
   <Fragment slot="head">
@@ -113,47 +101,19 @@ const structuredData = {
           <h2 class="sec-title" style="font-size:26px">How to blur a face</h2>
         </div>
       </div>
-      <div class="howto">
-        <div class="howto-step">
-          <div class="n">1</div>
-          <h4>Add your photos</h4>
-          <p>Drag your images onto the editor, or click Browse. JPEG, PNG, and WebP are all accepted, up to 30 at a time.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">2</div>
-          <h4>Find the faces</h4>
-          <p>Click <em>Find faces</em> to detect them automatically across every photo. Then check its work: drag a box over anything it missed, and move, resize or delete any box you don't want.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">3</div>
-          <h4>Set the strength</h4>
-          <p>Raise the strength until no facial features remain. Small or distant faces need the strongest setting.</p>
-        </div>
-        <div class="howto-step">
-          <div class="n">4</div>
-          <h4>Download</h4>
-          <p>Save the result. The blur is rendered into the pixels, so the hidden face can't be recovered.</p>
-        </div>
-      </div>
+      <HowToSteps steps={steps} />
     </div>
   </section>
 
-  <!-- WHY / PRIVACY -->
+  <!-- DETECTION -->
   <section class="section" style="padding-top:0">
     <div class="wrap" style="max-width:780px">
       <div class="sec-head">
         <div>
-          <h2 class="sec-title" style="font-size:22px">Why blur a face locally?</h2>
+          <h2 class="sec-title" style="font-size:22px">Face detection that happens on your device</h2>
         </div>
       </div>
       <p class="muted" style="font-size:15.5px;line-height:1.65">
-        Blurring a face is usually about privacy. The face might belong to a stranger in the background, a child, a colleague, or a witness who shouldn't be identifiable. Sending that same photo to a remote server just to hide it makes little sense, so Latch does the whole job in your browser. The image is decoded, edited, and re-encoded on your own device, and no copy is sent anywhere.
-      </p>
-      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
-        How the blur is saved matters too. Some tools draw it as a separate layer that can be peeled back from the file. Here it is composited into the exported pixels at full resolution, so the image you share has no sharp original underneath. For anything sensitive, turn the strength up until the face can't be read at all.
-      </p>
-      <h3 style="font-size:17px;margin-top:26px">Face detection happens on your device</h3>
-      <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:10px">
         Automatic face detection normally means an upload. You send the photo to a server, it finds the faces, and it sends coordinates back. For a privacy tool that is an odd arrangement, because you have disclosed the image you were trying to protect to a company whose retention policy you have to take on trust.
       </p>
       <p class="muted" style="font-size:15.5px;line-height:1.65;margin-top:14px">
@@ -165,6 +125,27 @@ const structuredData = {
     </div>
   </section>
 
+  <!-- BEYOND THE FACE -->
+  <section class="section" style="padding-top:0">
+    <div class="wrap" style="max-width:780px">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title" style="font-size:22px">What identifies someone besides their face</h2>
+        </div>
+      </div>
+      <p class="muted" style="font-size:15.5px;line-height:1.65">
+        People who know someone recognise far more than a face. When the point is that a child, a witness or a colleague can't be identified, look over the rest of the photo as well, and box anything on this list.
+      </p>
+      <ul class="check-list">
+        <li><strong>Names on clothing.</strong> Name badges, lanyards, a school uniform's crest, a team shirt with a name on the back.</li>
+        <li><strong>Distinctive features.</strong> Tattoos, a hairstyle, a wheelchair or a bike that people around them would know.</li>
+        <li><strong>Reflections.</strong> Glasses, windows and mirrors can show a second, unblurred copy of a face.</li>
+        <li><strong>The setting.</strong> A school gate, a house number or a car's plate can place someone as precisely as their face. <a class="prose-link" href="/blur-license-plate/">Blur license plate</a> covers cars.</li>
+        <li><strong>The file name.</strong> The download keeps your file name, with <code>-blurred</code> added. A photo called <code>emma-school-play.jpg</code> names the person you blurred, so rename it before you share.</li>
+      </ul>
+    </div>
+  </section>
+
   <!-- FAQ -->
   <section class="section" style="padding-top:0">
     <div class="wrap" style="max-width:780px">
@@ -173,43 +154,10 @@ const structuredData = {
           <h2 class="sec-title" style="font-size:26px">Frequently asked</h2>
         </div>
       </div>
-      <div class="faq">
-        <details class="faq-item" open>
-          <summary class="faq-q">Are my photos uploaded anywhere?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. The photo is decoded and edited entirely in your browser using the Canvas API. Nothing is sent to a server, and that includes the face finder, which downloads once and then runs on your own device. Editing and export keep working even if you go offline after loading the page.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Does it find every face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. Treat the finder as a helper for a first pass. It is good at faces that are reasonably large and facing the camera, but it can miss faces that are small, turned away, in deep shadow, or partly covered. Always check the result and draw a box over anything it missed before you share the image.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Does the face detection run on a server?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. The detection model is downloaded to your browser the first time you use it, then runs entirely on your device. Most tools that offer automatic face blurring upload your photo to a server to do the detection. This one never does.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Can the blurred face be recovered later?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">No. The blur is rendered into the pixels of the exported image at full resolution, rather than sitting on top as a separate layer or overlay. Once you download and share the result, there is no original detail underneath to reverse. For sensitive cases, use a high strength so no facial features remain.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">How much should I blur a face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Turn the strength up until no facial features are recognisable. For a small or low-resolution face, use the strongest setting. If you'd prefer mosaic blocks or a solid bar to a soft blur, the <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">pixelate</a> and <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">redact</a> tools do the same job with a different look.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Can I blur more than one face?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. Draw a separate box over each face. There is no limit on how many. You can move, resize, or delete any box before you export.</p>
-        </details>
-        <details class="faq-item">
-          <summary class="faq-q">Does it work on my phone?<span class="pm" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg></span></summary>
-          <p class="faq-a">Yes. The editor supports touch, so you can draw and adjust boxes with your finger on a phone or tablet just as you would with a mouse.</p>
-        </details>
-      </div>
+      <FaqList faqs={faqs} />
 
       <p class="muted" style="font-size:14px;margin-top:30px">
         Related privacy tools: <a href="/blur-image/" style="color:var(--accent-text);font-weight:600">Blur part of an image</a> · <a href="/pixelate-image/" style="color:var(--accent-text);font-weight:600">Pixelate an image</a> · <a href="/blur-license-plate/" style="color:var(--accent-text);font-weight:600">Blur a license plate</a> · <a href="/redact-image/" style="color:var(--accent-text);font-weight:600">Redact an image</a> · <a href="/remove-exif/" style="color:var(--accent-text);font-weight:600">Remove photo metadata</a>
-      </p>
-
-      <p class="muted" style="font-size:14px;margin-top:12px">
-        Strength decides how much blur is enough. See <a href="/unblur-license-plate/" style="color:var(--accent-text);font-weight:600">What a blur does and doesn't destroy</a>.
       </p>
     </div>
   </section>
