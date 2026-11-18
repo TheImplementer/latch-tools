@@ -760,7 +760,9 @@ export function initPdfRedactWidget(root: HTMLElement): void {
             for (const m of found) {
               const key = groupKey(m);
               keys.add(key);
-              if (!foundInfo.has(key)) foundInfo.set(key, { kind: m.kind, text: m.text });
+              // A search's row shows what was typed, not how the page spaced it.
+              if (!foundInfo.has(key))
+                foundInfo.set(key, { kind: m.kind, text: m.kind === "text" ? query.trim() : m.text });
               for (const r of boxesFor(pt, m, vp, ink)) {
                 if (r.w > 0 && r.h > 0) rects.push({ ...r, found: key });
               }

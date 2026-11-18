@@ -27,6 +27,8 @@ import {
   watchOrigins,
 } from "./helpers";
 import { findMatches, PATTERN_KINDS } from "../src/lib/findPatterns";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 const ALL_KINDS = PATTERN_KINDS.map((k) => k.kind);
 
@@ -254,6 +256,39 @@ for (const font of ["Impact", "Verdana", "Georgia", "Courier New"]) {
   });
 }
 
+// Made by Pages and by Word for the web, not by us: see
+// tests/real-exports/README.md. In both, the letter-spaced heading reads back
+// as "J A N E E X A M P L E" and a card number wraps inside a table cell, two
+// things no fixture built in code produced.
+for (const file of ["pages-statement.pdf", "word-web-statement.pdf"]) {
+  test(`a real export (${file}) is covered, and its labels kept`, async ({ page }) => {
+    const src = readFileSync(
+      fileURLToPath(new URL(`./real-exports/${file}`, import.meta.url)),
+    );
+    await open(page, "/redact-pdf/", src);
+    await find(page, FIND_CONTROL_RED, []);
+    const [before] = await extractPageImages(await exportPdf(page));
+
+    await open(page, "/redact-pdf/", src);
+    await find(page, "Jane Example", ALL_KINDS);
+    // The small print's account number has no label, so the user searches it.
+    await find(page, FIND.account, []);
+    await find(page, FIND_CONTROL_RED, []);
+    const rows = page.locator('[data-el="find-list"] li');
+    // The letter-spaced heading joins the other hits under one row.
+    await expect(rows.filter({ hasText: "Your search" }).first()).toContainText("Jane Example");
+    await expect(rows.filter({ hasText: "Card number" })).toContainText(FIND.card);
+    const [after] = await extractPageImages(await exportPdf(page));
+
+    const red = await countRed(page, after);
+    expect(red.n, `red left at ${red.at}`).toBe(0);
+    const b0 = (await countCast(page, before, "blue")).n;
+    const b1 = (await countCast(page, after, "blue")).n;
+    expect(b0).toBeGreaterThan(1000);
+    expect(b1 / b0, "share of label text still visible").toBeGreaterThan(0.95);
+  });
+}
+
 test("the boxes stay off the words next to a match", async ({ page }) => {
   // Baseline: the same document with one box, far from any label.
   await open(page, "/redact-pdf/", await makeFindPdf());
@@ -377,6 +412,27 @@ test.describe("patterns", () => {
       `Customer no. 0001234567 ISBN 978-0-306-40615-7 Policy AB 12 34 56 Z VAT GB123456789 ` +
       `Batch 123-45-678 Card ending 1234 Date 12 10 24 Account balance 41234567.00`;
     expect(findMatches(text, "", ALL_KINDS)).toEqual([]);
+  });
+
+  test("numbers wrapped onto the next line are still found", () => {
+    const text =
+      "Card payment 4111 1111\n1111 1111 TESCO IBAN GB33 BUKB 2045\n6741 2345 67 " +
+      "NI AB 12 34\n56 C Amex 3782\n822463 10005";
+    expect(findMatches(text, "", ALL_KINDS).map((m) => `${m.kind}:${m.text}`)).toEqual([
+      "card:4111 1111\n1111 1111",
+      "iban:GB33 BUKB 2045\n6741 2345 67",
+      "nino:AB 12 34\n56 C",
+      "card:3782\n822463 10005",
+    ]);
+  });
+
+  test("a typed search finds letter-spaced text, and only that", () => {
+    const q = (text: string, s: string) => findMatches(text, s, []).map((m) => m.text);
+    expect(q("ACCOUNT HOLDER: J A N E E X A M P L E", "Jane Example")).toEqual([
+      "J A N E E X A M P L E",
+    ]);
+    expect(q("Just a plane, an example. Jan e x.", "Jane Example")).toEqual([]);
+    expect(q("j a n e", "jan")).toEqual(["j a n"]);
   });
 
   test("a typed search ignores case, line breaks and how a number is spaced", () => {

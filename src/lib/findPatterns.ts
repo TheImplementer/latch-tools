@@ -95,9 +95,28 @@ export function luhn(s: string): boolean {
   return d.length > 0 && sum % 10 === 0;
 }
 
+// Every IBAN country's fixed length, from the SWIFT IBAN registry. Checking it
+// matters as much as the checksum: mod-97 alone passes one random string in
+// 97, so a greedy match that ran on into the next word ("… 67 NI AB 12") could
+// still validate. A country missing here falls back to the checksum alone.
+const IBAN_LENGTH: Record<string, number> = Object.fromEntries(
+  (
+    "AD24 AE23 AL28 AT20 AZ28 BA20 BE16 BG22 BH22 BI27 BR29 BY28 CH21 CR22 CY28 " +
+    "CZ24 DE22 DJ27 DK18 DO28 EE20 EG29 ES24 FI18 FK18 FO18 FR27 GB22 GE22 GI23 " +
+    "GL18 GR27 GT28 HR21 HU28 IE22 IL23 IQ23 IS26 IT27 JO30 KW30 KZ20 LB28 LC32 " +
+    "LI21 LT20 LU20 LV21 LY25 MC27 MD24 ME22 MK19 MN20 MR27 MT31 MU30 NI28 NL18 " +
+    "NO15 OM23 PK24 PL28 PS29 PT25 QA29 RO24 RS22 RU33 SA24 SC31 SD18 SE24 SI19 " +
+    "SK24 SM27 SO23 ST25 SV28 TL23 TN24 TR26 UA29 VA22 VG24 XK20 YE30"
+  )
+    .split(" ")
+    .map((e) => [e.slice(0, 2), Number(e.slice(2))]),
+);
+
 export function ibanValid(s: string): boolean {
   const t = s.replace(/\s/g, "").toUpperCase();
   if (t.length < 15 || t.length > 34) return false;
+  const want = IBAN_LENGTH[t.slice(0, 2)];
+  if (want && t.length !== want) return false;
   const r = t.slice(4) + t.slice(0, 4);
   let m = 0;
   for (const ch of r) {
@@ -119,6 +138,25 @@ export function ibanValid(s: string): boolean {
 interface Rule {
   re: RegExp;
   accept?: (m: string, text: string, at: number) => number;
+}
+
+/**
+ * A grouped card number spaces its groups one way throughout ("4111 1111 …",
+ * "4111-1111-…" or not at all), except where the line wrapped. `cuts` are the
+ * digit counts its groups end at. Two numbers that happen to sit side by side
+ * ("87654321 12345678") space themselves inconsistently and fail this.
+ */
+function sameSeparators(m: string, cuts: number[]): boolean {
+  const seps = new Set<string>();
+  let n = 0;
+  for (let i = 0; i < m.length; i++) {
+    if (!/\d/.test(m[i])) continue;
+    n++;
+    if (!cuts.includes(n)) continue;
+    const next = /\d/.test(m[i + 1] ?? "") ? "" : m[i + 1];
+    if (next !== undefined && next !== "\n") seps.add(next);
+  }
+  return seps.size <= 1;
 }
 
 const before = (text: string, at: number, n: number) =>
@@ -192,14 +230,14 @@ const RULES: Record<PatternKind, Rule[]> = {
 
   iban: [
     {
-      re: /\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]){11,30}\b/g,
+      re: /\b[A-Z]{2}\d{2}(?:[ \n]?[A-Z0-9]){11,30}\b/g,
       accept: (m) => {
         // Greedy: may have run into the next all-caps word. Back off one
         // space-separated group at a time until the checksum holds.
         let s = m;
         for (;;) {
           if (ibanValid(s)) return s.length;
-          const cut = s.lastIndexOf(" ");
+          const cut = Math.max(s.lastIndexOf(" "), s.lastIndexOf("\n"));
           if (cut < 15) return 0;
           s = s.slice(0, cut);
         }
@@ -210,13 +248,13 @@ const RULES: Record<PatternKind, Rule[]> = {
   card: [
     // Grouped in fours (16–19 digits), as printed on statements and receipts.
     {
-      re: /(?<![\d-])\d{4}([ -]?)\d{4}\1\d{4}\1\d{4}(?:\1\d{1,3})?(?![\d-])/g,
-      accept: (m) => (luhn(m) ? m.length : 0),
+      re: /(?<![\d-])\d{4}[ \n-]?\d{4}[ \n-]?\d{4}[ \n-]?\d{4}(?:[ \n-]?\d{1,3})?(?![\d-])/g,
+      accept: (m) => (luhn(m) && sameSeparators(m, [4, 8, 12, 16]) ? m.length : 0),
     },
     // American Express: 4-6-5.
     {
-      re: /(?<![\d-])3[47]\d{2}([ -]?)\d{6}\1\d{5}(?![\d-])/g,
-      accept: (m) => (luhn(m) ? m.length : 0),
+      re: /(?<![\d-])3[47]\d{2}[ \n-]?\d{6}[ \n-]?\d{5}(?![\d-])/g,
+      accept: (m) => (luhn(m) && sameSeparators(m, [4, 10]) ? m.length : 0),
     },
     // Ungrouped, 13–19 digits.
     {
@@ -229,7 +267,7 @@ const RULES: Record<PatternKind, Rule[]> = {
   // never issued; suffix A–D. Written in capitals, often spaced in pairs.
   nino: [
     {
-      re: /\b(?!BG|GB|NK|KN|TN|NT|ZZ)[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z] ?\d{2} ?\d{2} ?\d{2} ?[A-D]\b/g,
+      re: /\b(?!BG|GB|NK|KN|TN|NT|ZZ)[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z][ \n]?\d{2}[ \n]?\d{2}[ \n]?\d{2}[ \n]?[A-D]\b/g,
     },
   ],
 
@@ -258,6 +296,11 @@ const RULES: Record<PatternKind, Rule[]> = {
  * separators also matches the same digits grouped differently ("41234567"
  * finds "4123 4567"), because how a document spaces a number is not something
  * the person searching can know.
+ *
+ * Letter-spaced text ("A C C O U N T  H O L D E R") also matches: PDF writers
+ * set it as one character per draw, and pdf.js reads each gap as a space, the
+ * word gap included. Ordinary text never has whitespace between every
+ * letter, so this form finds nothing else.
  */
 export function queryRegex(query: string): RegExp | null {
   const q = query.trim();
@@ -277,7 +320,10 @@ export function queryRegex(query: string): RegExp | null {
     .split(/\s+/)
     .map((w) => Array.from(w).map(one).join(""))
     .join("\\s+");
-  return new RegExp(body, "giu");
+  const chars = Array.from(q.replace(/\s+/g, ""));
+  if (chars.length < 3) return new RegExp(body, "giu");
+  const spaced = chars.map(one).join("\\s{1,3}");
+  return new RegExp(`${body}|${spaced}`, "giu");
 }
 
 // ---- Entry point ----
@@ -339,9 +385,13 @@ export function findMatches(
   return kept.sort((a, b) => a.start - b.start);
 }
 
-/** The key matches are grouped under in the results list. */
+/**
+ * The key matches are grouped under in the results list. A search's hits group
+ * by their letters alone, so "Jane Example", a letter-spaced "J A N E  E X A M
+ * P L E" and "4123 4567" for "41234567" share one row.
+ */
 export function groupKey(m: Pick<Match, "kind" | "text">): string {
-  const t =
-    m.kind === "text" || m.kind === "email" ? m.text.toLowerCase() : m.text;
+  if (m.kind === "text") return "text:" + m.text.toLowerCase().replace(/\s+/g, "");
+  const t = m.kind === "email" ? m.text.toLowerCase() : m.text;
   return m.kind + ":" + t.replace(/\s+/g, " ").trim();
 }
