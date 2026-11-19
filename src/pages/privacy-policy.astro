@@ -6,7 +6,7 @@ import Footer from '../components/Footer.astro';
 
 <Layout
   title="Privacy Policy — Latch Tools"
-  description="Latch Tools processes all files locally in your browser. No uploads, no tracking, no stored data. Read the full privacy policy."
+  description="Latch Tools processes all files locally in your browser. No uploads and no cookies; the only analytics is a cookieless page-load count. Read the full policy."
   ogImage="/og/privacy-policy.png"
 >
   <Header />
@@ -19,7 +19,7 @@ import Footer from '../components/Footer.astro';
           Privacy Policy
         </h1>
         <p style="color: var(--text-3); font-family: var(--font-mono); font-size: 13px; margin: 14px 0 40px;">
-          Last updated: 2 June 2026
+          Last updated: 19 November 2026
         </p>
       </div>
     </section>
@@ -60,37 +60,55 @@ import Footer from '../components/Footer.astro';
             See <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer" target="_blank" style="color: var(--accent-text)">Cloudflare's privacy policy</a> for details.
           </p>
 
-          <h2>Cookies</h2>
-          <p>
-            Latch sets no cookies, so no consent banner is shown — there is nothing to
-            consent to. If cookie-based analytics or advertising are ever added, this
-            policy will be updated before any such scripts are enabled, and a compliant
-            consent banner will be shown to visitors in the UK and EU.
-          </p>
-
           <h2>Analytics</h2>
           <p>
-            Latch runs no analytics. There is no page-view counter, no measurement
-            beacon, and no third-party analytics service of any kind — we do not track
-            which pages you visit or what you do on them. The only records that exist are
-            the standard Cloudflare server logs described above, which every website
-            generates and which we do not process ourselves.
+            Latch uses Cloudflare Web Analytics to count page loads and see how fast
+            pages load. Cloudflare adds a small script to each page
+            (<code>static.cloudflareinsights.com/beacon.min.js</code>), and when you
+            leave a page it sends one report to <code>latchtools.com/cdn-cgi/rum</code>.
+            That report contains:
+          </p>
+          <ul>
+            <li>the address of the page, and the page you came from, if any;</li>
+            <li>your browser engine and version, and your operating system version;</li>
+            <li>load timings, such as time to first byte and how long the page took to draw;</li>
+            <li>a random ID for that one page load, made fresh every time.</li>
+          </ul>
+          <p>
+            It contains nothing about the files you open, their names or sizes, or
+            anything you type or draw in a tool. Latch never puts any of that in a page
+            address, so the address can't carry it either. The script sets no cookies
+            and stores nothing in your browser, so it has no way to link one visit
+            to the next. We see totals in Cloudflare's dashboard, such as visits per page,
+            countries and browsers, not individual visitors. If your browser or a
+            content blocker blocks the script, every tool works the same.
           </p>
 
           <h2>Third-party scripts</h2>
           <p>
-            Latch loads no third-party scripts at all. Fonts are self-hosted, so no
-            external font service is contacted, and no analytics, advertising, or tracking
-            scripts are loaded. The only code that runs on the page is Latch's own, and it
-            never sends the files you work with anywhere.
+            The Cloudflare Web Analytics script above is the only script on the site
+            that Latch didn't write. Fonts and every library the tools use are served
+            from latchtools.com itself, so no font service or code CDN is contacted, and
+            there is no advertising or tracking script. When you first use a tool it may
+            fetch more of Latch's own code from latchtools.com, such as the PDF reader or
+            an image codec, but nothing is ever sent back. You can watch this in your
+            browser's network panel.
+          </p>
+
+          <h2>Cookies</h2>
+          <p>
+            Latch sets no cookies, and neither does the analytics script, so no consent
+            banner is shown. If cookies are ever needed, for advertising or anything
+            else, this policy will change before they are set, and visitors in the UK
+            and EU will be asked first.
           </p>
 
           <h2>Your rights (UK &amp; EU)</h2>
           <p>
-            Because we do not collect personal data beyond standard Cloudflare server
-            logs (which we do not control or process ourselves), there is no personal
-            data held by Latch for you to access, correct, or erase.
-            If you have questions, contact us at the address below.
+            Latch holds no personal data about you. The analytics reports carry no
+            identifier that lasts beyond one page load, and the server logs above are
+            kept by Cloudflare, not by us, so there is nothing for us to look up,
+            correct or erase. If you have questions, contact us at the address below.
           </p>
 
           <h2>Children</h2>
@@ -101,8 +119,8 @@ import Footer from '../components/Footer.astro';
 
           <h2>Changes to this policy</h2>
           <p>
-            If this policy changes in a meaningful way — for example, when analytics
-            or ads are introduced — the "last updated" date at the top will change and
+            If this policy changes in a meaningful way, for example if ads are
+            introduced, the "last updated" date at the top will change and
             we will describe what is new. Continued use of the site after a material
             change constitutes acceptance of the updated policy.
           </p>
@@ -146,4 +164,5 @@ import Footer from '../components/Footer.astro';
   }
   .prose ul li { margin-bottom: 6px; }
   .prose em { font-style: italic; }
+  .prose code { font-family: var(--font-mono); font-size: .9em; overflow-wrap: anywhere; }
 </style>

@@ -29,7 +29,7 @@ The only external URLs referenced in the codebase are `schema.org` and `w3.org` 
 
 **Face detection runs on your device too.** Most tools that offer automatic face blurring upload your photo to a server to find the faces. This one downloads a small open-source model ([YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet), MIT) into your browser instead and runs it locally, so the image still never moves. The ONNX runtime's WebAssembly binary is self-hosted for the same reason — it is served from this origin, never a CDN.
 
-**No analytics, no third-party scripts.** The site loads no analytics, no tracking beacon, and no third-party scripts of any kind — the only code that runs is the tool's own. Beyond the standard server logs any web host generates, nothing about your visit is recorded.
+**One third-party script: Cloudflare Web Analytics.** latchtools.com runs Cloudflare's cookieless Web Analytics, which Cloudflare adds to pages at the edge (it isn't in this repo, so local builds and the tests don't load it). When you leave a page, it sends one report with the page address, referrer, browser and OS version, load timings and a random per-load ID. Nothing about files, because no tool puts anything in the URL. It sets no cookies and stores nothing in the browser. The [privacy policy](https://latchtools.com/privacy-policy/) lists the exact fields. Apart from that script, everything the site loads, from fonts to codecs, is served from its own origin.
 
 ## Tools
 
